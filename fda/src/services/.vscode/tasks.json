@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build authentication",
+            "command": "dotnet build authentication/Services/authentication.csproj",
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build catalog",
+            "command": "dotnet build catalog/Services/catalog.Services.csproj",
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build crm",
+            "command": "dotnet build crm/Services/crm.csproj",
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build all services",
+            "dependsOn": [
+                "build authentication",
+                "build catalog",
+                "build crm"
+            ],
+            "type": "shell",
+            "group": "build"
+        }
+    ]
+}

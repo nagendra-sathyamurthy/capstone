@@ -1,0 +1,19 @@
+# Item API cURL Commands
+
+# Get all items
+curl -X GET "https://localhost:7027/api/item" -H "accept: application/json"
+
+# Get item by ID
+curl -X GET "https://localhost:7027/api/item/{id}" -H "accept: application/json"
+
+# Create item
+curl -X POST "https://localhost:7027/api/item" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"name\":\"Sample Item\",\"description\":\"Description here\",\"price\":99.99}"
+
+# Update item
+curl -X PUT "https://localhost:7027/api/item/{id}" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"id\":\"{id}\",\"name\":\"Updated Name\",\"description\":\"Updated Description\",\"price\":123.45}"
+
+# Delete item
+curl -X DELETE "https://localhost:7027/api/item/{id}" -H "accept: application/json"
+
+# If JWT authentication is enabled, add your token to any request:
+# -H "Authorization: Bearer <your_jwt_token>"

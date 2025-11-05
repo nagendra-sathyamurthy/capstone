@@ -1,0 +1,4 @@
+apiVersion: v2
+name: catalog-mongodb
+version: 0.1.0
+description: Helm chart for MongoDB for Catalog service

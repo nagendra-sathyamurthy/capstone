@@ -1,0 +1,4 @@
+apiVersion: v2
+name: authentication-mongodb
+version: 0.1.0
+description: Helm chart for MongoDB for Authentication service

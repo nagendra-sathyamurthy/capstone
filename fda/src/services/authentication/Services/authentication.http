@@ -1,0 +1,14 @@
+# Login
+curl -X POST https://localhost:5001/api/auth/login \
+	-H "Content-Type: application/json" \
+	-d '{"email":"user@example.com","password":"yourpassword"}'
+
+# Register
+curl -X POST https://localhost:5001/api/auth/register \
+	-H "Content-Type: application/json" \
+	-d '{"email":"newuser@example.com","password":"newpassword"}'
+
+# Forgot Password
+curl -X POST https://localhost:5001/api/auth/forgot-password \
+	-H "Content-Type: application/json" \
+	-d '"user@example.com"'

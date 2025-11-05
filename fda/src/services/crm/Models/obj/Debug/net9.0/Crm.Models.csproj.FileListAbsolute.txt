@@ -1,0 +1,12 @@
+C:\dotnet\capstone\fda\src\services\crm\Models\bin\Debug\net9.0\Crm.Models.deps.json
+C:\dotnet\capstone\fda\src\services\crm\Models\bin\Debug\net9.0\Crm.Models.dll
+C:\dotnet\capstone\fda\src\services\crm\Models\bin\Debug\net9.0\Crm.Models.pdb
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.csproj.AssemblyReference.cache
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.AssemblyInfoInputs.cache
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.AssemblyInfo.cs
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.csproj.CoreCompileInputs.cache
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.dll
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\refint\Crm.Models.dll
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.pdb
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\ref\Crm.Models.dll

@@ -1,0 +1,11 @@
+C:\dotnet\capstone\fda\src\services\cart\Models\bin\Debug\net9.0\Cart.Models.deps.json
+C:\dotnet\capstone\fda\src\services\cart\Models\bin\Debug\net9.0\Cart.Models.dll
+C:\dotnet\capstone\fda\src\services\cart\Models\bin\Debug\net9.0\Cart.Models.pdb
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.GeneratedMSBuildEditorConfig.editorconfig
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.AssemblyInfoInputs.cache
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.AssemblyInfo.cs
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.csproj.CoreCompileInputs.cache
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.dll
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\refint\Cart.Models.dll
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.pdb
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\ref\Cart.Models.dll

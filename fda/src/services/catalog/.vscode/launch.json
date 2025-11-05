@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Launch catalog.Services",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build catalog solution",
+            "program": "${workspaceFolder}/Services/bin/Debug/net9.0/catalog.Services.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Services",
+            "stopAtEntry": false,
+            "console": "internalConsole"            
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Launch crm.Services",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build crm solution",
+            "program": "${workspaceFolder}/Services/bin/Debug/net9.0/crm.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Services",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+@catalog.Services_HostAddress = http://localhost:5270
+
+GET {{catalog.Services_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+POST {{catalog.Services_HostAddress}}/api/item/bulk
+Content-Type: application/json
+
+[
+  {
+    "name": "Item 1",
+    "description": "Bulk item 1",
+    "price": 10.0
+  },
+  {
+    "name": "Item 2",
+    "description": "Bulk item 2",
+    "price": 20.0
+  }
+]
+
+###
