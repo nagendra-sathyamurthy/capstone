@@ -18,11 +18,11 @@ service:
 mongodb:
   auth:
     enabled: true
-    rootUser: admin
-    rootPassword: "SecurePass123!"
+    rootUser: Athena
+    rootPassword: "Ath3n@Str0ngP@ssw0rd2024!"
     database: authenticationdb
-    username: authuser
-    password: "AuthPass123!"
+    username: athenauser
+    password: "Ath3n@Str0ngP@ssw0rd2024!"
   
   # Resource limits and requests
   resources:

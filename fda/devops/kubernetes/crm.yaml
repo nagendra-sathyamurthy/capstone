@@ -24,8 +24,26 @@ spec:
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Development"
-        - name: MONGO_CONNECTION_STRING
-          value: "mongodb://sa:sa@mongodb-service:27017/crmdb?authSource=admin"
+        - name: ConnectionStrings__DefaultConnection
+          valueFrom:
+            secretKeyRef:
+              name: crm-secret
+              key: connection-string
+        - name: DatabaseSettings__ConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: crm-secret
+              key: connection-string
+        - name: DatabaseSettings__DatabaseName
+          valueFrom:
+            secretKeyRef:
+              name: crm-secret
+              key: database-name
+        - name: DatabaseSettings__CollectionName
+          valueFrom:
+            secretKeyRef:
+              name: crm-secret
+              key: collection-name
         resources:
           requests:
             memory: "256Mi"
