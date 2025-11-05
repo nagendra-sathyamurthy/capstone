@@ -90,6 +90,8 @@ This directory contains comprehensive Postman collections for testing all micros
 4. Import the `Capstone-Environment.postman_environment.json` file
 5. Select the "Capstone Services Environment" from the environment dropdown
 
+**🔐 Security Note**: The environment includes MongoDB credentials with strong authentication (username: Athena) that match your deployment configuration.
+
 ### 2. Configure Service URLs
 
 Update the environment variables if your services run on different ports:
@@ -183,6 +185,18 @@ The collections use several automatic features:
 - `{{order_id}}`: Order identifier
 - `{{payment_id}}`: Payment transaction ID
 
+### MongoDB Configuration Variables
+
+- `{{mongodb_username}}`: MongoDB username (Athena)
+- `{{mongodb_password}}`: MongoDB password (strong password)
+- `{{mongodb_host_local}}`: Local development MongoDB host (localhost:9000)
+- `{{mongodb_host_k8s}}`: Kubernetes MongoDB host (mongodb-service:27017)
+- `{{mongodb_auth_source}}`: MongoDB authentication source (admin)
+- `{{mongodb_connection_local_auth}}`: Complete connection string for Authentication DB
+- `{{mongodb_connection_local_catalog}}`: Complete connection string for Catalog DB
+- `{{mongodb_connection_local_crm}}`: Complete connection string for CRM DB
+- `{{mongodb_connection_local_cart}}`: Complete connection string for Cart DB
+
 ## Troubleshooting
 
 ### Common Issues
@@ -208,6 +222,17 @@ To reset environment variables between test runs:
 1. Go to Environment settings
 2. Clear values for: `auth_token`, `cart_id`, `item_id`, `customer_id`, `order_id`, `payment_id`
 3. Or duplicate the environment for fresh testing
+
+### MongoDB Connection Testing
+
+The environment includes MongoDB connection strings for debugging and testing:
+
+1. **Database Health Check**: Use connection strings to verify MongoDB connectivity
+2. **Direct Database Access**: Connect to specific databases using provided connection strings
+3. **Credential Verification**: Test authentication with Athena credentials
+4. **Multi-Environment Support**: Switch between local (port 9000) and Kubernetes connections
+
+**Security Note**: MongoDB credentials are marked as "secret" type in Postman to prevent accidental exposure in shared collections.
 
 ## API Documentation
 
