@@ -1,4 +1,4 @@
-# Default values for authentication-mongodb
+# Default values for cart-mongodb
 replicaCount: 1
 
 image:
@@ -20,9 +20,9 @@ mongodb:
     enabled: true
     rootUser: admin
     rootPassword: "SecurePass123!"
-    database: authenticationdb
-    username: authuser
-    password: "AuthPass123!"
+    database: cartdb
+    username: cartuser
+    password: "CartPass123!"
   
   # Resource limits and requests
   resources:

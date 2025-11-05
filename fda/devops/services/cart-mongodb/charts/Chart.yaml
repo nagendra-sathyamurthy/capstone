@@ -1,7 +1,7 @@
 apiVersion: v2
-name: catalog-mongodb
+name: cart-mongodb
 version: 1.0.0
-description: Helm chart for MongoDB database for Catalog microservice
+description: Helm chart for MongoDB database for Cart microservice
 type: application
 appVersion: "7.0"
 maintainers:
@@ -10,7 +10,7 @@ maintainers:
 keywords:
   - mongodb
   - database
-  - catalog
+  - cart
   - microservice
 home: https://github.com/nagendra-sathyamurthy/capstone
 sources:
