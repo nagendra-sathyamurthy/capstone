@@ -1,14 +1,26 @@
-# Helm Charts Update Summary
+# Capstone Microservices - Helm Charts
 
-## 🚀 Major Improvements Completed
+This directory contains production-ready Helm charts for deploying MongoDB databases that support the capstone microservices architecture.
 
-### Chart Metadata Enhancement
-- **Version Upgrade**: All charts upgraded from `0.1.0` → `1.0.0`
-- **MongoDB Image**: Pinned to stable `mongo:7.0` (from `latest`)
-- **Chart Type**: Explicitly set as `application`
-- **Maintainers**: Added DevOps team contact information
-- **Keywords**: Added relevant tags for discoverability
-- **Sources**: Linked to GitHub repository
+## � Chart Structure
+
+```
+helm/
+├── README.md
+├── authentication/charts/    # Authentication service MongoDB
+├── cart/charts/             # Shopping cart service MongoDB  
+├── catalog/charts/          # Product catalog service MongoDB
+└── crm/charts/             # Customer relationship service MongoDB
+```
+
+## 🚀 Chart Features
+
+### Production-Ready Configuration
+- **Version**: All charts are at `v1.0.0` production release
+- **MongoDB Image**: Stable `mongo:7.0` (pinned version)
+- **Chart Type**: Application charts with full Kubernetes integration
+- **Maintainers**: DevOps team with proper contact information
+- **Documentation**: Comprehensive values.yaml with inline documentation
 
 ### 🔒 Security & Authentication
 ```yaml
@@ -66,31 +78,18 @@ securityContext:
   runAsUser: 999
 ```
 
-## 📦 Updated Services
+## 📦 Available Services
 
-### ✅ Authentication MongoDB
-- **Database**: `authenticationdb`
-- **User**: `authuser` / `AuthPass123!`
-- **Features**: Full production configuration
-- **Status**: Complete with all templates
+Each service has its own dedicated MongoDB database with secure authentication:
 
-### ✅ Catalog MongoDB
-- **Database**: `catalogdb`
-- **User**: `cataloguser` / `CatalogPass123!`
-- **Features**: Enhanced security and monitoring
-- **Status**: Complete with all templates
+| Service | Database | Username | Chart Location |
+|---------|----------|----------|----------------|
+| **Authentication** | `authenticationdb` | `authuser` | `./authentication/charts/` |
+| **Cart** | `cartdb` | `cartuser` | `./cart/charts/` |
+| **Catalog** | `catalogdb` | `cataloguser` | `./catalog/charts/` |
+| **CRM** | `crmdb` | `crmuser` | `./crm/charts/` |
 
-### ✅ CRM MongoDB
-- **Database**: `crmdb`
-- **User**: `crmuser` / `CrmPass123!`
-- **Features**: Resource limits and probes
-- **Status**: Complete with all templates
-
-### 🆕 Cart MongoDB
-- **Database**: `cartdb`
-- **User**: `cartuser` / `CartPass123!`
-- **Features**: Brand new complete chart
-- **Status**: New chart created with full configuration
+> **Security Note**: All databases use strong authentication with service-specific credentials configured in `values.yaml`
 
 ## 🎯 Helm Best Practices Implemented
 
@@ -117,38 +116,141 @@ labels:
 - Affinity rules for pod placement
 - Pod annotations for additional metadata
 
-## 🔧 Usage Examples
+## � Quick Start
+
+### Prerequisites
+- Kubernetes cluster (v1.20+)
+- Helm 3.x installed
+- kubectl configured
 
 ### Deploy Individual Service
 ```bash
-helm install auth-db fda/devops/services/authentication-mongodb/charts/
+# Deploy authentication database
+helm install auth-db ./authentication/charts/ -n capstone-services --create-namespace
+
+# Deploy cart database  
+helm install cart-db ./cart/charts/ -n capstone-services
+
+# Deploy catalog database
+helm install catalog-db ./catalog/charts/ -n capstone-services
+
+# Deploy CRM database
+helm install crm-db ./crm/charts/ -n capstone-services
 ```
 
-### Deploy All Services
+### Deploy All Services (Batch)
 ```bash
-helm install auth-db fda/devops/services/authentication-mongodb/charts/
-helm install catalog-db fda/devops/services/catalog-mongodb/charts/
-helm install crm-db fda/devops/services/crm-mongodb/charts/
-helm install cart-db fda/devops/services/cart-mongodb/charts/
+# Create namespace first
+kubectl create namespace capstone-services
+
+# Deploy all databases
+for service in authentication cart catalog crm; do
+    helm install "${service}-db" ./${service}/charts/ -n capstone-services
+done
 ```
 
-### Custom Values
+### Custom Configuration Examples
 ```bash
-helm install auth-db fda/devops/services/authentication-mongodb/charts/ \
+# Deploy with custom storage size
+helm install auth-db ./authentication/charts/ \
   --set persistence.size=5Gi \
-  --set mongodb.resources.limits.memory=1Gi
+  --set mongodb.resources.limits.memory=1Gi \
+  -n capstone-services
+
+# Deploy with custom credentials
+helm install cart-db ./cart/charts/ \
+  --set mongodb.auth.rootPassword="MySecureRootPass" \
+  --set mongodb.auth.password="MySecureUserPass" \
+  -n capstone-services
 ```
 
-## 🚦 Production Readiness
+### Verify Deployments
+```bash
+# Check all pods
+kubectl get pods -n capstone-services
 
-All charts now include:
-- ✅ Stable image versions
-- ✅ Resource limits and requests
-- ✅ Health monitoring
-- ✅ Security contexts
-- ✅ Persistent storage
-- ✅ Proper authentication
-- ✅ Kubernetes best practices
-- ✅ Helm best practices
+# Check services
+kubectl get svc -n capstone-services
 
-The charts are now production-ready and follow industry standards for MongoDB deployments in Kubernetes environments.
+# Check persistent volumes
+kubectl get pvc -n capstone-services
+```
+
+## � Maintenance & Operations
+
+### Upgrade Charts
+```bash
+# Upgrade specific service
+helm upgrade auth-db ./authentication/charts/ -n capstone-services
+
+# Upgrade all services
+for service in authentication cart catalog crm; do
+    helm upgrade "${service}-db" ./${service}/charts/ -n capstone-services
+done
+```
+
+### Uninstall Services
+```bash
+# Remove specific service
+helm uninstall auth-db -n capstone-services
+
+# Remove all services
+helm list -n capstone-services | grep -E "(auth|cart|catalog|crm)-db" | awk '{print $1}' | xargs -I {} helm uninstall {} -n capstone-services
+```
+
+### Monitoring & Troubleshooting
+```bash
+# Check deployment status
+helm status auth-db -n capstone-services
+
+# View logs
+kubectl logs -l app.kubernetes.io/name=authentication-mongodb -n capstone-services
+
+# Port forward for local access
+kubectl port-forward svc/authentication-mongodb 27017:27017 -n capstone-services
+```
+
+## 🚦 Production Readiness Checklist
+
+All charts include enterprise-grade features:
+
+✅ **Stability & Versioning**
+- Pinned MongoDB image (`mongo:7.0`)
+- Semantic versioning for charts (`v1.0.0`)
+- Immutable deployments
+
+✅ **Security & Authentication** 
+- MongoDB authentication enabled
+- Service-specific user accounts
+- Kubernetes security contexts
+- Non-root container execution
+
+✅ **Resource Management**
+- CPU/Memory limits and requests
+- Quality of Service (QoS) guaranteed
+- Resource quotas compatible
+
+✅ **High Availability**
+- Liveness and readiness probes
+- Persistent volume claims
+- Graceful shutdown handling
+- Rolling update strategy
+
+✅ **Observability**
+- Structured logging
+- Health check endpoints  
+- Kubernetes standard labels
+- Helm release tracking
+
+✅ **Best Practices**
+- Helm template helpers
+- Configurable via values.yaml
+- Kubernetes naming conventions
+- GitOps-ready structure
+
+## 📚 Additional Resources
+
+- [Kubernetes Documentation](https://kubernetes.io/docs/)
+- [Helm Documentation](https://helm.sh/docs/)
+- [MongoDB on Kubernetes](https://www.mongodb.com/kubernetes)
+- [Project Repository](https://github.com/nagendra-sathyamurthy/capstone)
