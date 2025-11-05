@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "c:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj": {}
+    "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj": {}
   },
   "projects": {
     "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\DataAccess\\Crm.DataAccess.csproj": {
@@ -138,14 +138,14 @@
         }
       }
     },
-    "c:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj": {
+    "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj",
+        "projectUniqueName": "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj",
         "projectName": "Crm.Services",
-        "projectPath": "c:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj",
+        "projectPath": "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj",
         "packagesPath": "C:\\Users\\Nagen\\.nuget\\packages\\",
-        "outputPath": "c:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\obj\\",
+        "outputPath": "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Nagen\\AppData\\Roaming\\NuGet\\NuGet.Config"

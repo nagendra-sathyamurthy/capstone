@@ -22,3 +22,4 @@ C:\dotnet\capstone\fda\src\services\authentication\DataAccess\obj\Debug\net9.0\a
 C:\dotnet\capstone\fda\src\services\authentication\DataAccess\obj\Debug\net9.0\refint\authentication.DataAccess.dll
 C:\dotnet\capstone\fda\src\services\authentication\DataAccess\obj\Debug\net9.0\authentication.DataAccess.pdb
 C:\dotnet\capstone\fda\src\services\authentication\DataAccess\obj\Debug\net9.0\ref\authentication.DataAccess.dll
+C:\dotnet\capstone\fda\src\services\authentication\DataAccess\obj\Debug\net9.0\authentication.DataAccess.sourcelink.json

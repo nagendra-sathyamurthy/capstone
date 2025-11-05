@@ -13,3 +13,4 @@ C:\dotnet\capstone\fda\src\services\cart\DataAccess\obj\Debug\net9.0\Cart.DataAc
 C:\dotnet\capstone\fda\src\services\cart\DataAccess\obj\Debug\net9.0\refint\Cart.DataAccess.dll
 C:\dotnet\capstone\fda\src\services\cart\DataAccess\obj\Debug\net9.0\Cart.DataAccess.pdb
 C:\dotnet\capstone\fda\src\services\cart\DataAccess\obj\Debug\net9.0\ref\Cart.DataAccess.dll
+C:\dotnet\capstone\fda\src\services\cart\DataAccess\obj\Debug\net9.0\Cart.DataAccess.sourcelink.json

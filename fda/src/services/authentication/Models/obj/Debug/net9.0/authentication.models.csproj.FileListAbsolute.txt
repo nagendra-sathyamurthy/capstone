@@ -22,3 +22,4 @@ C:\dotnet\capstone\fda\src\services\authentication\Models\obj\Debug\net9.0\authe
 C:\dotnet\capstone\fda\src\services\authentication\Models\obj\Debug\net9.0\refint\authentication.models.dll
 C:\dotnet\capstone\fda\src\services\authentication\Models\obj\Debug\net9.0\authentication.models.pdb
 C:\dotnet\capstone\fda\src\services\authentication\Models\obj\Debug\net9.0\ref\authentication.models.dll
+C:\dotnet\capstone\fda\src\services\authentication\Models\obj\Debug\net9.0\authentication.models.sourcelink.json

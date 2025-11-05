@@ -51,3 +51,4 @@ C:\dotnet\capstone\fda\src\services\cart\Services\obj\Debug\net9.0\refint\Cart.S
 C:\dotnet\capstone\fda\src\services\cart\Services\obj\Debug\net9.0\Cart.Services.pdb
 C:\dotnet\capstone\fda\src\services\cart\Services\obj\Debug\net9.0\Cart.Services.genruntimeconfig.cache
 C:\dotnet\capstone\fda\src\services\cart\Services\obj\Debug\net9.0\ref\Cart.Services.dll
+C:\dotnet\capstone\fda\src\services\cart\Services\obj\Debug\net9.0\Cart.Services.sourcelink.json

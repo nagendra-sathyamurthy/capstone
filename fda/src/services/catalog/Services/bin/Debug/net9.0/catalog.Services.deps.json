@@ -8,12 +8,12 @@
     ".NETCoreApp,Version=v9.0": {
       "Catalog.Services/1.0.0": {
         "dependencies": {
-          "Catalog.DataAccess": "1.0.0",
-          "Catalog.Models": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.9",
           "Microsoft.AspNetCore.OpenApi": "9.0.9",
           "MongoDB.Driver": "3.5.0",
-          "Swashbuckle.AspNetCore": "6.5.0"
+          "Swashbuckle.AspNetCore": "6.5.0",
+          "catalog.DataAccess": "1.0.0",
+          "catalog.Models": "1.0.0"
         },
         "runtime": {
           "Catalog.Services.dll": {}
@@ -246,23 +246,23 @@
           }
         }
       },
-      "Catalog.DataAccess/1.0.0": {
+      "catalog.DataAccess/1.0.0": {
         "dependencies": {
           "MongoDB.Driver": "3.5.0"
         },
         "runtime": {
-          "Catalog.DataAccess.dll": {
+          "catalog.DataAccess.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
       },
-      "Catalog.Models/1.0.0": {
+      "catalog.Models/1.0.0": {
         "dependencies": {
           "MongoDB.Driver": "3.5.0"
         },
         "runtime": {
-          "Catalog.Models.dll": {
+          "catalog.Models.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -479,12 +479,12 @@
       "path": "zstdsharp.port/0.7.3",
       "hashPath": "zstdsharp.port.0.7.3.nupkg.sha512"
     },
-    "Catalog.DataAccess/1.0.0": {
+    "catalog.DataAccess/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Catalog.Models/1.0.0": {
+    "catalog.Models/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

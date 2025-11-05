@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "gcOanHXoBY0=",
+  "dgSpecHash": "octL71pn3H4=",
   "success": true,
-  "projectFilePath": "c:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj",
+  "projectFilePath": "C:\\dotnet\\capstone\\fda\\src\\services\\crm\\Services\\Crm.Services.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Nagen\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",
     "C:\\Users\\Nagen\\.nuget\\packages\\awssdk.securitytoken\\3.7.100.14\\awssdk.securitytoken.3.7.100.14.nupkg.sha512",

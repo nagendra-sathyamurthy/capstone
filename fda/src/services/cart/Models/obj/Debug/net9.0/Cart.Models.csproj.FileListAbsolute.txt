@@ -9,3 +9,4 @@ C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.dll
 C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\refint\Cart.Models.dll
 C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.pdb
 C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\ref\Cart.Models.dll
+C:\dotnet\capstone\fda\src\services\cart\Models\obj\Debug\net9.0\Cart.Models.sourcelink.json

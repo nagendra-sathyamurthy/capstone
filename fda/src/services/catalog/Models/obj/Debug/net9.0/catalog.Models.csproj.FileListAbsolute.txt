@@ -10,3 +10,4 @@ C:\dotnet\capstone\fda\src\services\catalog\Models\obj\Debug\net9.0\catalog.Mode
 C:\dotnet\capstone\fda\src\services\catalog\Models\obj\Debug\net9.0\refint\catalog.Models.dll
 C:\dotnet\capstone\fda\src\services\catalog\Models\obj\Debug\net9.0\catalog.Models.pdb
 C:\dotnet\capstone\fda\src\services\catalog\Models\obj\Debug\net9.0\ref\catalog.Models.dll
+C:\dotnet\capstone\fda\src\services\catalog\Models\obj\Debug\net9.0\catalog.Models.sourcelink.json

@@ -10,3 +10,4 @@ C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.dll
 C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\refint\Crm.Models.dll
 C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.pdb
 C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\ref\Crm.Models.dll
+C:\dotnet\capstone\fda\src\services\crm\Models\obj\Debug\net9.0\Crm.Models.sourcelink.json

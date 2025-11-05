@@ -28,3 +28,4 @@ C:\dotnet\capstone\fda\src\services\crm\DataAccess\obj\Debug\net9.0\ref\crm.Data
 c:\dotnet\capstone\fda\src\services\crm\DataAccess\bin\Debug\net9.0\Crm.Models.dll
 c:\dotnet\capstone\fda\src\services\crm\DataAccess\bin\Debug\net9.0\Crm.Models.pdb
 c:\dotnet\capstone\fda\src\services\crm\DataAccess\obj\Debug\net9.0\Crm.Data.8A3CE53D.Up2Date
+C:\dotnet\capstone\fda\src\services\crm\DataAccess\obj\Debug\net9.0\Crm.DataAccess.sourcelink.json

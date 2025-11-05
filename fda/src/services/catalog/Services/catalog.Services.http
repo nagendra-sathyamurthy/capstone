@@ -1,10 +1,5 @@
 @catalog.Services_HostAddress = http://localhost:5270
 
-GET {{catalog.Services_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-
 POST {{catalog.Services_HostAddress}}/api/item/bulk
 Content-Type: application/json
 

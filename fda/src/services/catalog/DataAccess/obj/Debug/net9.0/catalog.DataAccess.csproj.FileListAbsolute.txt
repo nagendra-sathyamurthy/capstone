@@ -10,3 +10,4 @@ C:\dotnet\capstone\fda\src\services\catalog\DataAccess\obj\Debug\net9.0\refint\c
 C:\dotnet\capstone\fda\src\services\catalog\DataAccess\obj\Debug\net9.0\catalog.DataAccess.pdb
 C:\dotnet\capstone\fda\src\services\catalog\DataAccess\obj\Debug\net9.0\ref\catalog.DataAccess.dll
 c:\dotnet\capstone\fda\src\services\catalog\DataAccess\obj\Debug\net9.0\catalog.DataAccess.csproj.AssemblyReference.cache
+C:\dotnet\capstone\fda\src\services\catalog\DataAccess\obj\Debug\net9.0\catalog.DataAccess.sourcelink.json
