@@ -88,7 +88,12 @@ builder.Services.AddSingleton<IMongoDatabase>(sp =>
     var connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? 
                           "mongodb://athena:athena2024!@localhost:27017";
     var mongoClient = new MongoClient(connectionString);
-    return mongoClient.GetDatabase("AuthenticationDb");
+    
+    // Extract database name from connection string, default to "authenticationdb"
+    var mongoUrl = new MongoUrl(connectionString);
+    var databaseName = mongoUrl.DatabaseName ?? "authenticationdb";
+    
+    return mongoClient.GetDatabase(databaseName);
 });
 
 builder.Services.AddScoped<IRepository<UserAccount>>(sp =>

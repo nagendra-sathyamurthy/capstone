@@ -28,6 +28,11 @@ spec:
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Development"
+        - name: MONGO_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret  # Uses shared MongoDB secret
+              key: auth-connection-string
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:

@@ -1,0 +1,6374 @@
+{
+  "collection": {
+    "item": [
+      {
+        "id": "f983ee74-0068-4646-878a-df9992053af2",
+        "name": "Customer Registration",
+        "request": {
+          "description": {
+            "content": "Register a new user account",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"role\": \"customer\",\n  \"organization\": \"external_users\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\"],\n  \"favoriteRestaurants\": [\"Tony's Authentic Pizzeria\", \"Fresh & Green Cafe\"]\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "284c57ce-2454-4ca3-9995-2e5ac9634472",
+        "name": "Restaurant Owner (Biller) Registration",
+        "request": {
+          "description": {
+            "content": "Register a new restaurant owner account with business information",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\",\n  \"firstName\": \"Maria\",\n  \"lastName\": \"Rodriguez\",\n  \"phoneNumber\": \"+1-555-0890\",\n  \"role\": \"biller\",\n  \"organization\": \"tonys_pizzeria\",\n  \"businessInfo\": {\n    \"restaurantName\": \"Tony's Authentic Pizzeria\",\n    \"businessLicense\": \"SF-REST-2024-001\",\n    \"taxId\": \"98-7654321\",\n    \"address\": {\n      \"street\": \"789 Main Street\",\n      \"city\": \"San Francisco\",\n      \"state\": \"CA\",\n      \"zipCode\": \"94105\"\n    }\n  }\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "a45fcba4-d77b-47b2-9890-c970d187d792",
+        "name": "Staff (Operator) Registration",
+        "request": {
+          "description": {
+            "content": "Register a new operator (cashier/supervisor) account",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\",\n  \"firstName\": \"James\",\n  \"lastName\": \"Chen\",\n  \"phoneNumber\": \"+1-555-0456\",\n  \"role\": \"operator\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-OP-001\",\n    \"position\": \"Floor Supervisor\",\n    \"department\": \"Operations\",\n    \"hireDate\": \"2023-06-15\",\n    \"shiftSchedule\": \"Day Shift\"\n  }\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "8ab236e5-1ccd-40b6-ba5e-09ce1103e523",
+        "name": "Kitchen Staff (Worker) Registration",
+        "request": {
+          "description": {
+            "content": "Register a new kitchen worker (chef/cook/assistant) account",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"carlos.martinez@tonysizza.com\",\n  \"password\": \"Chef2024!\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0789\",\n  \"role\": \"worker\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-WK-002\",\n    \"position\": \"Head Chef\",\n    \"department\": \"Kitchen\",\n    \"hireDate\": \"2022-03-10\",\n    \"certifications\": [\"Food Safety Manager\", \"Culinary Arts Degree\"],\n    \"shiftSchedule\": \"Evening Shift\"\n  }\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "85a1516b-350a-48ef-a8aa-6e1eca4efaa5",
+        "name": "IT Technician Registration",
+        "request": {
+          "description": {
+            "content": "Register a new IT technician (developer/tester/admin) account",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Kim\",\n  \"phoneNumber\": \"+1-555-0321\",\n  \"role\": \"technician\",\n  \"organization\": \"fda_it_department\",\n  \"techInfo\": {\n    \"employeeId\": \"FDA-DEV-001\",\n    \"specialization\": \"full_stack_developer\",\n    \"department\": \"Software Development\",\n    \"securityClearance\": \"Level 3\",\n    \"accessPermissions\": [\"production_read\", \"staging_write\", \"development_admin\"]\n  }\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "9e7aae58-f6a9-499e-b0e2-93642568698c",
+        "name": "Delivery Agent Registration",
+        "request": {
+          "description": {
+            "content": "Register a new delivery agent account with vehicle and service area information",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\",\n  \"firstName\": \"Mike\",\n  \"lastName\": \"Torres\",\n  \"phoneNumber\": \"+1-555-0567\",\n  \"role\": \"delivery_agent\",\n  \"organization\": \"fda_delivery_network\",\n  \"deliveryInfo\": {\n    \"employeeId\": \"FDA-DEL-001\",\n    \"vehicleType\": \"motorcycle\",\n    \"licensePlate\": \"DEL-2024-MT\",\n    \"driversLicense\": \"CA-DL-5567892\",\n    \"insurancePolicy\": \"INS-FDA-DEL-2024-001\",\n    \"serviceAreas\": [\"downtown_sf\", \"mission_district\", \"soma\"],\n    \"workingHours\": \"flexible\",\n    \"averageRating\": 4.8\n  }\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "49beebfd-9dce-4c84-a292-bd64c5c89982",
+        "name": "Customer Login",
+        "request": {
+          "description": {
+            "content": "Authenticate customer and receive JWT token with role information",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "e0397d03-8284-4bc1-b673-59f42552a712",
+              "type": "text/javascript",
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const response = pm.response.json();",
+                "    if (response.token) {",
+                "        pm.collectionVariables.set('authToken', response.token);",
+                "        pm.collectionVariables.set('userRole', response.user.role);",
+                "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                "    }",
+                "}"
+              ],
+              "_lastExecutionId": "7ca0580d-74f0-4537-8a87-8f0a794503d4"
+            }
+          }
+        ]
+      },
+      {
+        "id": "d325bea3-6c44-4a21-8720-57b8730baf1e",
+        "name": "Restaurant Owner Login",
+        "request": {
+          "description": {
+            "content": "Authenticate restaurant owner and receive JWT token with business permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "ca4225b7-3613-42e2-ad22-8241ecbb50bd",
+              "type": "text/javascript",
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const response = pm.response.json();",
+                "    if (response.token) {",
+                "        pm.collectionVariables.set('authToken', response.token);",
+                "        pm.collectionVariables.set('userRole', response.user.role);",
+                "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                "    }",
+                "}"
+              ],
+              "_lastExecutionId": "17f30dbe-cb31-4633-bd1a-0160d475710e"
+            }
+          }
+        ]
+      },
+      {
+        "id": "d6ad7bbd-044a-47d8-b43b-3f85eaa534f6",
+        "name": "Staff Login",
+        "request": {
+          "description": {
+            "content": "Authenticate staff member and receive JWT token with operational permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "7ec5d39a-8435-4201-9bee-2fba1dd631c0",
+              "type": "text/javascript",
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const response = pm.response.json();",
+                "    if (response.token) {",
+                "        pm.collectionVariables.set('authToken', response.token);",
+                "        pm.collectionVariables.set('userRole', response.user.role);",
+                "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                "    }",
+                "}"
+              ],
+              "_lastExecutionId": "097b9e83-3351-402d-9c5d-7af2a2e8a86a"
+            }
+          }
+        ]
+      },
+      {
+        "id": "6b79122b-7647-4c9d-84fb-b6530bd80708",
+        "name": "IT Technician Login",
+        "request": {
+          "description": {
+            "content": "Authenticate IT technician and receive JWT token with system administration permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "1a02a23a-bfb4-4752-bae2-3c57fb1a57eb",
+              "type": "text/javascript",
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const response = pm.response.json();",
+                "    if (response.token) {",
+                "        pm.collectionVariables.set('authToken', response.token);",
+                "        pm.collectionVariables.set('userRole', response.user.role);",
+                "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                "        pm.collectionVariables.set('securityClearance', response.user.techInfo.securityClearance);",
+                "    }",
+                "}"
+              ],
+              "_lastExecutionId": "1f2ec60c-86fd-4622-8269-dcebab0ad9db"
+            }
+          }
+        ]
+      },
+      {
+        "id": "74dd5d77-74f4-4145-9220-f1793d509166",
+        "name": "Delivery Agent Login",
+        "request": {
+          "description": {
+            "content": "Authenticate delivery agent and receive JWT token with delivery permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "e4d0c6b6-2302-4c98-808a-ba893b6d96d0",
+              "type": "text/javascript",
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const response = pm.response.json();",
+                "    if (response.token) {",
+                "        pm.collectionVariables.set('authToken', response.token);",
+                "        pm.collectionVariables.set('userRole', response.user.role);",
+                "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                "        pm.collectionVariables.set('vehicleType', response.user.deliveryInfo.vehicleType);",
+                "        pm.collectionVariables.set('serviceAreas', JSON.stringify(response.user.deliveryInfo.serviceAreas));",
+                "    }",
+                "}"
+              ],
+              "_lastExecutionId": "50680930-cc25-46b9-96d9-30330e6683c0"
+            }
+          }
+        ]
+      },
+      {
+        "id": "67249b5f-ecaf-469e-9cf6-6dd0dcea0f8a",
+        "name": "Forgot Password",
+        "request": {
+          "description": {
+            "content": "Initiate password reset process for user",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "forgot-password"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "\"user@example.com\""
+          }
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "bdad91da-2ccb-4841-8dc8-1bda641bf0ee",
+        "name": "Validate Token",
+        "request": {
+          "description": {
+            "content": "Validate the current JWT token and return user role and permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "validate"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}"
+            }
+          ],
+          "method": "GET"
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "b09a3d6c-66ed-4a47-ac44-d110ed318ed0",
+        "name": "Get User Profile",
+        "request": {
+          "description": {
+            "content": "Get complete user profile with role-specific information",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "profile"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}"
+            }
+          ],
+          "method": "GET"
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "d134db89-5e6c-4307-b35e-f92fd230ef8f",
+        "name": "Update User Profile",
+        "request": {
+          "description": {
+            "content": "Update user profile information (role-based permissions apply)",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "profile"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "PUT",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez-Johnson\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\", \"Low Sodium\"]\n}"
+          }
+        },
+        "response": [],
+        "event": []
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "string",
+        "value": "{{auth_base_url}}",
+        "key": "baseUrl"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "authToken"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "userRole"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "userOrganization"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "securityClearance"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "vehicleType"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "serviceAreas"
+      }
+    ],
+    "info": {
+      "_postman_id": "2c0314bf-5a03-4189-b6b6-e74d46850a3e",
+      "name": "Authentication Service API",
+      "version": {
+        "raw": "1.0.0",
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "prerelease": [],
+        "build": [],
+        "string": "1.0.0"
+      },
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "API collection for Authentication Service with user registration, login, and forgot password functionality",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2025-11-06T00:00:00.000Z",
+      "postman_exported_using": "Postman/10.20.0"
+    },
+    "id": "capstone-local-environment",
+    "name": "Capstone Local Development Environment",
+    "values": [
+      {
+        "type": "any",
+        "value": "local",
+        "key": "environment_type"
+      },
+      {
+        "type": "any",
+        "value": "shared-mongodb",
+        "key": "deployment_architecture"
+      },
+      {
+        "description": {
+          "content": "Authentication service - Kubernetes NodePort (HTTP on port 8080 internally)",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "http://localhost:30001",
+        "key": "auth_base_url"
+      },
+      {
+        "description": {
+          "content": "Catalog service - Kubernetes NodePort",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "http://localhost:30002",
+        "key": "catalog_base_url"
+      },
+      {
+        "description": {
+          "content": "CRM service - Kubernetes NodePort",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "http://localhost:30003",
+        "key": "crm_base_url"
+      },
+      {
+        "description": {
+          "content": "Cart service - Kubernetes NodePort",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "http://localhost:30004",
+        "key": "cart_base_url"
+      },
+      {
+        "description": {
+          "content": "Order service - Kubernetes NodePort (when available)",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "http://localhost:30005",
+        "key": "order_base_url"
+      },
+      {
+        "description": {
+          "content": "Payment service - Kubernetes NodePort (when available)",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "http://localhost:30006",
+        "key": "payment_base_url"
+      },
+      {
+        "description": {
+          "content": "Direct MongoDB access - Kubernetes NodePort",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "mongodb://localhost:30000",
+        "key": "mongodb_direct_url"
+      },
+      {
+        "description": {
+          "content": "JWT token for authenticated requests",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "",
+        "key": "auth_token"
+      },
+      {
+        "description": {
+          "content": "Test user ID for local development",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "local-test-user-123",
+        "key": "user_id"
+      },
+      {
+        "description": {
+          "content": "Test email for local development",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "dev@localhost.com",
+        "key": "test_email"
+      },
+      {
+        "description": {
+          "content": "Test password for local development",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "LocalDev123!",
+        "key": "test_password"
+      },
+      {
+        "description": {
+          "content": "Dynamic cart ID from API responses",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "",
+        "key": "cart_id"
+      },
+      {
+        "description": {
+          "content": "Dynamic item ID from API responses",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "",
+        "key": "item_id"
+      },
+      {
+        "description": {
+          "content": "Dynamic customer ID from API responses",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "",
+        "key": "customer_id"
+      },
+      {
+        "description": {
+          "content": "Dynamic order ID from API responses",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "",
+        "key": "order_id"
+      },
+      {
+        "description": {
+          "content": "Dynamic payment ID from API responses",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "",
+        "key": "payment_id"
+      },
+      {
+        "description": {
+          "content": "MongoDB root username",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "Athena",
+        "key": "mongodb_username"
+      },
+      {
+        "description": {
+          "content": "MongoDB root password",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "Ath3n@Str0ngP@ssw0rd2024!",
+        "key": "mongodb_password"
+      },
+      {
+        "description": {
+          "content": "Shared MongoDB service in Kubernetes",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "mongodb-service:27017",
+        "key": "mongodb_host_shared"
+      },
+      {
+        "description": {
+          "content": "MongoDB authentication source",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "admin",
+        "key": "mongodb_auth_source"
+      },
+      {
+        "description": {
+          "content": "Authentication database connection - Shared MongoDB",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@mongodb-service:27017/authenticationdb?authSource=admin",
+        "key": "mongodb_connection_auth"
+      },
+      {
+        "description": {
+          "content": "Catalog database connection - Shared MongoDB",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@mongodb-service:27017/catalogdb?authSource=admin",
+        "key": "mongodb_connection_catalog"
+      },
+      {
+        "description": {
+          "content": "CRM database connection - Shared MongoDB",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@mongodb-service:27017/crmdb?authSource=admin",
+        "key": "mongodb_connection_crm"
+      },
+      {
+        "description": {
+          "content": "Cart database connection - Shared MongoDB",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@mongodb-service:27017/cartdb?authSource=admin",
+        "key": "mongodb_connection_cart"
+      },
+      {
+        "description": {
+          "content": "Development environment notes",
+          "type": "text/plain"
+        },
+        "type": "any",
+        "value": "Local development uses shared MongoDB for resource efficiency. Deploy with: deploy-local.ps1",
+        "key": "local_dev_notes"
+      }
+    ]
+  },
+  "globals": {
+    "id": "056c67cf-fd75-4391-964c-5a756ec3715c",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 15,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 5,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 2803.5333333333333,
+      "responseMin": 3,
+      "responseMax": 9940,
+      "responseSd": 4314.791333180422,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1762384963618,
+      "completed": 1762385006881
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 15,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "ded4089d-9c86-4005-a66c-f3f74b030d19",
+          "httpRequestId": "0efccd21-fbb6-4a46-b954-c9b03d49e130"
+        },
+        "item": {
+          "id": "f983ee74-0068-4646-878a-df9992053af2",
+          "name": "Customer Registration",
+          "request": {
+            "description": {
+              "content": "Register a new user account",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"role\": \"customer\",\n  \"organization\": \"external_users\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\"],\n  \"favoriteRestaurants\": [\"Tony's Authentic Pizzeria\", \"Fresh & Green Cafe\"]\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Register a new user account",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "893f242c-692d-437c-a79f-0b21c0cf0317",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "545",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"role\": \"customer\",\n  \"organization\": \"external_users\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\"],\n  \"favoriteRestaurants\": [\"Tony's Authentic Pizzeria\", \"Fresh & Green Cafe\"]\n}"
+          }
+        },
+        "response": {
+          "id": "508c00d8-617c-4786-8c21-f917ae46e948",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:43 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              116,
+              111,
+              111,
+              108,
+              115,
+              46,
+              105,
+              101,
+              116,
+              102,
+              46,
+              111,
+              114,
+              103,
+              47,
+              104,
+              116,
+              109,
+              108,
+              47,
+              114,
+              102,
+              99,
+              57,
+              49,
+              49,
+              48,
+              35,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              45,
+              49,
+              53,
+              46,
+              53,
+              46,
+              49,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              118,
+              97,
+              108,
+              105,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              48,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              123,
+              34,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              32,
+              105,
+              115,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              100,
+              46,
+              34,
+              93,
+              44,
+              34,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              74,
+              83,
+              79,
+              78,
+              32,
+              118,
+              97,
+              108,
+              117,
+              101,
+              32,
+              99,
+              111,
+              117,
+              108,
+              100,
+              32,
+              110,
+              111,
+              116,
+              32,
+              98,
+              101,
+              32,
+              99,
+              111,
+              110,
+              118,
+              101,
+              114,
+              116,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              65,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              77,
+              111,
+              100,
+              101,
+              108,
+              115,
+              46,
+              85,
+              115,
+              101,
+              114,
+              82,
+              111,
+              108,
+              101,
+              46,
+              32,
+              80,
+              97,
+              116,
+              104,
+              58,
+              32,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              32,
+              124,
+              32,
+              76,
+              105,
+              110,
+              101,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              58,
+              32,
+              55,
+              32,
+              124,
+              32,
+              66,
+              121,
+              116,
+              101,
+              80,
+              111,
+              115,
+              105,
+              116,
+              105,
+              111,
+              110,
+              73,
+              110,
+              76,
+              105,
+              110,
+              101,
+              58,
+              32,
+              50,
+              48,
+              46,
+              34,
+              93,
+              125,
+              44,
+              34,
+              116,
+              114,
+              97,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              34,
+              48,
+              48,
+              45,
+              57,
+              50,
+              101,
+              102,
+              101,
+              54,
+              51,
+              49,
+              98,
+              57,
+              52,
+              48,
+              98,
+              99,
+              51,
+              49,
+              97,
+              55,
+              100,
+              56,
+              55,
+              53,
+              48,
+              57,
+              56,
+              50,
+              101,
+              50,
+              100,
+              102,
+              57,
+              48,
+              45,
+              52,
+              99,
+              57,
+              99,
+              97,
+              51,
+              55,
+              54,
+              97,
+              50,
+              48,
+              52,
+              49,
+              99,
+              53,
+              55,
+              45,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 63,
+          "responseSize": 405
+        },
+        "id": "f983ee74-0068-4646-878a-df9992053af2"
+      },
+      {
+        "cursor": {
+          "ref": "e9e7d7c7-b495-4c38-9832-e767ff7a3bbf",
+          "length": 15,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "70318938-4aef-4990-b190-325acf15af1b"
+        },
+        "item": {
+          "id": "284c57ce-2454-4ca3-9995-2e5ac9634472",
+          "name": "Restaurant Owner (Biller) Registration",
+          "request": {
+            "description": {
+              "content": "Register a new restaurant owner account with business information",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\",\n  \"firstName\": \"Maria\",\n  \"lastName\": \"Rodriguez\",\n  \"phoneNumber\": \"+1-555-0890\",\n  \"role\": \"biller\",\n  \"organization\": \"tonys_pizzeria\",\n  \"businessInfo\": {\n    \"restaurantName\": \"Tony's Authentic Pizzeria\",\n    \"businessLicense\": \"SF-REST-2024-001\",\n    \"taxId\": \"98-7654321\",\n    \"address\": {\n      \"street\": \"789 Main Street\",\n      \"city\": \"San Francisco\",\n      \"state\": \"CA\",\n      \"zipCode\": \"94105\"\n    }\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Register a new restaurant owner account with business information",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "0ba49360-3be9-4b8f-9eab-7a0ee7c28ff8",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "504",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\",\n  \"firstName\": \"Maria\",\n  \"lastName\": \"Rodriguez\",\n  \"phoneNumber\": \"+1-555-0890\",\n  \"role\": \"biller\",\n  \"organization\": \"tonys_pizzeria\",\n  \"businessInfo\": {\n    \"restaurantName\": \"Tony's Authentic Pizzeria\",\n    \"businessLicense\": \"SF-REST-2024-001\",\n    \"taxId\": \"98-7654321\",\n    \"address\": {\n      \"street\": \"789 Main Street\",\n      \"city\": \"San Francisco\",\n      \"state\": \"CA\",\n      \"zipCode\": \"94105\"\n    }\n  }\n}"
+          }
+        },
+        "response": {
+          "id": "f2db9e50-daf3-4062-9082-652b8f96361e",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:43 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              116,
+              111,
+              111,
+              108,
+              115,
+              46,
+              105,
+              101,
+              116,
+              102,
+              46,
+              111,
+              114,
+              103,
+              47,
+              104,
+              116,
+              109,
+              108,
+              47,
+              114,
+              102,
+              99,
+              57,
+              49,
+              49,
+              48,
+              35,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              45,
+              49,
+              53,
+              46,
+              53,
+              46,
+              49,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              118,
+              97,
+              108,
+              105,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              48,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              123,
+              34,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              32,
+              105,
+              115,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              100,
+              46,
+              34,
+              93,
+              44,
+              34,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              74,
+              83,
+              79,
+              78,
+              32,
+              118,
+              97,
+              108,
+              117,
+              101,
+              32,
+              99,
+              111,
+              117,
+              108,
+              100,
+              32,
+              110,
+              111,
+              116,
+              32,
+              98,
+              101,
+              32,
+              99,
+              111,
+              110,
+              118,
+              101,
+              114,
+              116,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              65,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              77,
+              111,
+              100,
+              101,
+              108,
+              115,
+              46,
+              85,
+              115,
+              101,
+              114,
+              82,
+              111,
+              108,
+              101,
+              46,
+              32,
+              80,
+              97,
+              116,
+              104,
+              58,
+              32,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              32,
+              124,
+              32,
+              76,
+              105,
+              110,
+              101,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              58,
+              32,
+              54,
+              32,
+              124,
+              32,
+              66,
+              121,
+              116,
+              101,
+              80,
+              111,
+              115,
+              105,
+              116,
+              105,
+              111,
+              110,
+              73,
+              110,
+              76,
+              105,
+              110,
+              101,
+              58,
+              32,
+              49,
+              56,
+              46,
+              34,
+              93,
+              125,
+              44,
+              34,
+              116,
+              114,
+              97,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              34,
+              48,
+              48,
+              45,
+              57,
+              97,
+              56,
+              99,
+              98,
+              97,
+              57,
+              99,
+              102,
+              49,
+              57,
+              57,
+              97,
+              102,
+              101,
+              49,
+              50,
+              102,
+              53,
+              99,
+              100,
+              54,
+              50,
+              48,
+              100,
+              100,
+              100,
+              53,
+              102,
+              49,
+              102,
+              53,
+              45,
+              50,
+              101,
+              51,
+              102,
+              49,
+              49,
+              56,
+              98,
+              101,
+              52,
+              97,
+              53,
+              57,
+              53,
+              98,
+              48,
+              45,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9,
+          "responseSize": 405
+        },
+        "id": "284c57ce-2454-4ca3-9995-2e5ac9634472"
+      },
+      {
+        "cursor": {
+          "ref": "ddfe27e8-c2ba-4ad0-b1ed-2effdfc24f09",
+          "length": 15,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "5a535a4e-6d9c-4b09-b9ca-94b1b59bae51"
+        },
+        "item": {
+          "id": "a45fcba4-d77b-47b2-9890-c970d187d792",
+          "name": "Staff (Operator) Registration",
+          "request": {
+            "description": {
+              "content": "Register a new operator (cashier/supervisor) account",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\",\n  \"firstName\": \"James\",\n  \"lastName\": \"Chen\",\n  \"phoneNumber\": \"+1-555-0456\",\n  \"role\": \"operator\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-OP-001\",\n    \"position\": \"Floor Supervisor\",\n    \"department\": \"Operations\",\n    \"hireDate\": \"2023-06-15\",\n    \"shiftSchedule\": \"Day Shift\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Register a new operator (cashier/supervisor) account",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "2902ba24-8bac-45e8-9aac-0383338a8df8",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "397",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\",\n  \"firstName\": \"James\",\n  \"lastName\": \"Chen\",\n  \"phoneNumber\": \"+1-555-0456\",\n  \"role\": \"operator\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-OP-001\",\n    \"position\": \"Floor Supervisor\",\n    \"department\": \"Operations\",\n    \"hireDate\": \"2023-06-15\",\n    \"shiftSchedule\": \"Day Shift\"\n  }\n}"
+          }
+        },
+        "response": {
+          "id": "a1ba74d3-eb64-40e0-9b77-d02502ce25d3",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:43 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              116,
+              111,
+              111,
+              108,
+              115,
+              46,
+              105,
+              101,
+              116,
+              102,
+              46,
+              111,
+              114,
+              103,
+              47,
+              104,
+              116,
+              109,
+              108,
+              47,
+              114,
+              102,
+              99,
+              57,
+              49,
+              49,
+              48,
+              35,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              45,
+              49,
+              53,
+              46,
+              53,
+              46,
+              49,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              118,
+              97,
+              108,
+              105,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              48,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              123,
+              34,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              32,
+              105,
+              115,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              100,
+              46,
+              34,
+              93,
+              44,
+              34,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              74,
+              83,
+              79,
+              78,
+              32,
+              118,
+              97,
+              108,
+              117,
+              101,
+              32,
+              99,
+              111,
+              117,
+              108,
+              100,
+              32,
+              110,
+              111,
+              116,
+              32,
+              98,
+              101,
+              32,
+              99,
+              111,
+              110,
+              118,
+              101,
+              114,
+              116,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              65,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              77,
+              111,
+              100,
+              101,
+              108,
+              115,
+              46,
+              85,
+              115,
+              101,
+              114,
+              82,
+              111,
+              108,
+              101,
+              46,
+              32,
+              80,
+              97,
+              116,
+              104,
+              58,
+              32,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              32,
+              124,
+              32,
+              76,
+              105,
+              110,
+              101,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              58,
+              32,
+              54,
+              32,
+              124,
+              32,
+              66,
+              121,
+              116,
+              101,
+              80,
+              111,
+              115,
+              105,
+              116,
+              105,
+              111,
+              110,
+              73,
+              110,
+              76,
+              105,
+              110,
+              101,
+              58,
+              32,
+              50,
+              48,
+              46,
+              34,
+              93,
+              125,
+              44,
+              34,
+              116,
+              114,
+              97,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              34,
+              48,
+              48,
+              45,
+              101,
+              99,
+              54,
+              97,
+              97,
+              56,
+              52,
+              51,
+              101,
+              99,
+              98,
+              100,
+              56,
+              57,
+              98,
+              52,
+              97,
+              100,
+              102,
+              54,
+              55,
+              97,
+              51,
+              49,
+              98,
+              102,
+              51,
+              55,
+              52,
+              54,
+              57,
+              50,
+              45,
+              102,
+              49,
+              97,
+              97,
+              102,
+              55,
+              52,
+              102,
+              48,
+              54,
+              55,
+              56,
+              102,
+              102,
+              53,
+              99,
+              45,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 16,
+          "responseSize": 405
+        },
+        "id": "a45fcba4-d77b-47b2-9890-c970d187d792"
+      },
+      {
+        "cursor": {
+          "ref": "2439b4fa-8dc5-4e0b-b18b-684bea8925f0",
+          "length": 15,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "1e2832b4-5ffa-4430-abd4-221b0a0d8ab4"
+        },
+        "item": {
+          "id": "8ab236e5-1ccd-40b6-ba5e-09ce1103e523",
+          "name": "Kitchen Staff (Worker) Registration",
+          "request": {
+            "description": {
+              "content": "Register a new kitchen worker (chef/cook/assistant) account",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos.martinez@tonysizza.com\",\n  \"password\": \"Chef2024!\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0789\",\n  \"role\": \"worker\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-WK-002\",\n    \"position\": \"Head Chef\",\n    \"department\": \"Kitchen\",\n    \"hireDate\": \"2022-03-10\",\n    \"certifications\": [\"Food Safety Manager\", \"Culinary Arts Degree\"],\n    \"shiftSchedule\": \"Evening Shift\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Register a new kitchen worker (chef/cook/assistant) account",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "3d48c8b8-c949-4d7e-bd8a-4341e438f8c3",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "464",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"carlos.martinez@tonysizza.com\",\n  \"password\": \"Chef2024!\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0789\",\n  \"role\": \"worker\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-WK-002\",\n    \"position\": \"Head Chef\",\n    \"department\": \"Kitchen\",\n    \"hireDate\": \"2022-03-10\",\n    \"certifications\": [\"Food Safety Manager\", \"Culinary Arts Degree\"],\n    \"shiftSchedule\": \"Evening Shift\"\n  }\n}"
+          }
+        },
+        "response": {
+          "id": "95247635-3952-445f-92c2-1e507677d731",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:43 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              116,
+              111,
+              111,
+              108,
+              115,
+              46,
+              105,
+              101,
+              116,
+              102,
+              46,
+              111,
+              114,
+              103,
+              47,
+              104,
+              116,
+              109,
+              108,
+              47,
+              114,
+              102,
+              99,
+              57,
+              49,
+              49,
+              48,
+              35,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              45,
+              49,
+              53,
+              46,
+              53,
+              46,
+              49,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              118,
+              97,
+              108,
+              105,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              48,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              123,
+              34,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              32,
+              105,
+              115,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              100,
+              46,
+              34,
+              93,
+              44,
+              34,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              74,
+              83,
+              79,
+              78,
+              32,
+              118,
+              97,
+              108,
+              117,
+              101,
+              32,
+              99,
+              111,
+              117,
+              108,
+              100,
+              32,
+              110,
+              111,
+              116,
+              32,
+              98,
+              101,
+              32,
+              99,
+              111,
+              110,
+              118,
+              101,
+              114,
+              116,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              65,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              77,
+              111,
+              100,
+              101,
+              108,
+              115,
+              46,
+              85,
+              115,
+              101,
+              114,
+              82,
+              111,
+              108,
+              101,
+              46,
+              32,
+              80,
+              97,
+              116,
+              104,
+              58,
+              32,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              32,
+              124,
+              32,
+              76,
+              105,
+              110,
+              101,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              58,
+              32,
+              54,
+              32,
+              124,
+              32,
+              66,
+              121,
+              116,
+              101,
+              80,
+              111,
+              115,
+              105,
+              116,
+              105,
+              111,
+              110,
+              73,
+              110,
+              76,
+              105,
+              110,
+              101,
+              58,
+              32,
+              49,
+              56,
+              46,
+              34,
+              93,
+              125,
+              44,
+              34,
+              116,
+              114,
+              97,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              34,
+              48,
+              48,
+              45,
+              97,
+              55,
+              55,
+              51,
+              51,
+              99,
+              53,
+              99,
+              49,
+              97,
+              57,
+              52,
+              99,
+              57,
+              51,
+              55,
+              54,
+              98,
+              51,
+              98,
+              98,
+              50,
+              57,
+              98,
+              98,
+              100,
+              102,
+              55,
+              53,
+              49,
+              53,
+              97,
+              45,
+              100,
+              50,
+              52,
+              53,
+              48,
+              50,
+              54,
+              51,
+              48,
+              97,
+              98,
+              101,
+              49,
+              56,
+              57,
+              55,
+              45,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 405
+        },
+        "id": "8ab236e5-1ccd-40b6-ba5e-09ce1103e523"
+      },
+      {
+        "cursor": {
+          "ref": "a9fdeea6-919d-4b8b-810a-3c67aa932822",
+          "length": 15,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "00f3e0b3-ef89-4f65-bf1d-64036eb3fb38"
+        },
+        "item": {
+          "id": "85a1516b-350a-48ef-a8aa-6e1eca4efaa5",
+          "name": "IT Technician Registration",
+          "request": {
+            "description": {
+              "content": "Register a new IT technician (developer/tester/admin) account",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Kim\",\n  \"phoneNumber\": \"+1-555-0321\",\n  \"role\": \"technician\",\n  \"organization\": \"fda_it_department\",\n  \"techInfo\": {\n    \"employeeId\": \"FDA-DEV-001\",\n    \"specialization\": \"full_stack_developer\",\n    \"department\": \"Software Development\",\n    \"securityClearance\": \"Level 3\",\n    \"accessPermissions\": [\"production_read\", \"staging_write\", \"development_admin\"]\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Register a new IT technician (developer/tester/admin) account",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "02925ccb-6feb-4d1a-ace4-7efd11b5461d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "469",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Kim\",\n  \"phoneNumber\": \"+1-555-0321\",\n  \"role\": \"technician\",\n  \"organization\": \"fda_it_department\",\n  \"techInfo\": {\n    \"employeeId\": \"FDA-DEV-001\",\n    \"specialization\": \"full_stack_developer\",\n    \"department\": \"Software Development\",\n    \"securityClearance\": \"Level 3\",\n    \"accessPermissions\": [\"production_read\", \"staging_write\", \"development_admin\"]\n  }\n}"
+          }
+        },
+        "response": {
+          "id": "348a4577-b6aa-49d7-b88f-d67f50eb081e",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:43 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              116,
+              111,
+              111,
+              108,
+              115,
+              46,
+              105,
+              101,
+              116,
+              102,
+              46,
+              111,
+              114,
+              103,
+              47,
+              104,
+              116,
+              109,
+              108,
+              47,
+              114,
+              102,
+              99,
+              57,
+              49,
+              49,
+              48,
+              35,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              45,
+              49,
+              53,
+              46,
+              53,
+              46,
+              49,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              118,
+              97,
+              108,
+              105,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              48,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              123,
+              34,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              32,
+              105,
+              115,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              100,
+              46,
+              34,
+              93,
+              44,
+              34,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              74,
+              83,
+              79,
+              78,
+              32,
+              118,
+              97,
+              108,
+              117,
+              101,
+              32,
+              99,
+              111,
+              117,
+              108,
+              100,
+              32,
+              110,
+              111,
+              116,
+              32,
+              98,
+              101,
+              32,
+              99,
+              111,
+              110,
+              118,
+              101,
+              114,
+              116,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              65,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              77,
+              111,
+              100,
+              101,
+              108,
+              115,
+              46,
+              85,
+              115,
+              101,
+              114,
+              82,
+              111,
+              108,
+              101,
+              46,
+              32,
+              80,
+              97,
+              116,
+              104,
+              58,
+              32,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              32,
+              124,
+              32,
+              76,
+              105,
+              110,
+              101,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              58,
+              32,
+              54,
+              32,
+              124,
+              32,
+              66,
+              121,
+              116,
+              101,
+              80,
+              111,
+              115,
+              105,
+              116,
+              105,
+              111,
+              110,
+              73,
+              110,
+              76,
+              105,
+              110,
+              101,
+              58,
+              32,
+              50,
+              50,
+              46,
+              34,
+              93,
+              125,
+              44,
+              34,
+              116,
+              114,
+              97,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              34,
+              48,
+              48,
+              45,
+              51,
+              100,
+              56,
+              56,
+              48,
+              54,
+              98,
+              56,
+              48,
+              51,
+              52,
+              50,
+              102,
+              55,
+              49,
+              102,
+              98,
+              55,
+              50,
+              57,
+              57,
+              56,
+              102,
+              51,
+              102,
+              48,
+              97,
+              99,
+              53,
+              55,
+              97,
+              56,
+              45,
+              100,
+              50,
+              50,
+              52,
+              100,
+              56,
+              49,
+              54,
+              102,
+              55,
+              57,
+              98,
+              51,
+              51,
+              52,
+              54,
+              45,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 405
+        },
+        "id": "85a1516b-350a-48ef-a8aa-6e1eca4efaa5"
+      },
+      {
+        "cursor": {
+          "ref": "8c998a75-af32-485c-a26a-5f18356e0a2f",
+          "length": 15,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "2a8cbc7c-498c-4dec-a640-f6beea257434"
+        },
+        "item": {
+          "id": "9e7aae58-f6a9-499e-b0e2-93642568698c",
+          "name": "Delivery Agent Registration",
+          "request": {
+            "description": {
+              "content": "Register a new delivery agent account with vehicle and service area information",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\",\n  \"firstName\": \"Mike\",\n  \"lastName\": \"Torres\",\n  \"phoneNumber\": \"+1-555-0567\",\n  \"role\": \"delivery_agent\",\n  \"organization\": \"fda_delivery_network\",\n  \"deliveryInfo\": {\n    \"employeeId\": \"FDA-DEL-001\",\n    \"vehicleType\": \"motorcycle\",\n    \"licensePlate\": \"DEL-2024-MT\",\n    \"driversLicense\": \"CA-DL-5567892\",\n    \"insurancePolicy\": \"INS-FDA-DEL-2024-001\",\n    \"serviceAreas\": [\"downtown_sf\", \"mission_district\", \"soma\"],\n    \"workingHours\": \"flexible\",\n    \"averageRating\": 4.8\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Register a new delivery agent account with vehicle and service area information",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d34c64f0-67b3-4c7b-86dd-a8bfa6232155",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "558",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\",\n  \"firstName\": \"Mike\",\n  \"lastName\": \"Torres\",\n  \"phoneNumber\": \"+1-555-0567\",\n  \"role\": \"delivery_agent\",\n  \"organization\": \"fda_delivery_network\",\n  \"deliveryInfo\": {\n    \"employeeId\": \"FDA-DEL-001\",\n    \"vehicleType\": \"motorcycle\",\n    \"licensePlate\": \"DEL-2024-MT\",\n    \"driversLicense\": \"CA-DL-5567892\",\n    \"insurancePolicy\": \"INS-FDA-DEL-2024-001\",\n    \"serviceAreas\": [\"downtown_sf\", \"mission_district\", \"soma\"],\n    \"workingHours\": \"flexible\",\n    \"averageRating\": 4.8\n  }\n}"
+          }
+        },
+        "response": {
+          "id": "e938471a-02b7-4adc-b147-3d718f39677e",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:44 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              115,
+              58,
+              47,
+              47,
+              116,
+              111,
+              111,
+              108,
+              115,
+              46,
+              105,
+              101,
+              116,
+              102,
+              46,
+              111,
+              114,
+              103,
+              47,
+              104,
+              116,
+              109,
+              108,
+              47,
+              114,
+              102,
+              99,
+              57,
+              49,
+              49,
+              48,
+              35,
+              115,
+              101,
+              99,
+              116,
+              105,
+              111,
+              110,
+              45,
+              49,
+              53,
+              46,
+              53,
+              46,
+              49,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              79,
+              110,
+              101,
+              32,
+              111,
+              114,
+              32,
+              109,
+              111,
+              114,
+              101,
+              32,
+              118,
+              97,
+              108,
+              105,
+              100,
+              97,
+              116,
+              105,
+              111,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              48,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              34,
+              58,
+              123,
+              34,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              101,
+              114,
+              82,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              32,
+              102,
+              105,
+              101,
+              108,
+              100,
+              32,
+              105,
+              115,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              114,
+              101,
+              100,
+              46,
+              34,
+              93,
+              44,
+              34,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              91,
+              34,
+              84,
+              104,
+              101,
+              32,
+              74,
+              83,
+              79,
+              78,
+              32,
+              118,
+              97,
+              108,
+              117,
+              101,
+              32,
+              99,
+              111,
+              117,
+              108,
+              100,
+              32,
+              110,
+              111,
+              116,
+              32,
+              98,
+              101,
+              32,
+              99,
+              111,
+              110,
+              118,
+              101,
+              114,
+              116,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              65,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              105,
+              111,
+              110,
+              46,
+              77,
+              111,
+              100,
+              101,
+              108,
+              115,
+              46,
+              85,
+              115,
+              101,
+              114,
+              82,
+              111,
+              108,
+              101,
+              46,
+              32,
+              80,
+              97,
+              116,
+              104,
+              58,
+              32,
+              36,
+              46,
+              114,
+              111,
+              108,
+              101,
+              32,
+              124,
+              32,
+              76,
+              105,
+              110,
+              101,
+              78,
+              117,
+              109,
+              98,
+              101,
+              114,
+              58,
+              32,
+              54,
+              32,
+              124,
+              32,
+              66,
+              121,
+              116,
+              101,
+              80,
+              111,
+              115,
+              105,
+              116,
+              105,
+              111,
+              110,
+              73,
+              110,
+              76,
+              105,
+              110,
+              101,
+              58,
+              32,
+              50,
+              54,
+              46,
+              34,
+              93,
+              125,
+              44,
+              34,
+              116,
+              114,
+              97,
+              99,
+              101,
+              73,
+              100,
+              34,
+              58,
+              34,
+              48,
+              48,
+              45,
+              55,
+              53,
+              51,
+              57,
+              50,
+              100,
+              52,
+              100,
+              50,
+              100,
+              53,
+              52,
+              55,
+              54,
+              97,
+              54,
+              101,
+              57,
+              102,
+              52,
+              56,
+              55,
+              55,
+              50,
+              101,
+              102,
+              56,
+              51,
+              51,
+              53,
+              101,
+              57,
+              45,
+              50,
+              50,
+              100,
+              101,
+              100,
+              55,
+              54,
+              102,
+              53,
+              48,
+              52,
+              57,
+              51,
+              55,
+              50,
+              102,
+              45,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 405
+        },
+        "id": "9e7aae58-f6a9-499e-b0e2-93642568698c"
+      },
+      {
+        "cursor": {
+          "ref": "e5196e1f-a975-4662-b70a-a401c9326445",
+          "length": 15,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "7e64090b-a9fa-4d89-861e-276357563c9c"
+        },
+        "item": {
+          "id": "49beebfd-9dce-4c84-a292-bd64c5c89982",
+          "name": "Customer Login",
+          "request": {
+            "description": {
+              "content": "Authenticate customer and receive JWT token with role information",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e0397d03-8284-4bc1-b673-59f42552a712",
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('authToken', response.token);",
+                  "        pm.collectionVariables.set('userRole', response.user.role);",
+                  "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                  "    }",
+                  "}"
+                ],
+                "_lastExecutionId": "7ca0580d-74f0-4537-8a87-8f0a794503d4"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Authenticate customer and receive JWT token with role information",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "6fb35823-24cb-4687-8cc0-2d74c1bb654a",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "73",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\"\n}"
+          }
+        },
+        "response": {
+          "id": "d9951be4-bfd9-4384-8fda-1b8167c5f5b9",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:44 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              110,
+              32,
+              102,
+              97,
+              105,
+              108,
+              101,
+              100,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              85,
+              110,
+              97,
+              98,
+              108,
+              101,
+              32,
+              116,
+              111,
+              32,
+              97,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              117,
+              115,
+              105,
+              110,
+              103,
+              32,
+              115,
+              97,
+              115,
+              108,
+              32,
+              112,
+              114,
+              111,
+              116,
+              111,
+              99,
+              111,
+              108,
+              32,
+              109,
+              101,
+              99,
+              104,
+              97,
+              110,
+              105,
+              115,
+              109,
+              32,
+              83,
+              67,
+              82,
+              65,
+              77,
+              45,
+              83,
+              72,
+              65,
+              45,
+              49,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 25,
+          "responseSize": 102
+        },
+        "id": "49beebfd-9dce-4c84-a292-bd64c5c89982"
+      },
+      {
+        "cursor": {
+          "ref": "c5c2d893-a0d9-4bef-8e37-ca4c18918998",
+          "length": 15,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "c7c7d86f-0432-433e-9069-05dbc83f2346"
+        },
+        "item": {
+          "id": "d325bea3-6c44-4a21-8720-57b8730baf1e",
+          "name": "Restaurant Owner Login",
+          "request": {
+            "description": {
+              "content": "Authenticate restaurant owner and receive JWT token with business permissions",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ca4225b7-3613-42e2-ad22-8241ecbb50bd",
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('authToken', response.token);",
+                  "        pm.collectionVariables.set('userRole', response.user.role);",
+                  "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                  "    }",
+                  "}"
+                ],
+                "_lastExecutionId": "17f30dbe-cb31-4633-bd1a-0160d475710e"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Authenticate restaurant owner and receive JWT token with business permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c683cb6a-3fd0-49ba-89bd-7760cf3e6de2",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "84",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\"\n}"
+          }
+        },
+        "response": {
+          "id": "cbc2bcd7-e4be-4c35-8b3a-40ffbed5b1a0",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:46 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              110,
+              32,
+              102,
+              97,
+              105,
+              108,
+              101,
+              100,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              85,
+              110,
+              97,
+              98,
+              108,
+              101,
+              32,
+              116,
+              111,
+              32,
+              97,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              117,
+              115,
+              105,
+              110,
+              103,
+              32,
+              115,
+              97,
+              115,
+              108,
+              32,
+              112,
+              114,
+              111,
+              116,
+              111,
+              99,
+              111,
+              108,
+              32,
+              109,
+              101,
+              99,
+              104,
+              97,
+              110,
+              105,
+              115,
+              109,
+              32,
+              83,
+              67,
+              82,
+              65,
+              77,
+              45,
+              83,
+              72,
+              65,
+              45,
+              49,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 2328,
+          "responseSize": 102
+        },
+        "id": "d325bea3-6c44-4a21-8720-57b8730baf1e"
+      },
+      {
+        "cursor": {
+          "ref": "19580367-7ad2-466c-99fe-a643563aa79b",
+          "length": 15,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "36e36a73-118d-46cf-b34a-0d5944017040"
+        },
+        "item": {
+          "id": "d6ad7bbd-044a-47d8-b43b-3f85eaa534f6",
+          "name": "Staff Login",
+          "request": {
+            "description": {
+              "content": "Authenticate staff member and receive JWT token with operational permissions",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "7ec5d39a-8435-4201-9bee-2fba1dd631c0",
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('authToken', response.token);",
+                  "        pm.collectionVariables.set('userRole', response.user.role);",
+                  "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                  "    }",
+                  "}"
+                ],
+                "_lastExecutionId": "097b9e83-3351-402d-9c5d-7af2a2e8a86a"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Authenticate staff member and receive JWT token with operational permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "27ae30b6-6133-4a37-906b-50da3ea88c66",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "74",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\"\n}"
+          }
+        },
+        "response": {
+          "id": "274375d0-97eb-4a8c-aba6-9068c7de5253",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:22:56 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              110,
+              32,
+              102,
+              97,
+              105,
+              108,
+              101,
+              100,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              85,
+              110,
+              97,
+              98,
+              108,
+              101,
+              32,
+              116,
+              111,
+              32,
+              97,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              117,
+              115,
+              105,
+              110,
+              103,
+              32,
+              115,
+              97,
+              115,
+              108,
+              32,
+              112,
+              114,
+              111,
+              116,
+              111,
+              99,
+              111,
+              108,
+              32,
+              109,
+              101,
+              99,
+              104,
+              97,
+              110,
+              105,
+              115,
+              109,
+              32,
+              83,
+              67,
+              82,
+              65,
+              77,
+              45,
+              83,
+              72,
+              65,
+              45,
+              49,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9810,
+          "responseSize": 102
+        },
+        "id": "d6ad7bbd-044a-47d8-b43b-3f85eaa534f6"
+      },
+      {
+        "cursor": {
+          "ref": "7139f1aa-9f29-4afd-9bce-a3d502aa51db",
+          "length": 15,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "d3dea838-1c4e-446c-9a77-8d8e5f47a6ae"
+        },
+        "item": {
+          "id": "6b79122b-7647-4c9d-84fb-b6530bd80708",
+          "name": "IT Technician Login",
+          "request": {
+            "description": {
+              "content": "Authenticate IT technician and receive JWT token with system administration permissions",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "1a02a23a-bfb4-4752-bae2-3c57fb1a57eb",
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('authToken', response.token);",
+                  "        pm.collectionVariables.set('userRole', response.user.role);",
+                  "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                  "        pm.collectionVariables.set('securityClearance', response.user.techInfo.securityClearance);",
+                  "    }",
+                  "}"
+                ],
+                "_lastExecutionId": "1f2ec60c-86fd-4622-8269-dcebab0ad9db"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Authenticate IT technician and receive JWT token with system administration permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "75ac245a-ce93-41ac-979c-1921f1e6e907",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "69",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\"\n}"
+          }
+        },
+        "response": {
+          "id": "bb896ca2-bc23-4b7a-8997-822c5e70ca2e",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:23:06 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              110,
+              32,
+              102,
+              97,
+              105,
+              108,
+              101,
+              100,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              85,
+              110,
+              97,
+              98,
+              108,
+              101,
+              32,
+              116,
+              111,
+              32,
+              97,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              117,
+              115,
+              105,
+              110,
+              103,
+              32,
+              115,
+              97,
+              115,
+              108,
+              32,
+              112,
+              114,
+              111,
+              116,
+              111,
+              99,
+              111,
+              108,
+              32,
+              109,
+              101,
+              99,
+              104,
+              97,
+              110,
+              105,
+              115,
+              109,
+              32,
+              83,
+              67,
+              82,
+              65,
+              77,
+              45,
+              83,
+              72,
+              65,
+              45,
+              49,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9926,
+          "responseSize": 102
+        },
+        "id": "6b79122b-7647-4c9d-84fb-b6530bd80708"
+      },
+      {
+        "cursor": {
+          "ref": "2e476985-35e9-4b39-a06e-4af878df9b8c",
+          "length": 15,
+          "cycles": 1,
+          "position": 10,
+          "iteration": 0,
+          "httpRequestId": "13a4f69c-bfc6-43fb-8dba-dc32df746fe2"
+        },
+        "item": {
+          "id": "74dd5d77-74f4-4145-9220-f1793d509166",
+          "name": "Delivery Agent Login",
+          "request": {
+            "description": {
+              "content": "Authenticate delivery agent and receive JWT token with delivery permissions",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e4d0c6b6-2302-4c98-808a-ba893b6d96d0",
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('authToken', response.token);",
+                  "        pm.collectionVariables.set('userRole', response.user.role);",
+                  "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+                  "        pm.collectionVariables.set('vehicleType', response.user.deliveryInfo.vehicleType);",
+                  "        pm.collectionVariables.set('serviceAreas', JSON.stringify(response.user.deliveryInfo.serviceAreas));",
+                  "    }",
+                  "}"
+                ],
+                "_lastExecutionId": "50680930-cc25-46b9-96d9-30330e6683c0"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Authenticate delivery agent and receive JWT token with delivery permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "7b815186-9741-4b0a-aa22-19ad31c6d321",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "75",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\"\n}"
+          }
+        },
+        "response": {
+          "id": "aeb4b122-99dc-4096-b927-b16623754872",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:23:16 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              76,
+              111,
+              103,
+              105,
+              110,
+              32,
+              102,
+              97,
+              105,
+              108,
+              101,
+              100,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              85,
+              110,
+              97,
+              98,
+              108,
+              101,
+              32,
+              116,
+              111,
+              32,
+              97,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              117,
+              115,
+              105,
+              110,
+              103,
+              32,
+              115,
+              97,
+              115,
+              108,
+              32,
+              112,
+              114,
+              111,
+              116,
+              111,
+              99,
+              111,
+              108,
+              32,
+              109,
+              101,
+              99,
+              104,
+              97,
+              110,
+              105,
+              115,
+              109,
+              32,
+              83,
+              67,
+              82,
+              65,
+              77,
+              45,
+              83,
+              72,
+              65,
+              45,
+              49,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9908,
+          "responseSize": 102
+        },
+        "id": "74dd5d77-74f4-4145-9220-f1793d509166"
+      },
+      {
+        "cursor": {
+          "ref": "a4f59f37-8482-4ee7-82a5-42598f7b32aa",
+          "length": 15,
+          "cycles": 1,
+          "position": 11,
+          "iteration": 0,
+          "httpRequestId": "3b1a1328-4cac-4435-8b29-b86957668d46"
+        },
+        "item": {
+          "id": "67249b5f-ecaf-469e-9cf6-6dd0dcea0f8a",
+          "name": "Forgot Password",
+          "request": {
+            "description": {
+              "content": "Initiate password reset process for user",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "\"user@example.com\""
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Initiate password reset process for user",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "forgot-password"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "6d40abc1-2413-4037-bf09-5a9e310956f2",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "18",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "\"user@example.com\""
+          }
+        },
+        "response": {
+          "id": "e58164b8-01e5-43de-9374-d8d6213d48f3",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:23:26 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              70,
+              97,
+              105,
+              108,
+              101,
+              100,
+              32,
+              116,
+              111,
+              32,
+              112,
+              114,
+              111,
+              99,
+              101,
+              115,
+              115,
+              32,
+              112,
+              97,
+              115,
+              115,
+              119,
+              111,
+              114,
+              100,
+              32,
+              114,
+              101,
+              115,
+              101,
+              116,
+              32,
+              114,
+              101,
+              113,
+              117,
+              101,
+              115,
+              116,
+              34,
+              44,
+              34,
+              101,
+              114,
+              114,
+              111,
+              114,
+              34,
+              58,
+              34,
+              85,
+              110,
+              97,
+              98,
+              108,
+              101,
+              32,
+              116,
+              111,
+              32,
+              97,
+              117,
+              116,
+              104,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              116,
+              101,
+              32,
+              117,
+              115,
+              105,
+              110,
+              103,
+              32,
+              115,
+              97,
+              115,
+              108,
+              32,
+              112,
+              114,
+              111,
+              116,
+              111,
+              99,
+              111,
+              108,
+              32,
+              109,
+              101,
+              99,
+              104,
+              97,
+              110,
+              105,
+              115,
+              109,
+              32,
+              83,
+              67,
+              82,
+              65,
+              77,
+              45,
+              83,
+              72,
+              65,
+              45,
+              49,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9940,
+          "responseSize": 130
+        },
+        "id": "67249b5f-ecaf-469e-9cf6-6dd0dcea0f8a"
+      },
+      {
+        "cursor": {
+          "ref": "6ef4c833-ba39-4bdf-a1dc-1dd433b3d809",
+          "length": 15,
+          "cycles": 1,
+          "position": 12,
+          "iteration": 0,
+          "httpRequestId": "7a2de6f4-12f9-4baa-bef2-176b6f91e578"
+        },
+        "item": {
+          "id": "bdad91da-2ccb-4841-8dc8-1bda641bf0ee",
+          "name": "Validate Token",
+          "request": {
+            "description": {
+              "content": "Validate the current JWT token and return user role and permissions",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "validate"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Validate the current JWT token and return user role and permissions",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "validate"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer "
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "5c9f2cbf-4c92-4c81-a9f9-1c4af2aeea14",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "092e5b27-e8f2-47dc-a975-5b4f81c63b4d",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "Content-Length",
+              "value": "0"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:23:26 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "WWW-Authenticate",
+              "value": "Bearer"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": []
+          },
+          "cookie": [],
+          "responseTime": 12,
+          "responseSize": 0
+        },
+        "id": "bdad91da-2ccb-4841-8dc8-1bda641bf0ee"
+      },
+      {
+        "cursor": {
+          "ref": "b21b0727-597a-4a05-992e-92f12211a72a",
+          "length": 15,
+          "cycles": 1,
+          "position": 13,
+          "iteration": 0,
+          "httpRequestId": "ff2fb129-2e59-4c09-bc4d-2183f9b6c149"
+        },
+        "item": {
+          "id": "b09a3d6c-66ed-4a47-ac44-d110ed318ed0",
+          "name": "Get User Profile",
+          "request": {
+            "description": {
+              "content": "Get complete user profile with role-specific information",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Get complete user profile with role-specific information",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "profile"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer "
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "e368e355-461f-4818-a553-4ecf84d66ea1",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "bbb449a7-d0b9-4ffc-8dc2-cf6a295dbe43",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "Content-Length",
+              "value": "0"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:23:26 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "WWW-Authenticate",
+              "value": "Bearer"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": []
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 0
+        },
+        "id": "b09a3d6c-66ed-4a47-ac44-d110ed318ed0"
+      },
+      {
+        "cursor": {
+          "ref": "64b2f52a-411e-4ce0-bf5d-d523331e923a",
+          "length": 15,
+          "cycles": 1,
+          "position": 14,
+          "iteration": 0,
+          "httpRequestId": "637f7fe3-8efc-4461-9d0d-8ab63890f584"
+        },
+        "item": {
+          "id": "d134db89-5e6c-4307-b35e-f92fd230ef8f",
+          "name": "Update User Profile",
+          "request": {
+            "description": {
+              "content": "Update user profile information (role-based permissions apply)",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "profile"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez-Johnson\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\", \"Low Sodium\"]\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Update user profile information (role-based permissions apply)",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "30001",
+            "path": [
+              "api",
+              "auth",
+              "profile"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer "
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ed2bb308-7c80-4b0b-b21b-b82061942b95",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:30001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "329",
+              "system": true
+            }
+          ],
+          "method": "PUT",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez-Johnson\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\", \"Low Sodium\"]\n}"
+          }
+        },
+        "response": {
+          "id": "deeb484c-c2c2-4691-95f0-87dfd3a40935",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "Content-Length",
+              "value": "0"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 05 Nov 2025 23:23:26 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            },
+            {
+              "key": "WWW-Authenticate",
+              "value": "Bearer"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": []
+          },
+          "cookie": [],
+          "responseTime": 3,
+          "responseSize": 0
+        },
+        "id": "d134db89-5e6c-4307-b35e-f92fd230ef8f"
+      }
+    ],
+    "transfers": {
+      "responseTotal": 3070
+    },
+    "failures": [],
+    "error": null
+  }
+}
