@@ -8,12 +8,22 @@
   "variable": [
     {
       "key": "workflow_user_email",
-      "value": "workflow@example.com",
+      "value": "alex.johnson@gmail.com",
       "type": "string"
     },
     {
       "key": "workflow_user_password",
-      "value": "WorkflowTest123!",
+      "value": "FoodieLife2024!",
+      "type": "string"
+    },
+    {
+      "key": "workflow_customer_name",
+      "value": "Alex Johnson",
+      "type": "string"
+    },
+    {
+      "key": "workflow_scenario",
+      "value": "Busy Professional Ordering Dinner After Work",
       "type": "string"
     }
   ],

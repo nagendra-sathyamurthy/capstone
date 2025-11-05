@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://localhost:5001",
+      "value": "{{auth_base_url}}",
       "type": "string"
     },
     {
@@ -30,7 +30,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+          "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\"],\n  \"favoriteRestaurants\": [\"Tony's Authentic Pizzeria\", \"Fresh & Green Cafe\"]\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/auth/register",
@@ -68,7 +68,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+          "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/auth/login",

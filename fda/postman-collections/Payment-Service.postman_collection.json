@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:5006",
+      "value": "{{payment_base_url}}",
       "type": "string"
     },
     {
@@ -59,7 +59,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"amount\": 1351.97,\n  \"currency\": \"USD\",\n  \"paymentMethod\": {\n    \"type\": \"CreditCard\",\n    \"cardNumber\": \"4111111111111111\",\n    \"expiryMonth\": \"12\",\n    \"expiryYear\": \"2025\",\n    \"cvv\": \"123\",\n    \"cardHolderName\": \"John Doe\"\n  },\n  \"billingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  }\n}"
+          "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"customerId\": \"{{customer_id}}\",\n  \"amount\": 86.26,\n  \"currency\": \"USD\",\n  \"paymentMethod\": {\n    \"type\": \"CreditCard\",\n    \"provider\": \"Visa\",\n    \"cardNumber\": \"4532015112830366\",\n    \"expiryMonth\": \"08\",\n    \"expiryYear\": \"2027\",\n    \"cvv\": \"847\",\n    \"cardHolderName\": \"Emily Chen\"\n  },\n  \"billingAddress\": {\n    \"firstName\": \"Emily\",\n    \"lastName\": \"Chen\",\n    \"street\": \"2847 Fillmore Street\",\n    \"apartment\": \"Apt 4B\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94115\",\n    \"country\": \"United States\",\n    \"phoneNumber\": \"+1-415-555-0187\",\n    \"email\": \"emily.chen@designstudio.com\"\n  },\n  \"paymentDetails\": {\n    \"subtotal\": 61.84,\n    \"taxAmount\": 5.57,\n    \"deliveryFee\": 3.99,\n    \"serviceFee\": 2.50,\n    \"tip\": 12.36,\n    \"discountAmount\": 0.00,\n    \"totalAmount\": 86.26,\n    \"paymentDescription\": \"Food delivery order - Pizza, Chicken Tikka Masala (x2), Chocolate Lava Cake\"\n  },\n  \"deliveryDetails\": {\n    \"deliveryType\": \"standard\",\n    \"estimatedDeliveryTime\": \"2025-11-06T19:45:00Z\",\n    \"driverTip\": 12.36,\n    \"restaurantPartners\": [\"Tony's Authentic Pizzeria\", \"Spice Garden Indian Cuisine\", \"Sweet Endings Bakery\"]\n  },\n  \"metadata\": {\n    \"customerType\": \"Regular\",\n    \"orderNotes\": \"Multi-restaurant order - coordinate delivery timing\",\n    \"fraudScore\": \"low\",\n    \"paymentSource\": \"mobile_app\",\n    \"loyaltyPointsEarned\": 86\n  }\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/payment/process",

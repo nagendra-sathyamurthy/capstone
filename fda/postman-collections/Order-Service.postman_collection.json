@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:5005",
+      "value": "{{order_base_url}}",
       "type": "string"
     },
     {
@@ -59,7 +59,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"items\": [\n    {\n      \"itemId\": \"item123\",\n      \"name\": \"Laptop\",\n      \"quantity\": 1,\n      \"price\": 1299.99\n    },\n    {\n      \"itemId\": \"item456\",\n      \"name\": \"Mouse\",\n      \"quantity\": 2,\n      \"price\": 25.99\n    }\n  ],\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  },\n  \"billingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  }\n}"
+          "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"customerId\": \"{{customer_id}}\",\n  \"orderType\": \"delivery\",\n  \"items\": [\n    {\n      \"itemId\": \"{{item_id}}\",\n      \"name\": \"Margherita Pizza (Large)\",\n      \"sku\": \"PIZZA-MARG-LG\",\n      \"quantity\": 1,\n      \"unitPrice\": 18.99,\n      \"totalPrice\": 18.99,\n      \"category\": \"Pizza\",\n      \"restaurant\": \"Tony's Authentic Pizzeria\",\n      \"preparationTime\": 15,\n      \"specialInstructions\": \"Extra basil please\"\n    },\n    {\n      \"itemId\": \"curry-tikka-reg\",\n      \"name\": \"Chicken Tikka Masala\",\n      \"sku\": \"CURRY-TIKKA-REG\",\n      \"quantity\": 2,\n      \"unitPrice\": 16.95,\n      \"totalPrice\": 33.90,\n      \"category\": \"Indian Curry\",\n      \"restaurant\": \"Spice Garden Indian Cuisine\",\n      \"preparationTime\": 20,\n      \"spiceLevel\": \"Mild\",\n      \"specialInstructions\": \"Medium spice level, extra rice\"\n    },\n    {\n      \"itemId\": \"dessert-choc-lava\",\n      \"name\": \"Chocolate Lava Cake\",\n      \"sku\": \"DESSERT-CHOC-LAVA\",\n      \"quantity\": 1,\n      \"unitPrice\": 8.95,\n      \"totalPrice\": 8.95,\n      \"category\": \"Dessert\",\n      \"restaurant\": \"Sweet Endings Bakery\",\n      \"preparationTime\": 8\n    }\n  ],\n  \"deliveryAddress\": {\n    \"firstName\": \"Emily\",\n    \"lastName\": \"Chen\",\n    \"street\": \"2847 Fillmore Street\",\n    \"apartment\": \"Apt 4B\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94115\",\n    \"country\": \"United States\",\n    \"phoneNumber\": \"+1-415-555-0187\",\n    \"deliveryInstructions\": \"Ring doorbell twice. Leave at door if no answer. Building entrance code: 1234\"\n  },\n  \"paymentAddress\": {\n    \"firstName\": \"Emily\",\n    \"lastName\": \"Chen\",\n    \"street\": \"2847 Fillmore Street\",\n    \"apartment\": \"Apt 4B\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94115\",\n    \"country\": \"United States\",\n    \"phoneNumber\": \"+1-415-555-0187\"\n  },\n  \"orderNotes\": \"Family dinner order. Please ensure all items arrive together and hot. Contact if any items unavailable.\",\n  \"preferredDeliveryTime\": \"2025-11-06T19:30:00Z\",\n  \"estimatedDeliveryTime\": \"2025-11-06T19:45:00Z\",\n  \"maxPreparationTime\": 20,\n  \"subtotal\": 61.84,\n  \"taxAmount\": 5.57,\n  \"deliveryFee\": 3.99,\n  \"serviceFee\": 2.50,\n  \"tip\": 12.36,\n  \"totalAmount\": 86.26\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/order",

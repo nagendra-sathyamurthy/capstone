@@ -62,7 +62,7 @@ spec:
     app: authentication
   ports:
   - protocol: TCP
-    port: 5001
+    port: 8080
     targetPort: 8080
     nodePort: 30001
   type: NodePort

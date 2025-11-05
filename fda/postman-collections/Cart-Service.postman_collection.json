@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:5004",
+      "value": "{{cart_base_url}}",
       "type": "string"
     },
     {
@@ -132,7 +132,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"itemId\": \"item123\",\n  \"name\": \"Sample Product\",\n  \"quantity\": 2,\n  \"price\": 29.99\n}"
+          "raw": "{\n  \"itemId\": \"{{item_id}}\",\n  \"name\": \"Margherita Pizza (Large)\",\n  \"quantity\": 1,\n  \"price\": 18.99,\n  \"sku\": \"PIZZA-MARG-LG\",\n  \"category\": \"Pizza\",\n  \"restaurant\": \"Tony's Authentic Pizzeria\",\n  \"preparationTime\": 15,\n  \"dietaryInfo\": [\"Vegetarian\", \"Contains Gluten\", \"Contains Dairy\"],\n  \"spiceLevel\": \"None\",\n  \"specialInstructions\": \"Extra basil please\",\n  \"restaurantAddress\": {\n    \"street\": \"142 Mulberry Street\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10013\"\n  }\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/cart/{{cartId}}/items",
