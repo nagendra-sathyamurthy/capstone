@@ -27,11 +27,11 @@ mongodb:
   # Resource limits and requests
   resources:
     limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 100m
+      cpu: 200m
       memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
 
 # Persistence configuration
 persistence:
@@ -62,16 +62,16 @@ affinity: {}
 # Liveness and readiness probes
 livenessProbe:
   enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  enabled: true
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
   successThreshold: 1
-  failureThreshold: 6
-
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 5
-  periodSeconds: 5
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3
+  failureThreshold: 10
