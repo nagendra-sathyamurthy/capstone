@@ -1,0 +1,261 @@
+{
+  "info": {
+    "name": "Payment Service API",
+    "description": "API collection for Payment Service with payment processing functionality",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5006",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Process Payment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201 || pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.id || response.paymentId) {",
+              "        pm.collectionVariables.set('paymentId', response.id || response.paymentId);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"amount\": 1351.97,\n  \"currency\": \"USD\",\n  \"paymentMethod\": {\n    \"type\": \"CreditCard\",\n    \"cardNumber\": \"4111111111111111\",\n    \"expiryMonth\": \"12\",\n    \"expiryYear\": \"2025\",\n    \"cvv\": \"123\",\n    \"cardHolderName\": \"John Doe\"\n  },\n  \"billingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/process",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "process"]
+        },
+        "description": "Process a payment for an order"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Payment by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/{{paymentId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "{{paymentId}}"]
+        },
+        "description": "Retrieve payment details by payment ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Payment by Order ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/order/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "order", "{{orderId}}"]
+        },
+        "description": "Retrieve payment details by order ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Refund Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 100.00,\n  \"reason\": \"Customer return request\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/{{paymentId}}/refund",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "{{paymentId}}", "refund"]
+        },
+        "description": "Process a refund for a payment (partial or full)"
+      },
+      "response": []
+    },
+    {
+      "name": "Validate Payment Method",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"CreditCard\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiryMonth\": \"12\",\n  \"expiryYear\": \"2025\",\n  \"cvv\": \"123\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/validate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "validate"]
+        },
+        "description": "Validate a payment method before processing"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Payment Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/{{paymentId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "{{paymentId}}", "status"]
+        },
+        "description": "Get the current status of a payment"
+      },
+      "response": []
+    },
+    {
+      "name": "Process PayPal Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"amount\": 1351.97,\n  \"currency\": \"USD\",\n  \"paymentMethod\": {\n    \"type\": \"PayPal\",\n    \"email\": \"user@example.com\"\n  },\n  \"returnUrl\": \"https://yoursite.com/payment/success\",\n  \"cancelUrl\": \"https://yoursite.com/payment/cancel\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/paypal",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "paypal"]
+        },
+        "description": "Process a PayPal payment"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Payment History",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/payment/history?userId=user123&startDate=2024-01-01&endDate=2024-12-31",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "payment", "history"],
+          "query": [
+            {
+              "key": "userId",
+              "value": "user123"
+            },
+            {
+              "key": "startDate",
+              "value": "2024-01-01"
+            },
+            {
+              "key": "endDate",
+              "value": "2024-12-31"
+            }
+          ]
+        },
+        "description": "Get payment history for a user or date range"
+      },
+      "response": []
+    }
+  ]
+}

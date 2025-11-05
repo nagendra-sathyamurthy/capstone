@@ -1,0 +1,257 @@
+{
+  "info": {
+    "name": "Order Service API",
+    "description": "API collection for Order Service with order management functionality",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5005",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "user123",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    if (response.id || response.orderId) {",
+              "        pm.collectionVariables.set('orderId', response.id || response.orderId);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"items\": [\n    {\n      \"itemId\": \"item123\",\n      \"name\": \"Laptop\",\n      \"quantity\": 1,\n      \"price\": 1299.99\n    },\n    {\n      \"itemId\": \"item456\",\n      \"name\": \"Mouse\",\n      \"quantity\": 2,\n      \"price\": 25.99\n    }\n  ],\n  \"shippingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  },\n  \"billingAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"Anytown\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/order",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order"]
+        },
+        "description": "Create a new order from cart items"
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Orders",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/order",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order"]
+        },
+        "description": "Retrieve all orders (admin functionality)"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Order by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/order/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order", "{{orderId}}"]
+        },
+        "description": "Retrieve a specific order by its ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Orders by User ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/order/user/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order", "user", "{{userId}}"]
+        },
+        "description": "Retrieve all orders for a specific user"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Order Status",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Processing\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/order/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order", "{{orderId}}", "status"]
+        },
+        "description": "Update the status of an order (Pending, Processing, Shipped, Delivered, Cancelled)"
+      },
+      "response": []
+    },
+    {
+      "name": "Cancel Order",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"Customer requested cancellation\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/order/{{orderId}}/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order", "{{orderId}}", "cancel"]
+        },
+        "description": "Cancel an existing order"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Order History",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/order/{{orderId}}/history",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order", "{{orderId}}", "history"]
+        },
+        "description": "Get the status history/tracking information for an order"
+      },
+      "response": []
+    },
+    {
+      "name": "Search Orders",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/order/search?status=Processing&dateFrom=2024-01-01&dateTo=2024-12-31",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "order", "search"],
+          "query": [
+            {
+              "key": "status",
+              "value": "Processing"
+            },
+            {
+              "key": "dateFrom",
+              "value": "2024-01-01"
+            },
+            {
+              "key": "dateTo",
+              "value": "2024-12-31"
+            }
+          ]
+        },
+        "description": "Search orders by various criteria"
+      },
+      "response": []
+    }
+  ]
+}

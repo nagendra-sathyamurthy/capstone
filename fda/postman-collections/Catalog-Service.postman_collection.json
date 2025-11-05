@@ -1,0 +1,188 @@
+{
+  "info": {
+    "name": "Catalog Service API",
+    "description": "API collection for Catalog Service with item management functionality",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5002",
+      "type": "string"
+    },
+    {
+      "key": "itemId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get All Items",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/item",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item"]
+        },
+        "description": "Retrieve all items from the catalog"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Item by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/item/{{itemId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item", "{{itemId}}"]
+        },
+        "description": "Retrieve a specific item by its ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    if (response.id) {",
+              "        pm.collectionVariables.set('itemId', response.id);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sample Product\",\n  \"description\": \"A sample product for testing\",\n  \"price\": 29.99\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/item",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item"]
+        },
+        "description": "Create a new item in the catalog"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Multiple Items (Bulk)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"name\": \"Laptop\",\n    \"description\": \"High-performance laptop for professionals\",\n    \"price\": 1299.99\n  },\n  {\n    \"name\": \"Mouse\",\n    \"description\": \"Wireless optical mouse\",\n    \"price\": 25.99\n  },\n  {\n    \"name\": \"Keyboard\",\n    \"description\": \"Mechanical gaming keyboard\",\n    \"price\": 89.99\n  }\n]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/item/bulk",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item", "bulk"]
+        },
+        "description": "Create multiple items in a single request"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Item",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Product Name\",\n  \"description\": \"Updated product description\",\n  \"price\": 39.99\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/item/{{itemId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item", "{{itemId}}"]
+        },
+        "description": "Update an existing item"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Item",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/item/{{itemId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item", "{{itemId}}"]
+        },
+        "description": "Delete an item from the catalog"
+      },
+      "response": []
+    },
+    {
+      "name": "Search Items by Name",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/item?search=laptop",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "item"],
+          "query": [
+            {
+              "key": "search",
+              "value": "laptop"
+            }
+          ]
+        },
+        "description": "Search for items by name (if search functionality is implemented)"
+      },
+      "response": []
+    }
+  ]
+}

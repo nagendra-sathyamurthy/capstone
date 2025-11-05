@@ -1,0 +1,192 @@
+{
+  "info": {
+    "name": "CRM Service API",
+    "description": "API collection for CRM Service with customer management functionality",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5003",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get All Customers",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/customer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "customer"]
+        },
+        "description": "Retrieve all customers from the CRM system"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Customer by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/customer/{{customerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "customer", "{{customerId}}"]
+        },
+        "description": "Retrieve a specific customer by their ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Customer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    if (response.id) {",
+              "        pm.collectionVariables.set('customerId', response.id);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phoneNumber\": \"1234567890\",\n  \"address\": \"123 Main St, Anytown, USA\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/customer",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "customer"]
+        },
+        "description": "Create a new customer in the CRM system"
+      },
+      "response": []
+    },
+    {
+      "name": "Create Multiple Customers (Bulk)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"firstName\": \"Alice\",\n    \"lastName\": \"Johnson\",\n    \"email\": \"alice.johnson@example.com\",\n    \"phoneNumber\": \"5551234567\",\n    \"address\": \"456 Oak Ave, Springfield, USA\"\n  },\n  {\n    \"firstName\": \"Bob\",\n    \"lastName\": \"Smith\",\n    \"email\": \"bob.smith@example.com\",\n    \"phoneNumber\": \"5559876543\",\n    \"address\": \"789 Pine Rd, Riverside, USA\"\n  }\n]"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/customer/bulk",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "customer", "bulk"]
+        },
+        "description": "Create multiple customers in a single request"
+      },
+      "response": []
+    },
+    {
+      "name": "Update Customer",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"phoneNumber\": \"9876543210\",\n  \"address\": \"456 Elm St, Newtown, USA\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/customer/{{customerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "customer", "{{customerId}}"]
+        },
+        "description": "Update an existing customer's information"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Customer",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/customer/{{customerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "customer", "{{customerId}}"]
+        },
+        "description": "Delete a customer from the CRM system"
+      },
+      "response": []
+    }
+  ]
+}
