@@ -1,23 +1,27 @@
+# Local Development - CRM Service
+# Uses shared MongoDB instance (mongodb-service) instead of dedicated database
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-deployment
+  name: crm-deployment
   namespace: capstone-services
   labels:
-    app: catalog
+    app: crm
+    environment: local
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: catalog
+      app: crm
   template:
     metadata:
       labels:
-        app: catalog
+        app: crm
+        environment: local
     spec:
       containers:
-      - name: catalog
-        image: services-catalog:latest
+      - name: crm
+        image: services-crm:latest
         imagePullPolicy: Never  # Use local image
         ports:
         - containerPort: 8080
@@ -27,42 +31,38 @@ spec:
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
-              name: catalog-secret
-              key: connection-string
+              name: mongodb-secret  # Uses shared MongoDB secret
+              key: crm-connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: catalog-secret
-              key: connection-string
+              name: mongodb-secret  # Uses shared MongoDB secret
+              key: crm-connection-string
         - name: DatabaseSettings__DatabaseName
-          valueFrom:
-            secretKeyRef:
-              name: catalog-secret
-              key: database-name
+          value: "crmdb"
         - name: DatabaseSettings__CollectionName
-          valueFrom:
-            secretKeyRef:
-              name: catalog-secret
-              key: collection-name
+          value: "customers"
         resources:
           requests:
+            memory: "128Mi"  # Reduced for local dev
+            cpu: "100m"
+          limits:
             memory: "256Mi"
             cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog-service
+  name: crm-service
   namespace: capstone-services
+  labels:
+    environment: local
 spec:
   selector:
-    app: catalog
+    app: crm
   ports:
   - protocol: TCP
-    port: 5002
+    port: 5003
     targetPort: 8080
-    nodePort: 30002
+    nodePort: 30003
   type: NodePort

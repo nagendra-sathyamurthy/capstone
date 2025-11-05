@@ -1,23 +1,27 @@
+# Local Development - Authentication Service
+# Uses shared MongoDB instance (mongodb-service)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-deployment
+  name: authentication-deployment
   namespace: capstone-services
   labels:
-    app: cart
+    app: authentication
+    environment: local
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cart
+      app: authentication
   template:
     metadata:
       labels:
-        app: cart
+        app: authentication
+        environment: local
     spec:
       containers:
-      - name: cart
-        image: services-cart:latest
+      - name: authentication
+        image: services-authentication:latest
         imagePullPolicy: Never  # Use local image
         ports:
         - containerPort: 8080
@@ -27,26 +31,20 @@ spec:
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
-              name: cart-secret
-              key: connection-string
+              name: mongodb-secret  # Uses shared MongoDB secret
+              key: auth-connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: cart-secret
-              key: connection-string
+              name: mongodb-secret  # Uses shared MongoDB secret
+              key: auth-connection-string
         - name: DatabaseSettings__DatabaseName
-          valueFrom:
-            secretKeyRef:
-              name: cart-secret
-              key: database-name
+          value: "authenticationdb"
         - name: DatabaseSettings__CollectionName
-          valueFrom:
-            secretKeyRef:
-              name: cart-secret
-              key: collection-name
+          value: "users"
         resources:
           requests:
-            memory: "128Mi"
+            memory: "128Mi"  # Reduced for local dev
             cpu: "100m"
           limits:
             memory: "256Mi"
@@ -55,14 +53,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cart-service
+  name: authentication-service
   namespace: capstone-services
+  labels:
+    environment: local
 spec:
   selector:
-    app: cart
+    app: authentication
   ports:
   - protocol: TCP
-    port: 5004
+    port: 5001
     targetPort: 8080
-    nodePort: 30004
+    nodePort: 30001
   type: NodePort

@@ -1,0 +1,160 @@
+# Production - CRM Service with Dedicated MongoDB
+# Dedicated MongoDB instance for CRM service with enhanced security
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crm-mongodb-deployment
+  namespace: capstone-services
+  labels:
+    app: crm-mongodb
+    environment: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crm-mongodb
+  template:
+    metadata:
+      labels:
+        app: crm-mongodb
+        environment: production
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: crm-mongodb-secret
+              key: username
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: crm-mongodb-secret
+              key: password
+        - name: MONGO_INITDB_DATABASE
+          value: "crmdb"
+        resources:
+          requests:
+            memory: "1Gi"  # Higher resources for CRM data
+            cpu: "300m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: crm-mongodb-storage
+          mountPath: /data/db
+      volumes:
+      - name: crm-mongodb-storage
+        persistentVolumeClaim:
+          claimName: crm-mongodb-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: crm-mongodb-pvc
+  namespace: capstone-services
+  labels:
+    environment: production
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi  # Larger storage for customer data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crm-mongodb-service
+  namespace: capstone-services
+  labels:
+    environment: production
+spec:
+  selector:
+    app: crm-mongodb
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crm-deployment
+  namespace: capstone-services
+  labels:
+    app: crm
+    environment: production
+spec:
+  replicas: 2  # High availability for CRM
+  selector:
+    matchLabels:
+      app: crm
+  template:
+    metadata:
+      labels:
+        app: crm
+        environment: production
+    spec:
+      containers:
+      - name: crm
+        image: services-crm:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ConnectionStrings__DefaultConnection
+          valueFrom:
+            secretKeyRef:
+              name: crm-mongodb-secret
+              key: connection-string
+        - name: DatabaseSettings__ConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: crm-mongodb-secret
+              key: connection-string
+        - name: DatabaseSettings__DatabaseName
+          value: "crmdb"
+        - name: DatabaseSettings__CollectionName
+          value: "customers"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crm-service
+  namespace: capstone-services
+  labels:
+    environment: production
+spec:
+  selector:
+    app: crm
+  ports:
+  - protocol: TCP
+    port: 5003
+    targetPort: 8080
+  type: LoadBalancer

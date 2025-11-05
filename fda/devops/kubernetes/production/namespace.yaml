@@ -1,0 +1,7 @@
+# Namespace for Capstone Services
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: capstone-services
+  labels:
+    name: capstone-services

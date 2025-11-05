@@ -1,3 +1,4 @@
+# Namespace for Capstone Services
 apiVersion: v1
 kind: Namespace
 metadata:

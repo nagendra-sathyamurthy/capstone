@@ -1,3 +1,5 @@
+# Local Development MongoDB - Shared Instance
+# Single MongoDB instance hosting all databases for resource efficiency
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -5,6 +7,7 @@ metadata:
   namespace: capstone-services
   labels:
     app: mongodb
+    environment: local
 spec:
   replicas: 1
   selector:
@@ -14,6 +17,7 @@ spec:
     metadata:
       labels:
         app: mongodb
+        environment: local
     spec:
       containers:
       - name: mongodb
@@ -55,6 +59,8 @@ kind: Service
 metadata:
   name: mongodb-service
   namespace: capstone-services
+  labels:
+    environment: local
 spec:
   selector:
     app: mongodb
