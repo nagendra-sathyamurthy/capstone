@@ -1,0 +1,695 @@
+{
+  "info": {
+    "name": "Kitchen Worker Service API",
+    "description": "API collection for Kitchen Workers (Chef/Cook/Assistant) operations including order fulfillment, inventory tracking, shift management, and food preparation workflows",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{worker_base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "{{worker_auth_token}}",
+      "type": "string"
+    },
+    {
+      "key": "restaurantId",
+      "value": "tonys_pizzeria",
+      "type": "string"
+    },
+    {
+      "key": "workerId",
+      "value": "TP-WK-002",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Order Fulfillment",
+      "item": [
+        {
+          "name": "Get Assigned Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/orders/assigned?workerId={{workerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "orders", "assigned"],
+              "query": [
+                {
+                  "key": "workerId",
+                  "value": "{{workerId}}"
+                }
+              ]
+            },
+            "description": "Get orders assigned to this kitchen worker"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Kitchen Queue",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/kitchen/queue?status=pending,preparing",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "kitchen", "queue"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending,preparing"
+                }
+              ]
+            },
+            "description": "Get all pending orders in kitchen queue with priorities"
+          },
+          "response": []
+        },
+        {
+          "name": "Start Order Preparation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"workerId\": \"{{workerId}}\",\n  \"startTime\": \"2024-01-20T13:30:00Z\",\n  \"estimatedCompletionTime\": \"2024-01-20T13:48:00Z\",\n  \"station\": \"pizza_oven\",\n  \"notes\": \"Customer requested extra basil - noted on order\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/orders/{{orderId}}/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "orders", "{{orderId}}", "start"]
+            },
+            "description": "Mark order as started and assign to kitchen station"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Progress",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"status\": \"preparing\",\n  \"progressPercentage\": 75,\n  \"currentStep\": \"baking_in_oven\",\n  \"workerId\": \"{{workerId}}\",\n  \"notes\": \"Pizza in oven, 5 minutes remaining\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/orders/{{orderId}}/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "orders", "{{orderId}}", "progress"]
+            },
+            "description": "Update order preparation progress and status"
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"workerId\": \"{{workerId}}\",\n  \"completionTime\": \"2024-01-20T13:47:00Z\",\n  \"qualityCheck\": {\n    \"temperature\": \"optimal\",\n    \"presentation\": \"excellent\",\n    \"portionSize\": \"correct\"\n  },\n  \"notes\": \"Order completed as requested, extra basil added\",\n  \"readyForPickup\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/orders/{{orderId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "orders", "{{orderId}}", "complete"]
+            },
+            "description": "Mark order as completed and ready for pickup/delivery"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Order Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"issueType\": \"ingredient_shortage\",\n  \"description\": \"Ran out of fresh mozzarella, used regular mozzarella instead\",\n  \"severity\": \"low\",\n  \"workerId\": \"{{workerId}}\",\n  \"substitutionMade\": true,\n  \"customerNotificationRequired\": false,\n  \"actionTaken\": \"Used regular mozzarella - quality maintained\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/orders/{{orderId}}/issues",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "orders", "{{orderId}}", "issues"]
+            },
+            "description": "Report issues encountered during order preparation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kitchen Operations",
+      "item": [
+        {
+          "name": "Check Station Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/kitchen/stations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "kitchen", "stations"]
+            },
+            "description": "Get status of all kitchen stations and equipment"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Station Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stationId\": \"pizza_oven_1\",\n  \"status\": \"occupied\",\n  \"workerId\": \"{{workerId}}\",\n  \"currentOrders\": [\"order_123\", \"order_124\"],\n  \"estimatedAvailableTime\": \"2024-01-20T14:15:00Z\",\n  \"notes\": \"Working on two large pizzas, oven at full capacity\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/kitchen/stations/{{stationId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "kitchen", "stations", "{{stationId}}", "status"]
+            },
+            "description": "Update kitchen station status and availability"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Equipment Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"equipmentId\": \"pizza_oven_1\",\n  \"issueType\": \"temperature_inconsistent\",\n  \"description\": \"Oven temperature fluctuating between 425-475°F instead of steady 450°F\",\n  \"severity\": \"medium\",\n  \"workerId\": \"{{workerId}}\",\n  \"affectedOrders\": [\"order_125\"],\n  \"repairRequired\": true,\n  \"temporaryWorkaround\": \"Using oven 2 for consistent results\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/kitchen/equipment/issues",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "kitchen", "equipment", "issues"]
+            },
+            "description": "Report kitchen equipment problems and malfunctions"
+          },
+          "response": []
+        },
+        {
+          "name": "Food Safety Log",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkType\": \"temperature_log\",\n  \"area\": \"refrigeration_unit_1\",\n  \"temperature\": 38.5,\n  \"targetTemperature\": 40.0,\n  \"status\": \"compliant\",\n  \"workerId\": \"{{workerId}}\",\n  \"timestamp\": \"2024-01-20T14:00:00Z\",\n  \"notes\": \"All perishables at safe temperature\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/kitchen/safety/logs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "kitchen", "safety", "logs"]
+            },
+            "description": "Log food safety checks and temperature monitoring"
+          },
+          "response": []
+        },
+        {
+          "name": "Cleaning Checklist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"areaId\": \"prep_station_a\",\n  \"cleaningType\": \"hourly_sanitization\",\n  \"checklist\": [\n    {\"task\": \"Sanitize cutting boards\", \"completed\": true},\n    {\"task\": \"Clean knife storage\", \"completed\": true},\n    {\"task\": \"Wipe down surfaces\", \"completed\": true},\n    {\"task\": \"Replace sanitizer solution\", \"completed\": true}\n  ],\n  \"workerId\": \"{{workerId}}\",\n  \"completionTime\": \"2024-01-20T14:00:00Z\",\n  \"notes\": \"All cleaning tasks completed per protocol\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/kitchen/cleaning",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "kitchen", "cleaning"]
+            },
+            "description": "Record completion of cleaning and sanitization tasks"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Inventory Management",
+      "item": [
+        {
+          "name": "Check Ingredient Levels",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/inventory/ingredients?category=perishable",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "inventory", "ingredients"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "perishable"
+                }
+              ]
+            },
+            "description": "Check current levels of ingredients and supplies"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Ingredient Usage",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"workerId\": \"{{workerId}}\",\n  \"ingredientsUsed\": [\n    {\"ingredient\": \"mozzarella_cheese\", \"quantity\": 8, \"unit\": \"oz\"},\n    {\"ingredient\": \"pizza_dough\", \"quantity\": 1, \"unit\": \"portion\"},\n    {\"ingredient\": \"tomato_sauce\", \"quantity\": 4, \"unit\": \"oz\"},\n    {\"ingredient\": \"fresh_basil\", \"quantity\": 0.5, \"unit\": \"oz\"}\n  ],\n  \"timestamp\": \"2024-01-20T13:45:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/inventory/usage",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "inventory", "usage"]
+            },
+            "description": "Record ingredient usage for inventory tracking"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Low Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ingredient\": \"fresh_basil\",\n  \"currentQuantity\": 2,\n  \"unit\": \"oz\",\n  \"minimumThreshold\": 8,\n  \"urgency\": \"medium\",\n  \"workerId\": \"{{workerId}}\",\n  \"affectedItems\": [\"Margherita Pizza\", \"Caprese Salad\"],\n  \"estimatedRunOutTime\": \"2024-01-20T18:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/inventory/low-stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "inventory", "low-stock"]
+            },
+            "description": "Alert management about low stock ingredients"
+          },
+          "response": []
+        },
+        {
+          "name": "Receive Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryId\": \"FFS-DEL-0156\",\n  \"supplier\": \"Fresh Foods Supplier\",\n  \"receivedBy\": \"{{workerId}}\",\n  \"deliveryTime\": \"2024-01-20T09:30:00Z\",\n  \"items\": [\n    {\n      \"ingredient\": \"mozzarella_cheese\",\n      \"quantityOrdered\": 50,\n      \"quantityReceived\": 50,\n      \"unit\": \"lbs\",\n      \"condition\": \"excellent\",\n      \"expirationDate\": \"2024-02-15\"\n    },\n    {\n      \"ingredient\": \"roma_tomatoes\",\n      \"quantityOrdered\": 20,\n      \"quantityReceived\": 18,\n      \"unit\": \"lbs\",\n      \"condition\": \"good\",\n      \"notes\": \"2 lbs short - noted on delivery receipt\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/inventory/deliveries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "inventory", "deliveries"]
+            },
+            "description": "Record receipt and quality check of ingredient deliveries"
+          },
+          "response": []
+        },
+        {
+          "name": "Waste Tracking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"wasteType\": \"expired_ingredient\",\n  \"ingredient\": \"fresh_mushrooms\",\n  \"quantity\": 3,\n  \"unit\": \"lbs\",\n  \"reason\": \"Expired before use - delivery delayed\",\n  \"workerId\": \"{{workerId}}\",\n  \"cost\": 12.50,\n  \"disposalMethod\": \"compost\",\n  \"timestamp\": \"2024-01-20T08:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/inventory/waste",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "inventory", "waste"]
+            },
+            "description": "Track food waste for cost analysis and sustainability"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shift Management",
+      "item": [
+        {
+          "name": "Clock In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"{{workerId}}\",\n  \"clockInTime\": \"2024-01-20T09:00:00Z\",\n  \"station\": \"prep_station_a\",\n  \"shiftType\": \"day_shift\",\n  \"notes\": \"Starting prep work for lunch rush\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/shift/clock-in",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "shift", "clock-in"]
+            },
+            "description": "Record start of work shift"
+          },
+          "response": []
+        },
+        {
+          "name": "Clock Out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"{{workerId}}\",\n  \"clockOutTime\": \"2024-01-20T17:00:00Z\",\n  \"ordersCompleted\": 27,\n  \"shiftSummary\": \"Completed all assigned orders, restocked prep station, no incidents\",\n  \"equipmentStatus\": \"All equipment cleaned and shut down properly\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/shift/clock-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "shift", "clock-out"]
+            },
+            "description": "Record end of work shift with summary"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Break",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"{{workerId}}\",\n  \"breakType\": \"lunch\",\n  \"requestedTime\": \"2024-01-20T14:00:00Z\",\n  \"duration\": 30,\n  \"currentOrders\": [\"order_123\"],\n  \"station\": \"prep_station_a\",\n  \"notes\": \"Current order will be completed in 5 minutes\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/shift/break-request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "shift", "break-request"]
+            },
+            "description": "Request break during shift with current status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Shift Schedule",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/shift/schedule?workerId={{workerId}}&week=2024-W03",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "shift", "schedule"],
+              "query": [
+                {
+                  "key": "workerId",
+                  "value": "{{workerId}}"
+                },
+                {
+                  "key": "week",
+                  "value": "2024-W03"
+                }
+              ]
+            },
+            "description": "Get weekly schedule and shift assignments"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Task Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskId\": \"task_456\",\n  \"status\": \"completed\",\n  \"workerId\": \"{{workerId}}\",\n  \"completionTime\": \"2024-01-20T15:30:00Z\",\n  \"notes\": \"Rush order completed on time, customer satisfied\",\n  \"qualityCheck\": \"passed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/tasks/{{taskId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "tasks", "{{taskId}}", "status"]
+            },
+            "description": "Update status of assigned tasks from supervisor"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Performance & Training",
+      "item": [
+        {
+          "name": "Get Performance Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/performance?workerId={{workerId}}&period=monthly",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "performance"],
+              "query": [
+                {
+                  "key": "workerId",
+                  "value": "{{workerId}}"
+                },
+                {
+                  "key": "period",
+                  "value": "monthly"
+                }
+              ]
+            },
+            "description": "View personal performance metrics and statistics"
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Training Module",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moduleId\": \"food_safety_update_2024\",\n  \"workerId\": \"{{workerId}}\",\n  \"completionTime\": \"2024-01-20T11:00:00Z\",\n  \"score\": 95,\n  \"certificateEarned\": true,\n  \"timeSpent\": 45,\n  \"notes\": \"Excellent understanding of new food safety protocols\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/training/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "training", "complete"]
+            },
+            "description": "Record completion of training modules and certifications"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Improvement Suggestion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"{{workerId}}\",\n  \"category\": \"workflow_efficiency\",\n  \"title\": \"Reorganize prep station layout\",\n  \"description\": \"Moving frequently used ingredients closer to cutting area could reduce prep time by 2-3 minutes per order\",\n  \"benefits\": \"Faster order preparation, reduced physical strain on workers\",\n  \"implementationDifficulty\": \"low\",\n  \"estimatedCostSavings\": \"15-20 minutes per shift\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/worker/{{restaurantId}}/suggestions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "worker", "{{restaurantId}}", "suggestions"]
+            },
+            "description": "Submit suggestions for kitchen workflow improvements"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

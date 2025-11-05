@@ -1,0 +1,562 @@
+{
+  "info": {
+    "name": "Restaurant Owner Service API",
+    "description": "API collection for Restaurant Owner (Biller) operations including menu management, staff oversight, order monitoring, and financial reporting",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{restaurant_base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "{{biller_auth_token}}",
+      "type": "string"
+    },
+    {
+      "key": "restaurantId",
+      "value": "tonys_pizzeria",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Menu Management",
+      "item": [
+        {
+          "name": "Get Restaurant Menu",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/menu",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "menu"]
+            },
+            "description": "Get complete menu for the restaurant with categories and items"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Truffle Mushroom Pizza\",\n  \"description\": \"Gourmet pizza with truffle oil, wild mushrooms, mozzarella, and fresh arugula\",\n  \"category\": \"Specialty Pizzas\",\n  \"price\": 24.99,\n  \"preparationTime\": 18,\n  \"ingredients\": [\"Pizza Dough\", \"Truffle Oil\", \"Wild Mushrooms\", \"Mozzarella\", \"Arugula\", \"Parmesan\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"spiceLevel\": \"Mild\",\n  \"dietaryOptions\": [\"Vegetarian\"],\n  \"isAvailable\": true,\n  \"isSpecialtyItem\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/menu/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "menu", "items"]
+            },
+            "description": "Add a new menu item to the restaurant's menu"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Menu Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Truffle Mushroom Pizza\",\n  \"description\": \"Gourmet pizza with premium truffle oil, wild mushrooms, fresh mozzarella, and organic arugula\",\n  \"price\": 26.99,\n  \"preparationTime\": 20,\n  \"isAvailable\": true,\n  \"isSpecialtyItem\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/menu/items/{{itemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "menu", "items", "{{itemId}}"]
+            },
+            "description": "Update an existing menu item"
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Item Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isAvailable\": false,\n  \"reason\": \"Ingredient shortage - wild mushrooms not available\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/menu/items/{{itemId}}/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "menu", "items", "{{itemId}}", "availability"]
+            },
+            "description": "Toggle menu item availability with reason"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Staff Management",
+      "item": [
+        {
+          "name": "Get Restaurant Staff",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/staff",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "staff"]
+            },
+            "description": "Get all staff members for the restaurant with roles and schedules"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Staff Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"lisa.wang@tonysizza.com\",\n  \"firstName\": \"Lisa\",\n  \"lastName\": \"Wang\",\n  \"phoneNumber\": \"+1-555-0654\",\n  \"role\": \"worker\",\n  \"position\": \"Sous Chef\",\n  \"department\": \"Kitchen\",\n  \"hireDate\": \"2024-01-15\",\n  \"hourlyWage\": 22.50,\n  \"shiftSchedule\": \"Day Shift\",\n  \"certifications\": [\"Food Safety Certified\", \"Culinary School Graduate\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/staff",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "staff"]
+            },
+            "description": "Add a new staff member to the restaurant"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Staff Schedule",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"TP-WK-003\",\n  \"scheduleChanges\": {\n    \"monday\": {\"start\": \"10:00\", \"end\": \"18:00\"},\n    \"tuesday\": {\"start\": \"10:00\", \"end\": \"18:00\"},\n    \"wednesday\": {\"start\": \"10:00\", \"end\": \"18:00\"},\n    \"thursday\": {\"start\": \"10:00\", \"end\": \"18:00\"},\n    \"friday\": {\"start\": \"12:00\", \"end\": \"20:00\"}\n  },\n  \"effectiveDate\": \"2024-02-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/staff/{{employeeId}}/schedule",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "staff", "{{employeeId}}", "schedule"]
+            },
+            "description": "Update staff member's work schedule"
+          },
+          "response": []
+        },
+        {
+          "name": "Staff Performance Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/staff/performance?period=monthly&month=2024-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "staff", "performance"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "monthly"
+                },
+                {
+                  "key": "month",
+                  "value": "2024-01"
+                }
+              ]
+            },
+            "description": "Get staff performance metrics and reports"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order Monitoring",
+      "item": [
+        {
+          "name": "Get Today's Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/orders?date=today&status=all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "orders"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "today"
+                },
+                {
+                  "key": "status",
+                  "value": "all"
+                }
+              ]
+            },
+            "description": "Get all orders for today with current status"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "orders", "{{orderId}}"]
+            },
+            "description": "Get detailed information about a specific order"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"preparing\",\n  \"estimatedCompletionTime\": \"2024-01-20T13:45:00Z\",\n  \"notes\": \"Customer requested extra sauce on the side\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/orders/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "orders", "{{orderId}}", "status"]
+            },
+            "description": "Update order status with completion estimates"
+          },
+          "response": []
+        },
+        {
+          "name": "Order Analytics Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/analytics/orders?timeframe=7days",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "analytics", "orders"],
+              "query": [
+                {
+                  "key": "timeframe",
+                  "value": "7days"
+                }
+              ]
+            },
+            "description": "Get comprehensive order analytics and trends"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Financial Reports",
+      "item": [
+        {
+          "name": "Daily Sales Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/reports/sales/daily?date=2024-01-20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "reports", "sales", "daily"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-01-20"
+                }
+              ]
+            },
+            "description": "Get detailed daily sales report with item breakdowns"
+          },
+          "response": []
+        },
+        {
+          "name": "Monthly Revenue Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/reports/revenue/monthly?month=2024-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "reports", "revenue", "monthly"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2024-01"
+                }
+              ]
+            },
+            "description": "Get comprehensive monthly revenue analysis"
+          },
+          "response": []
+        },
+        {
+          "name": "Expense Tracking",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/expenses?category=all&period=monthly",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "expenses"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "all"
+                },
+                {
+                  "key": "period",
+                  "value": "monthly"
+                }
+              ]
+            },
+            "description": "Track restaurant expenses by category"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Expense Entry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"ingredients\",\n  \"vendor\": \"Fresh Foods Supplier\",\n  \"description\": \"Weekly ingredient delivery - premium mozzarella, tomatoes, herbs\",\n  \"amount\": 847.50,\n  \"date\": \"2024-01-20\",\n  \"paymentMethod\": \"business_credit_card\",\n  \"invoiceNumber\": \"FFS-2024-0156\",\n  \"tags\": [\"weekly_delivery\", \"cheese\", \"produce\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/expenses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "expenses"]
+            },
+            "description": "Add a new expense entry for financial tracking"
+          },
+          "response": []
+        },
+        {
+          "name": "Profit & Loss Statement",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/reports/pnl?period=quarterly&quarter=2024-Q1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "reports", "pnl"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "quarterly"
+                },
+                {
+                  "key": "quarter",
+                  "value": "2024-Q1"
+                }
+              ]
+            },
+            "description": "Generate comprehensive profit and loss statement"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Restaurant Settings",
+      "item": [
+        {
+          "name": "Get Restaurant Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "profile"]
+            },
+            "description": "Get complete restaurant profile and settings"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Restaurant Hours",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operatingHours\": {\n    \"monday\": {\"open\": \"11:00\", \"close\": \"22:00\", \"isOpen\": true},\n    \"tuesday\": {\"open\": \"11:00\", \"close\": \"22:00\", \"isOpen\": true},\n    \"wednesday\": {\"open\": \"11:00\", \"close\": \"22:00\", \"isOpen\": true},\n    \"thursday\": {\"open\": \"11:00\", \"close\": \"23:00\", \"isOpen\": true},\n    \"friday\": {\"open\": \"11:00\", \"close\": \"23:30\", \"isOpen\": true},\n    \"saturday\": {\"open\": \"12:00\", \"close\": \"23:30\", \"isOpen\": true},\n    \"sunday\": {\"open\": \"12:00\", \"close\": \"21:00\", \"isOpen\": true}\n  },\n  \"deliveryHours\": {\n    \"cutoffTime\": \"21:30\",\n    \"minimumOrderAmount\": 15.00\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/hours",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "hours"]
+            },
+            "description": "Update restaurant operating and delivery hours"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Delivery Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryRadius\": 5.0,\n  \"deliveryFee\": 3.99,\n  \"freeDeliveryThreshold\": 35.00,\n  \"estimatedDeliveryTime\": 35,\n  \"acceptingOrders\": true,\n  \"specialInstructions\": \"Call upon arrival for contactless delivery\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurant/{{restaurantId}}/delivery-settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurant", "{{restaurantId}}", "delivery-settings"]
+            },
+            "description": "Update delivery radius, fees, and policies"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -15,11 +15,36 @@
       "key": "authToken",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "userRole",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userOrganization",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "securityClearance",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vehicleType",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "serviceAreas",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
     {
-      "name": "User Registration",
+      "name": "Customer Registration",
       "request": {
         "method": "POST",
         "header": [
@@ -30,7 +55,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\"],\n  \"favoriteRestaurants\": [\"Tony's Authentic Pizzeria\", \"Fresh & Green Cafe\"]\n}"
+          "raw": "{\n  \"email\": \"sarah.martinez@gmail.com\",\n  \"password\": \"FoodLover2024!\",\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"role\": \"customer\",\n  \"organization\": \"external_users\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\"],\n  \"favoriteRestaurants\": [\"Tony's Authentic Pizzeria\", \"Fresh & Green Cafe\"]\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/auth/register",
@@ -42,7 +67,122 @@
       "response": []
     },
     {
-      "name": "User Login",
+      "name": "Restaurant Owner (Biller) Registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\",\n  \"firstName\": \"Maria\",\n  \"lastName\": \"Rodriguez\",\n  \"phoneNumber\": \"+1-555-0890\",\n  \"role\": \"biller\",\n  \"organization\": \"tonys_pizzeria\",\n  \"businessInfo\": {\n    \"restaurantName\": \"Tony's Authentic Pizzeria\",\n    \"businessLicense\": \"SF-REST-2024-001\",\n    \"taxId\": \"98-7654321\",\n    \"address\": {\n      \"street\": \"789 Main Street\",\n      \"city\": \"San Francisco\",\n      \"state\": \"CA\",\n      \"zipCode\": \"94105\"\n    }\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Register a new restaurant owner account with business information"
+      },
+      "response": []
+    },
+    {
+      "name": "Staff (Operator) Registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\",\n  \"firstName\": \"James\",\n  \"lastName\": \"Chen\",\n  \"phoneNumber\": \"+1-555-0456\",\n  \"role\": \"operator\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-OP-001\",\n    \"position\": \"Floor Supervisor\",\n    \"department\": \"Operations\",\n    \"hireDate\": \"2023-06-15\",\n    \"shiftSchedule\": \"Day Shift\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Register a new operator (cashier/supervisor) account"
+      },
+      "response": []
+    },
+    {
+      "name": "Kitchen Staff (Worker) Registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"carlos.martinez@tonysizza.com\",\n  \"password\": \"Chef2024!\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Martinez\",\n  \"phoneNumber\": \"+1-555-0789\",\n  \"role\": \"worker\",\n  \"organization\": \"tonys_pizzeria\",\n  \"employeeInfo\": {\n    \"employeeId\": \"TP-WK-002\",\n    \"position\": \"Head Chef\",\n    \"department\": \"Kitchen\",\n    \"hireDate\": \"2022-03-10\",\n    \"certifications\": [\"Food Safety Manager\", \"Culinary Arts Degree\"],\n    \"shiftSchedule\": \"Evening Shift\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Register a new kitchen worker (chef/cook/assistant) account"
+      },
+      "response": []
+    },
+    {
+      "name": "IT Technician Registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\",\n  \"firstName\": \"Alex\",\n  \"lastName\": \"Kim\",\n  \"phoneNumber\": \"+1-555-0321\",\n  \"role\": \"technician\",\n  \"organization\": \"fda_it_department\",\n  \"techInfo\": {\n    \"employeeId\": \"FDA-DEV-001\",\n    \"specialization\": \"full_stack_developer\",\n    \"department\": \"Software Development\",\n    \"securityClearance\": \"Level 3\",\n    \"accessPermissions\": [\"production_read\", \"staging_write\", \"development_admin\"]\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Register a new IT technician (developer/tester/admin) account"
+      },
+      "response": []
+    },
+    {
+      "name": "Delivery Agent Registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\",\n  \"firstName\": \"Mike\",\n  \"lastName\": \"Torres\",\n  \"phoneNumber\": \"+1-555-0567\",\n  \"role\": \"delivery_agent\",\n  \"organization\": \"fda_delivery_network\",\n  \"deliveryInfo\": {\n    \"employeeId\": \"FDA-DEL-001\",\n    \"vehicleType\": \"motorcycle\",\n    \"licensePlate\": \"DEL-2024-MT\",\n    \"driversLicense\": \"CA-DL-5567892\",\n    \"insurancePolicy\": \"INS-FDA-DEL-2024-001\",\n    \"serviceAreas\": [\"downtown_sf\", \"mission_district\", \"soma\"],\n    \"workingHours\": \"flexible\",\n    \"averageRating\": 4.8\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        },
+        "description": "Register a new delivery agent account with vehicle and service area information"
+      },
+      "response": []
+    },
+    {
+      "name": "Customer Login",
       "event": [
         {
           "listen": "test",
@@ -52,6 +192,8 @@
               "    const response = pm.response.json();",
               "    if (response.token) {",
               "        pm.collectionVariables.set('authToken', response.token);",
+              "        pm.collectionVariables.set('userRole', response.user.role);",
+              "        pm.collectionVariables.set('userOrganization', response.user.organization);",
               "    }",
               "}"
             ]
@@ -75,7 +217,170 @@
           "host": ["{{baseUrl}}"],
           "path": ["api", "auth", "login"]
         },
-        "description": "Authenticate user and receive JWT token"
+        "description": "Authenticate customer and receive JWT token with role information"
+      },
+      "response": []
+    },
+    {
+      "name": "Restaurant Owner Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.token) {",
+              "        pm.collectionVariables.set('authToken', response.token);",
+              "        pm.collectionVariables.set('userRole', response.user.role);",
+              "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"maria.rodriguez@tonysizza.com\",\n  \"password\": \"RestaurantOwner2024!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Authenticate restaurant owner and receive JWT token with business permissions"
+      },
+      "response": []
+    },
+    {
+      "name": "Staff Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.token) {",
+              "        pm.collectionVariables.set('authToken', response.token);",
+              "        pm.collectionVariables.set('userRole', response.user.role);",
+              "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"james.chen@tonysizza.com\",\n  \"password\": \"Supervisor2024!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Authenticate staff member and receive JWT token with operational permissions"
+      },
+      "response": []
+    },
+    {
+      "name": "IT Technician Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.token) {",
+              "        pm.collectionVariables.set('authToken', response.token);",
+              "        pm.collectionVariables.set('userRole', response.user.role);",
+              "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+              "        pm.collectionVariables.set('securityClearance', response.user.techInfo.securityClearance);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"alex.kim@fdatech.com\",\n  \"password\": \"Developer2024!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Authenticate IT technician and receive JWT token with system administration permissions"
+      },
+      "response": []
+    },
+    {
+      "name": "Delivery Agent Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.token) {",
+              "        pm.collectionVariables.set('authToken', response.token);",
+              "        pm.collectionVariables.set('userRole', response.user.role);",
+              "        pm.collectionVariables.set('userOrganization', response.user.organization);",
+              "        pm.collectionVariables.set('vehicleType', response.user.deliveryInfo.vehicleType);",
+              "        pm.collectionVariables.set('serviceAreas', JSON.stringify(response.user.deliveryInfo.serviceAreas));",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"mike.torres@fdadelivery.com\",\n  \"password\": \"Delivery2024!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        },
+        "description": "Authenticate delivery agent and receive JWT token with delivery permissions"
       },
       "response": []
     },
@@ -117,7 +422,53 @@
           "host": ["{{baseUrl}}"],
           "path": ["api", "auth", "validate"]
         },
-        "description": "Validate the current JWT token"
+        "description": "Validate the current JWT token and return user role and permissions"
+      },
+      "response": []
+    },
+    {
+      "name": "Get User Profile",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "profile"]
+        },
+        "description": "Get complete user profile with role-specific information"
+      },
+      "response": []
+    },
+    {
+      "name": "Update User Profile",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Martinez-Johnson\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"address\": {\n    \"street\": \"456 Oak Avenue\",\n    \"apartment\": \"Apt 3A\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\"\n  },\n  \"dietaryPreferences\": [\"Vegetarian Options\", \"Gluten-Free Available\", \"Low Sodium\"]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/profile",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "profile"]
+        },
+        "description": "Update user profile information (role-based permissions apply)"
       },
       "response": []
     }

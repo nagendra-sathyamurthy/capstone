@@ -1,0 +1,703 @@
+{
+  "info": {
+    "name": "Delivery Agent Service API",
+    "description": "API collection for Delivery Agent operations including order pickup, navigation, delivery confirmation, customer interaction, and delivery management workflows",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{delivery_base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "{{delivery_agent_auth_token}}",
+      "type": "string"
+    },
+    {
+      "key": "agentId",
+      "value": "FDA-DEL-001",
+      "type": "string"
+    },
+    {
+      "key": "vehicleId",
+      "value": "DEL-2024-MT",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Agent Status Management",
+      "item": [
+        {
+          "name": "Go Online",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"location\": {\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194,\n    \"address\": \"Union Square, San Francisco, CA\"\n  },\n  \"vehicleStatus\": \"ready\",\n  \"shift\": {\n    \"startTime\": \"2024-01-20T11:00:00Z\",\n    \"plannedEndTime\": \"2024-01-20T20:00:00Z\",\n    \"serviceArea\": \"downtown_sf\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/online",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "online"]
+            },
+            "description": "Set delivery agent status to online and available for orders"
+          },
+          "response": []
+        },
+        {
+          "name": "Go Offline",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"reason\": \"end_of_shift\",\n  \"finalLocation\": {\n    \"latitude\": 37.7849,\n    \"longitude\": -122.4094,\n    \"address\": \"FDA Delivery Hub, San Francisco, CA\"\n  },\n  \"shiftSummary\": {\n    \"totalDeliveries\": 12,\n    \"totalDistance\": 45.6,\n    \"totalEarnings\": 156.80\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/offline",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "offline"]
+            },
+            "description": "Set delivery agent status to offline and end shift"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"location\": {\n    \"latitude\": 37.7849,\n    \"longitude\": -122.4194,\n    \"accuracy\": 5.2,\n    \"timestamp\": \"2024-01-20T14:30:00Z\",\n    \"speed\": 25.5,\n    \"heading\": 145\n  },\n  \"status\": \"en_route_to_pickup\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/location",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "location"]
+            },
+            "description": "Update current GPS location and movement data"
+          },
+          "response": []
+        },
+        {
+          "name": "Set Availability Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"status\": \"busy\",\n  \"reason\": \"delivering_order\",\n  \"estimatedAvailableTime\": \"2024-01-20T15:15:00Z\",\n  \"currentOrderId\": \"order_456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "availability"]
+            },
+            "description": "Update availability status (available, busy, break, emergency)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order Assignment & Pickup",
+      "item": [
+        {
+          "name": "Get Available Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/available?serviceArea=downtown_sf&maxDistance=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "available"],
+              "query": [
+                {
+                  "key": "serviceArea",
+                  "value": "downtown_sf"
+                },
+                {
+                  "key": "maxDistance",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Get list of orders available for pickup in agent's service area"
+          },
+          "response": []
+        },
+        {
+          "name": "Accept Order Assignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"acceptedAt\": \"2024-01-20T14:25:00Z\",\n  \"estimatedPickupTime\": \"2024-01-20T14:35:00Z\",\n  \"estimatedDeliveryTime\": \"2024-01-20T15:00:00Z\",\n  \"routeOptimization\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "accept"]
+            },
+            "description": "Accept an order assignment and commit to delivery"
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Order Assignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"rejectionReason\": \"too_far_from_current_location\",\n  \"currentLocation\": {\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194\n  },\n  \"alternativeSuggestion\": \"Assign to agent in Mission District area\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "reject"]
+            },
+            "description": "Reject an order assignment with reason"
+          },
+          "response": []
+        },
+        {
+          "name": "Arrive at Restaurant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"arrivalTime\": \"2024-01-20T14:33:00Z\",\n  \"location\": {\n    \"latitude\": 37.7849,\n    \"longitude\": -122.4194\n  },\n  \"restaurantId\": \"tonys_pizzeria\",\n  \"parkingStatus\": \"found_nearby_spot\",\n  \"waitTimeExpected\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/arrive-restaurant",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "arrive-restaurant"]
+            },
+            "description": "Confirm arrival at restaurant for order pickup"
+          },
+          "response": []
+        },
+        {
+          "name": "Pickup Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"pickupTime\": \"2024-01-20T14:38:00Z\",\n  \"verificationCode\": \"PU-4567\",\n  \"orderItems\": [\n    {\n      \"itemId\": \"pizza-margherita-large\",\n      \"quantity\": 1,\n      \"condition\": \"hot_and_fresh\",\n      \"packaging\": \"insulated_bag\"\n    },\n    {\n      \"itemId\": \"drink-coca-cola-medium\",\n      \"quantity\": 2,\n      \"condition\": \"cold\",\n      \"packaging\": \"drink_carrier\"\n    }\n  ],\n  \"restaurantStaff\": \"james-chen-op-001\",\n  \"qualityCheck\": \"passed\",\n  \"specialInstructions\": \"Customer requested extra napkins - included\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/pickup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "pickup"]
+            },
+            "description": "Confirm order pickup with verification and quality check"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Pickup Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"issueType\": \"order_not_ready\",\n  \"description\": \"Order still being prepared, estimated 10 more minutes\",\n  \"severity\": \"medium\",\n  \"expectedResolution\": \"2024-01-20T14:48:00Z\",\n  \"customerNotified\": false,\n  \"alternativeAction\": \"wait_at_restaurant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/pickup-issue",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "pickup-issue"]
+            },
+            "description": "Report issues encountered during order pickup"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Navigation & Delivery",
+      "item": [
+        {
+          "name": "Start Delivery Journey",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"departureTime\": \"2024-01-20T14:40:00Z\",\n  \"route\": {\n    \"origin\": {\n      \"latitude\": 37.7849,\n      \"longitude\": -122.4194,\n      \"address\": \"Tony's Authentic Pizzeria, San Francisco\"\n    },\n    \"destination\": {\n      \"latitude\": 37.7749,\n      \"longitude\": -122.4094,\n      \"address\": \"456 Oak Avenue, Apt 3A, San Francisco, CA 94102\"\n    },\n    \"estimatedDistance\": 1.2,\n    \"estimatedDuration\": 8,\n    \"trafficCondition\": \"light\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/start-journey",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "start-journey"]
+            },
+            "description": "Start delivery journey from restaurant to customer"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Delivery Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"currentLocation\": {\n    \"latitude\": 37.7799,\n    \"longitude\": -122.4144,\n    \"timestamp\": \"2024-01-20T14:45:00Z\"\n  },\n  \"progress\": {\n    \"distanceCovered\": 0.7,\n    \"distanceRemaining\": 0.5,\n    \"estimatedArrival\": \"2024-01-20T14:50:00Z\"\n  },\n  \"trafficUpdate\": \"moderate_congestion\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "progress"]
+            },
+            "description": "Update delivery progress and estimated arrival time"
+          },
+          "response": []
+        },
+        {
+          "name": "Arrive at Customer Location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"arrivalTime\": \"2024-01-20T14:48:00Z\",\n  \"location\": {\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4094,\n    \"address\": \"456 Oak Avenue, San Francisco, CA\"\n  },\n  \"deliveryMethod\": \"door_delivery\",\n  \"contactAttempt\": \"calling_customer\",\n  \"accessNotes\": \"Apartment building, need buzzer code\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/arrive-customer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "arrive-customer"]
+            },
+            "description": "Confirm arrival at customer location"
+          },
+          "response": []
+        },
+        {
+          "name": "Contact Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"contactMethod\": \"phone_call\",\n  \"contactTime\": \"2024-01-20T14:49:00Z\",\n  \"responseReceived\": true,\n  \"customerStatus\": \"coming_down_to_lobby\",\n  \"estimatedWaitTime\": 2,\n  \"message\": \"Hi, this is Mike from FDA Delivery. I'm here with your order from Tony's Pizzeria.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/contact-customer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "contact-customer"]
+            },
+            "description": "Log customer contact attempt and response"
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"deliveryTime\": \"2024-01-20T14:52:00Z\",\n  \"deliveryMethod\": \"hand_to_customer\",\n  \"verificationMethod\": \"customer_name\",\n  \"customerName\": \"Sarah Martinez\",\n  \"deliveryPhoto\": \"base64_encoded_photo_data\",\n  \"customerSignature\": \"received_verbally\",\n  \"orderCondition\": \"excellent\",\n  \"totalDeliveryTime\": 27,\n  \"customerFeedback\": \"very_satisfied\",\n  \"tip\": 5.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "complete"]
+            },
+            "description": "Complete delivery with confirmation and customer feedback"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Delivery Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"agentId\": \"{{agentId}}\",\n  \"issueType\": \"customer_unavailable\",\n  \"description\": \"Customer not answering phone or buzzer, attempted contact 3 times\",\n  \"attemptDetails\": [\n    {\"method\": \"phone_call\", \"time\": \"2024-01-20T14:49:00Z\", \"result\": \"no_answer\"},\n    {\"method\": \"apartment_buzzer\", \"time\": \"2024-01-20T14:51:00Z\", \"result\": \"no_response\"},\n    {\"method\": \"phone_call\", \"time\": \"2024-01-20T14:53:00Z\", \"result\": \"voicemail\"}\n  ],\n  \"actionTaken\": \"returning_to_restaurant\",\n  \"resolutionRequired\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/orders/{{orderId}}/delivery-issue",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "orders", "{{orderId}}", "delivery-issue"]
+            },
+            "description": "Report issues encountered during delivery attempt"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Agent Performance & Earnings",
+      "item": [
+        {
+          "name": "Get Today's Deliveries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/deliveries?date=today",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "deliveries"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "today"
+                }
+              ]
+            },
+            "description": "Get list of today's completed deliveries"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Performance Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/metrics?period=weekly",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "metrics"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "weekly"
+                }
+              ]
+            },
+            "description": "Get performance metrics including ratings, delivery times, and efficiency"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Earnings Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/earnings?period=monthly&month=2024-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "earnings"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "monthly"
+                },
+                {
+                  "key": "month",
+                  "value": "2024-01"
+                }
+              ]
+            },
+            "description": "Get detailed earnings breakdown including base pay, tips, and bonuses"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"feedbackType\": \"restaurant_experience\",\n  \"restaurantId\": \"tonys_pizzeria\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service, order was ready on time and staff was very helpful\",\n  \"category\": \"positive\",\n  \"suggestions\": \"Continue the great work, maybe add a dedicated pickup area for delivery agents\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "feedback"]
+            },
+            "description": "Submit feedback about restaurants, customers, or delivery experience"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Agent Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"profileUpdates\": {\n    \"phoneNumber\": \"+1-555-0567\",\n    \"emergencyContact\": {\n      \"name\": \"Maria Torres\",\n      \"relationship\": \"spouse\",\n      \"phoneNumber\": \"+1-555-0568\"\n    },\n    \"vehicleInfo\": {\n      \"licensePlate\": \"DEL-2024-MT\",\n      \"insuranceExpiry\": \"2024-12-31\",\n      \"maintenanceDate\": \"2024-01-15\"\n    },\n    \"preferredServiceAreas\": [\"downtown_sf\", \"mission_district\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "profile"]
+            },
+            "description": "Update delivery agent profile and vehicle information"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Emergency & Support",
+      "item": [
+        {
+          "name": "Report Emergency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"emergencyType\": \"vehicle_breakdown\",\n  \"severity\": \"medium\",\n  \"description\": \"Motorcycle engine making unusual noise, concerned about safety\",\n  \"location\": {\n    \"latitude\": 37.7799,\n    \"longitude\": -122.4144,\n    \"address\": \"Corner of Market St and 5th St\"\n  },\n  \"assistanceRequired\": true,\n  \"currentOrderId\": \"order_789\",\n  \"safetyStatus\": \"safe_but_stranded\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/emergency",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "emergency"]
+            },
+            "description": "Report emergency situations requiring immediate assistance"
+          },
+          "response": []
+        },
+        {
+          "name": "Request Support",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"agentId\": \"{{agentId}}\",\n  \"supportType\": \"technical_issue\",\n  \"priority\": \"medium\",\n  \"description\": \"Mobile app keeps crashing when trying to update location\",\n  \"deviceInfo\": {\n    \"model\": \"iPhone 14\",\n    \"osVersion\": \"iOS 17.2\",\n    \"appVersion\": \"2.4.1\"\n  },\n  \"stepsAttempted\": [\"Force closed app\", \"Restarted phone\", \"Checked internet connection\"],\n  \"affectedFunctionality\": [\"GPS tracking\", \"Order updates\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/support",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "support"]
+            },
+            "description": "Request technical or operational support"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Support Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/agent/{{agentId}}/support/tickets?status=open",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "agent", "{{agentId}}", "support", "tickets"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "open"
+                }
+              ]
+            },
+            "description": "Get list of open support tickets and their status"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

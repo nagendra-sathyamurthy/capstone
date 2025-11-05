@@ -1,0 +1,625 @@
+{
+  "info": {
+    "name": "Operator Service API",
+    "description": "API collection for Operator (Cashier/Supervisor) operations including order processing, customer service, staff coordination, and operational reporting",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{operator_base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "{{operator_auth_token}}",
+      "type": "string"
+    },
+    {
+      "key": "restaurantId",
+      "value": "tonys_pizzeria",
+      "type": "string"
+    },
+    {
+      "key": "operatorId",
+      "value": "TP-OP-001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Order Processing",
+      "item": [
+        {
+          "name": "Get Active Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/orders?status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "orders"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active"
+                }
+              ]
+            },
+            "description": "Get all active orders (pending, confirmed, preparing) for processing"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Walk-in Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderType\": \"walk-in\",\n  \"customerInfo\": {\n    \"name\": \"John Smith\",\n    \"phoneNumber\": \"+1-555-0987\",\n    \"isNewCustomer\": false\n  },\n  \"items\": [\n    {\n      \"menuItemId\": \"pizza-margherita\",\n      \"quantity\": 1,\n      \"size\": \"large\",\n      \"specialInstructions\": \"Extra basil, light cheese\"\n    },\n    {\n      \"menuItemId\": \"drink-coca-cola\",\n      \"quantity\": 2,\n      \"size\": \"medium\"\n    }\n  ],\n  \"paymentMethod\": \"cash\",\n  \"totalAmount\": 24.97,\n  \"operatorId\": \"{{operatorId}}\",\n  \"notes\": \"Customer paying cash, waiting at counter\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "orders"]
+            },
+            "description": "Create a new walk-in order for customers at the counter"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\",\n  \"operatorId\": \"{{operatorId}}\",\n  \"estimatedCompletionTime\": \"2024-01-20T14:15:00Z\",\n  \"notes\": \"Confirmed with customer, payment processed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/orders/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "orders", "{{orderId}}", "status"]
+            },
+            "description": "Update order status with operator oversight"
+          },
+          "response": []
+        },
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"card\",\n  \"amount\": 24.97,\n  \"cardDetails\": {\n    \"lastFourDigits\": \"4532\",\n    \"cardType\": \"Visa\"\n  },\n  \"operatorId\": \"{{operatorId}}\",\n  \"tip\": 5.00,\n  \"receiptRequested\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/orders/{{orderId}}/payment",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "orders", "{{orderId}}", "payment"]
+            },
+            "description": "Process payment for orders at the point of sale"
+          },
+          "response": []
+        },
+        {
+          "name": "Handle Order Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"issueType\": \"item_unavailable\",\n  \"description\": \"Large pizza dough ran out, offering medium size instead\",\n  \"resolution\": \"size_substitution\",\n  \"compensationType\": \"partial_refund\",\n  \"compensationAmount\": 3.00,\n  \"customerApproval\": true,\n  \"operatorId\": \"{{operatorId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/orders/{{orderId}}/issues",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "orders", "{{orderId}}", "issues"]
+            },
+            "description": "Handle order issues and customer complaints"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Customer Service",
+      "item": [
+        {
+          "name": "Search Customer History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/customers/search?phone=%2B1-555-0987",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "customers", "search"],
+              "query": [
+                {
+                  "key": "phone",
+                  "value": "+1-555-0987"
+                }
+              ]
+            },
+            "description": "Search customer history by phone number or email"
+          },
+          "response": []
+        },
+        {
+          "name": "Customer Order History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/customers/{{customerId}}/orders?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "customers", "{{customerId}}", "orders"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get customer's order history for better service"
+          },
+          "response": []
+        },
+        {
+          "name": "Process Refund",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"refundType\": \"partial\",\n  \"refundAmount\": 8.50,\n  \"reason\": \"Cold food delivered, customer dissatisfied\",\n  \"operatorId\": \"{{operatorId}}\",\n  \"managerApproval\": \"james-chen-op-001\",\n  \"refundMethod\": \"original_payment_method\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/refunds",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "refunds"]
+            },
+            "description": "Process customer refunds with proper authorization"
+          },
+          "response": []
+        },
+        {
+          "name": "Log Customer Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"orderId\": \"{{orderId}}\",\n  \"feedbackType\": \"complaint\",\n  \"rating\": 2,\n  \"comment\": \"Pizza was cold when delivered, took longer than estimated time\",\n  \"category\": \"delivery_quality\",\n  \"operatorId\": \"{{operatorId}}\",\n  \"actionTaken\": \"Processed partial refund and offered discount on next order\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "feedback"]
+            },
+            "description": "Log customer feedback and complaints for tracking"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Customer Loyalty Points",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"orderId\": \"{{orderId}}\",\n  \"pointsEarned\": 25,\n  \"bonusReason\": \"Customer satisfaction recovery - extra points for inconvenience\",\n  \"operatorId\": \"{{operatorId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/loyalty/points",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "loyalty", "points"]
+            },
+            "description": "Award loyalty points to customers"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Staff Coordination",
+      "item": [
+        {
+          "name": "Get Current Shift Staff",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/staff/current-shift",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "staff", "current-shift"]
+            },
+            "description": "Get all staff currently on shift for coordination"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Task to Worker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"TP-WK-002\",\n  \"taskType\": \"order_priority\",\n  \"orderId\": \"{{orderId}}\",\n  \"priority\": \"high\",\n  \"instructions\": \"Rush order - customer waiting at counter, needs to be completed in 10 minutes\",\n  \"assignedBy\": \"{{operatorId}}\",\n  \"estimatedDuration\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/staff/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "staff", "tasks"]
+            },
+            "description": "Assign specific tasks to kitchen workers"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Staff Break Schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"TP-WK-003\",\n  \"breakType\": \"lunch\",\n  \"startTime\": \"2024-01-20T14:00:00Z\",\n  \"duration\": 30,\n  \"replacementWorker\": \"TP-WK-004\",\n  \"approvedBy\": \"{{operatorId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/staff/breaks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "staff", "breaks"]
+            },
+            "description": "Coordinate staff break schedules during shift"
+          },
+          "response": []
+        },
+        {
+          "name": "Kitchen Status Update",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/kitchen/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "kitchen", "status"]
+            },
+            "description": "Get real-time kitchen status and capacity"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Staff Issue",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workerId\": \"TP-WK-005\",\n  \"issueType\": \"attendance\",\n  \"description\": \"Worker arrived 15 minutes late without notification\",\n  \"severity\": \"minor\",\n  \"actionTaken\": \"Verbal reminder about punctuality policy\",\n  \"reportedBy\": \"{{operatorId}}\",\n  \"requiresManagerReview\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/staff/issues",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "staff", "issues"]
+            },
+            "description": "Report staff performance or behavioral issues"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Operational Reports",
+      "item": [
+        {
+          "name": "Shift Summary Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/reports/shift?date=2024-01-20&shift=day",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "reports", "shift"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2024-01-20"
+                },
+                {
+                  "key": "shift",
+                  "value": "day"
+                }
+              ]
+            },
+            "description": "Generate shift summary with orders, sales, and issues"
+          },
+          "response": []
+        },
+        {
+          "name": "Order Fulfillment Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/metrics/fulfillment?timeframe=today",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "metrics", "fulfillment"],
+              "query": [
+                {
+                  "key": "timeframe",
+                  "value": "today"
+                }
+              ]
+            },
+            "description": "Get order completion times and efficiency metrics"
+          },
+          "response": []
+        },
+        {
+          "name": "Customer Service Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/reports/customer-service?period=daily",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "reports", "customer-service"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "daily"
+                }
+              ]
+            },
+            "description": "Summary of customer interactions, complaints, and resolutions"
+          },
+          "response": []
+        },
+        {
+          "name": "Cash Reconciliation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shiftDate\": \"2024-01-20\",\n  \"shiftType\": \"day\",\n  \"cashDrawerAmount\": 247.83,\n  \"expectedAmount\": 251.50,\n  \"variance\": -3.67,\n  \"notes\": \"Small variance likely due to customer change shortage\",\n  \"operatorId\": \"{{operatorId}}\",\n  \"verifiedBy\": \"james-chen-op-001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/cash/reconciliation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "cash", "reconciliation"]
+            },
+            "description": "Record cash drawer reconciliation at shift end"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Inventory Management",
+      "item": [
+        {
+          "name": "Check Item Availability",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/inventory/items?category=all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "inventory", "items"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "all"
+                }
+              ]
+            },
+            "description": "Check current inventory levels for menu planning"
+          },
+          "response": []
+        },
+        {
+          "name": "Report Low Stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemName\": \"Mozzarella Cheese\",\n  \"currentStock\": 2,\n  \"minimumRequired\": 10,\n  \"urgencyLevel\": \"high\",\n  \"estimatedRunOutTime\": \"2024-01-20T16:00:00Z\",\n  \"reportedBy\": \"{{operatorId}}\",\n  \"affectedMenuItems\": [\"Margherita Pizza\", \"Cheese Pizza\", \"Four Cheese Pizza\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/inventory/low-stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "inventory", "low-stock"]
+            },
+            "description": "Report low stock items to management"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Menu Item Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"menuItemId\": \"pizza-quattro-formaggi\",\n  \"isAvailable\": false,\n  \"reason\": \"Out of mozzarella cheese - main ingredient unavailable\",\n  \"operatorId\": \"{{operatorId}}\",\n  \"estimatedRestockTime\": \"2024-01-21T10:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/operator/{{restaurantId}}/menu/items/availability",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "operator", "{{restaurantId}}", "menu", "items", "availability"]
+            },
+            "description": "Temporarily disable menu items due to stock issues"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
