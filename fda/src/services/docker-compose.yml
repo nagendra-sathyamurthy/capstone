@@ -52,5 +52,18 @@ services:
       - mongodb
     restart: always
 
+  cart:
+    build:
+      context: ./cart
+      dockerfile: Dockerfile
+    ports:
+      - "5004:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MONGO_CONNECTION_STRING=mongodb://sa:sa@mongodb:27017/cartdb?authSource=admin
+    depends_on:
+      - mongodb
+    restart: always
+
 volumes:
   mongo-data:

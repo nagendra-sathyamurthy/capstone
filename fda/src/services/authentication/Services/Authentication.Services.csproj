@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Models\authentication.models.csproj" />
-    <ProjectReference Include="..\DataAccess\authentication.DataAccess.csproj" />
+    <ProjectReference Include="..\Models\Authentication.Models.csproj" />
+    <ProjectReference Include="..\DataAccess\Authentication.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-deployment
+  namespace: capstone-services
+  labels:
+    app: catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+      - name: catalog
+        image: services-catalog:latest
+        imagePullPolicy: Never  # Use local image
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: MONGO_CONNECTION_STRING
+          value: "mongodb://sa:sa@mongodb-service:27017/catalogdb?authSource=admin"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+  namespace: capstone-services
+spec:
+  selector:
+    app: catalog
+  ports:
+  - protocol: TCP
+    port: 5002
+    targetPort: 8080
+    nodePort: 30002
+  type: NodePort

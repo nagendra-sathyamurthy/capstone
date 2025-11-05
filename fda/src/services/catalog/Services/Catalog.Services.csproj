@@ -14,8 +14,8 @@
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <ProjectReference Include="..\Models\catalog.Models.csproj" />
-    <ProjectReference Include="..\DataAccess\catalog.DataAccess.csproj" />
+    <ProjectReference Include="..\Models\Catalog.Models.csproj" />
+    <ProjectReference Include="..\DataAccess\Catalog.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

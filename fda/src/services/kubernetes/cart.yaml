@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-deployment
+  namespace: capstone-services
+  labels:
+    app: cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+      - name: cart
+        image: services-cart:latest
+        imagePullPolicy: Never  # Use local image
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: MONGO_CONNECTION_STRING
+          value: "mongodb://sa:sa@mongodb-service:27017/cartdb?authSource=admin"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+  namespace: capstone-services
+spec:
+  selector:
+    app: cart
+  ports:
+  - protocol: TCP
+    port: 5004
+    targetPort: 8080
+    nodePort: 30004
+  type: NodePort

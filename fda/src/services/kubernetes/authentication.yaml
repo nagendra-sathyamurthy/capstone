@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication-deployment
+  namespace: capstone-services
+  labels:
+    app: authentication
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication
+  template:
+    metadata:
+      labels:
+        app: authentication
+    spec:
+      containers:
+      - name: authentication
+        image: services-authentication:latest
+        imagePullPolicy: Never  # Use local image
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: MONGO_CONNECTION_STRING
+          value: "mongodb://sa:sa@mongodb-service:27017/authenticationdb?authSource=admin"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication-service
+  namespace: capstone-services
+spec:
+  selector:
+    app: authentication
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetPort: 8080
+    nodePort: 30001
+  type: NodePort
