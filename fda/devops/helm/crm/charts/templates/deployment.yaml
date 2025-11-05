@@ -30,4 +30,4 @@ spec:
       volumes:
         - name: mongo-data
           persistentVolumeClaim:
-            claimName: mongo-pvc
+            claimName: {{ include "crm-mongodb.fullname" . }}-pvc
