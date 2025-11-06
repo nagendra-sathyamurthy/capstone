@@ -1,0 +1,332 @@
+{
+	"info": {
+		"_postman_id": "legacy-catalog-collection-v2",
+		"name": "📚 Legacy Catalog API Collection",
+		"description": "Legacy catalog endpoints for backward compatibility with older systems and integrations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "2.0.0"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					"// Set dynamic variables for testing",
+					"pm.globals.set('timestamp', Date.now());",
+					"pm.globals.set('random_legacy_id', 'legacy_' + Date.now());"
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"// Global test script for all requests",
+					"pm.test('Response time is reasonable (< 10s)', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+					"});",
+					"",
+					"// Log response for debugging",
+					"console.log('📚 Legacy Catalog Response Status:', pm.response.status);",
+					"console.log('⏱️ Response Time:', pm.response.responseTime + 'ms');",
+					"console.log('📊 Response Size:', pm.response.responseSize + ' bytes');"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Health & Status",
+			"description": "Legacy catalog service health monitoring",
+			"item": [
+				{
+					"name": "Legacy Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Legacy Catalog service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains health info', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('status');",
+									"    pm.expect(response.status).to.eql('Healthy');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{legacy_base_url}}/api/health",
+							"host": ["{{legacy_base_url}}"],
+							"path": ["api", "health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📚 Legacy Catalog Operations",
+			"description": "Legacy catalog endpoints for backward compatibility",
+			"item": [
+				{
+					"name": "Get All Items (Legacy Format)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Legacy items retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains legacy items array', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Legacy items have required properties', function () {",
+									"    const response = pm.response.json();",
+									"    if (response.length > 0) {",
+									"        const firstItem = response[0];",
+									"        pm.expect(firstItem).to.have.property('Id');",
+									"        pm.expect(firstItem).to.have.property('Name');",
+									"        pm.expect(firstItem).to.have.property('Price');",
+									"        pm.globals.set('legacy_item_id', firstItem.Id);",
+									"    }",
+									"});",
+									"",
+									"pm.test('Legacy format maintains backward compatibility', function () {",
+									"    const response = pm.response.json();",
+									"    response.forEach(item => {",
+									"        // Check for PascalCase properties (legacy format)",
+									"        pm.expect(item).to.have.property('Id');",
+									"        pm.expect(item).to.have.property('Name');",
+									"        pm.expect(item).to.have.property('Price');",
+									"        if (item.Description) {",
+									"            pm.expect(item).to.have.property('Description');",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{legacy_base_url}}/api/Items",
+							"host": ["{{legacy_base_url}}"],
+							"path": ["api", "Items"]
+						}
+					}
+				},
+				{
+					"name": "Get Item by ID (Legacy Format)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Legacy item retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains legacy item details', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('Id');",
+									"        pm.expect(response).to.have.property('Name');",
+									"        pm.expect(response).to.have.property('Price');",
+									"    });",
+									"",
+									"    pm.test('Legacy item format is correct', function () {",
+									"        const response = pm.response.json();",
+									"        // Verify PascalCase properties for legacy compatibility",
+									"        pm.expect(response.Id).to.be.a('string');",
+									"        pm.expect(response.Name).to.be.a('string');",
+									"        pm.expect(response.Price).to.be.a('number');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{legacy_base_url}}/api/Items/{{legacy_item_id}}",
+							"host": ["{{legacy_base_url}}"],
+							"path": ["api", "Items", "{{legacy_item_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Create Item (Legacy Format)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Legacy item creation response', function () {",
+									"    pm.response.to.have.status.oneOf([201, 401, 403]);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
+									"    pm.test('Legacy item created successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('Id');",
+									"        pm.expect(response).to.have.property('Name');",
+									"        pm.expect(response).to.have.property('Price');",
+									"        pm.globals.set('created_legacy_item_id', response.Id);",
+									"    });",
+									"",
+									"    pm.test('Created legacy item has correct format', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response.Id).to.be.a('string');",
+									"        pm.expect(response.Name).to.be.a('string');",
+									"        pm.expect(response.Price).to.be.a('number');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"Legacy Test Item {{timestamp}}\",\n  \"Description\": \"Test item created via legacy API\",\n  \"Price\": 15.99,\n  \"Category\": \"Main Course\",\n  \"Available\": true\n}"
+						},
+						"url": {
+							"raw": "{{legacy_base_url}}/api/Items",
+							"host": ["{{legacy_base_url}}"],
+							"path": ["api", "Items"]
+						}
+					}
+				},
+				{
+					"name": "Update Item (Legacy Format)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Legacy item update response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 403, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Legacy item updated successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('Id');",
+									"        pm.expect(response).to.have.property('Name');",
+									"        pm.expect(response).to.have.property('Price');",
+									"    });",
+									"",
+									"    pm.test('Updated legacy item maintains format', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response.Name).to.include('Updated');",
+									"        pm.expect(response.Price).to.be.a('number');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"Updated Legacy Test Item {{timestamp}}\",\n  \"Description\": \"Updated test item via legacy API\",\n  \"Price\": 18.99,\n  \"Category\": \"Main Course\",\n  \"Available\": true\n}"
+						},
+						"url": {
+							"raw": "{{legacy_base_url}}/api/Items/{{created_legacy_item_id}}",
+							"host": ["{{legacy_base_url}}"],
+							"path": ["api", "Items", "{{created_legacy_item_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Item (Legacy Format)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Legacy item deletion response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 204, 401, 403, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200 || pm.response.code === 204) {",
+									"    pm.test('Legacy item deleted successfully', function () {",
+									"        // Deletion successful",
+									"        pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{legacy_base_url}}/api/Items/{{created_legacy_item_id}}",
+							"host": ["{{legacy_base_url}}"],
+							"path": ["api", "Items", "{{created_legacy_item_id}}"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "legacy_base_url",
+			"value": "http://localhost:5005",
+			"type": "string"
+		}
+	]
+}

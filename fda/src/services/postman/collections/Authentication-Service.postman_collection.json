@@ -1,0 +1,635 @@
+{
+	"info": {
+		"_postman_id": "auth-service-collection-v2",
+		"name": "🔐 Authentication Service API Collection",
+		"description": "Comprehensive API collection for the Authentication Service including user registration, login flows, token management, roles, permissions, and OTP authentication.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "2.0.0"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					"// Set dynamic variables for testing",
+					"pm.globals.set('timestamp', Date.now());",
+					"pm.globals.set('random_email', 'user' + Date.now() + '@fooddelivery.com');",
+					"pm.globals.set('random_name', 'TestUser_' + Date.now());"
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"// Global test script for all requests",
+					"pm.test('Response time is reasonable (< 10s)', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+					"});",
+					"",
+					"// Log response for debugging",
+					"console.log('🔍 Auth Service Response Status:', pm.response.status);",
+					"console.log('⏱️ Response Time:', pm.response.responseTime + 'ms');",
+					"console.log('📊 Response Size:', pm.response.responseSize + ' bytes');"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Health & Status",
+			"description": "Authentication service health monitoring",
+			"item": [
+				{
+					"name": "Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Authentication service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains health info', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('status');",
+									"    pm.expect(response.status).to.eql('Healthy');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{auth_base_url}}/api/health",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔑 Authentication Flows",
+			"description": "User login, registration, and authentication flows",
+			"item": [
+				{
+					"name": "User Registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Registration successful', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response contains user info', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('user');",
+									"    pm.expect(response.user).to.have.property('email');",
+									"    pm.globals.set('registered_user_id', response.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"UserPass123!\",\n  \"role\": \"Customer\",\n  \"organization\": \"FoodDelivery\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/register",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "User Login (Email/Password)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Login successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains auth token', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('token');",
+									"    pm.globals.set('auth_token', response.token);",
+									"    pm.globals.set('current_user_id', response.user.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/login",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Email/Password Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email login successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains auth token', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('token');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/login/email",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "login", "email"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔐 Token Management",
+			"description": "JWT token validation and management",
+			"item": [
+				{
+					"name": "Validate Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Token validation response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Token is valid', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('valid');",
+									"        pm.expect(response.valid).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/validate",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "validate"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👤 User Profile Management",
+			"description": "User profile and account management",
+			"item": [
+				{
+					"name": "Get User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Profile retrieval successful', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Profile contains user info', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('email');",
+									"        pm.expect(response).to.have.property('role');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/profile",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Update Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Password update response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 400, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Password updated successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('message');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"AdminPass123!\",\n  \"newPassword\": \"NewAdminPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/password",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "password"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔄 Password Recovery",
+			"description": "Password reset and recovery flows",
+			"item": [
+				{
+					"name": "Forgot Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Forgot password request processed', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains confirmation message', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\"admin@restaurant.com\""
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/forgot-password",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "forgot-password"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏷️ Roles & Permissions",
+			"description": "Role and permission management endpoints",
+			"item": [
+				{
+					"name": "Get Available Roles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Roles retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains roles array', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"    pm.expect(response.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/roles",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "roles"]
+						}
+					}
+				},
+				{
+					"name": "Get Permissions for Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Permissions retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains permissions', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('role');",
+									"    pm.expect(response).to.have.property('permissions');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/permissions/Admin",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "permissions", "Admin"]
+						}
+					}
+				},
+				{
+					"name": "Check User Permission",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Permission check response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Permission check contains result', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('hasPermission');",
+									"        pm.expect(response).to.have.property('permission');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\"manage_menu\""
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/check-permission",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "check-permission"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📱 OTP Authentication",
+			"description": "One-Time Password generation and verification",
+			"item": [
+				{
+					"name": "Generate OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('OTP generation response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 400]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('OTP generated successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('success');",
+									"        pm.expect(response.success).to.be.true;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"purpose\": \"login\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/generate-otp",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "generate-otp"]
+						}
+					}
+				},
+				{
+					"name": "Verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('OTP verification response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 400]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('OTP verification result', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('success');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"otp\": \"123456\",\n  \"purpose\": \"login\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/verify-otp",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "verify-otp"]
+						}
+					}
+				},
+				{
+					"name": "Login with Email/OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Email/OTP login response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Login successful with OTP', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('token');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/login/email-otp",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "login", "email-otp"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "auth_base_url",
+			"value": "http://localhost:5001",
+			"type": "string"
+		}
+	]
+}

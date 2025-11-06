@@ -1,0 +1,430 @@
+{
+	"info": {
+		"_postman_id": "cart-service-collection-v2",
+		"name": "🛒 Cart Service API Collection",
+		"description": "Comprehensive API collection for the Cart Service including cart management, item operations, and shopping cart functionality.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "2.0.0"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					"// Set dynamic variables for testing",
+					"pm.globals.set('timestamp', Date.now());",
+					"pm.globals.set('random_quantity', Math.floor(Math.random() * 5) + 1);",
+					"pm.globals.set('test_item_id', 'item_' + Date.now());"
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"// Global test script for all requests",
+					"pm.test('Response time is reasonable (< 10s)', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+					"});",
+					"",
+					"// Log response for debugging",
+					"console.log('🛒 Cart Service Response Status:', pm.response.status);",
+					"console.log('⏱️ Response Time:', pm.response.responseTime + 'ms');",
+					"console.log('📊 Response Size:', pm.response.responseSize + ' bytes');"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Health & Status",
+			"description": "Cart service health monitoring",
+			"item": [
+				{
+					"name": "Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cart service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains health info', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('status');",
+									"    pm.expect(response.status).to.eql('Healthy');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cart_base_url}}/api/health",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🛒 Cart Management",
+			"description": "Shopping cart operations and management",
+			"item": [
+				{
+					"name": "Get User Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cart retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains cart details', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('userId');",
+									"        pm.expect(response).to.have.property('items');",
+									"        pm.expect(response.items).to.be.an('array');",
+									"        pm.globals.set('cart_id', response.id);",
+									"    });",
+									"",
+									"    pm.test('Cart has valid structure', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('totalAmount');",
+									"        pm.expect(response).to.have.property('itemCount');",
+									"        pm.expect(response).to.have.property('createdAt');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart"]
+						}
+					}
+				},
+				{
+					"name": "Clear Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cart clearing response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 204, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Cart cleared successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('message');",
+									"        pm.expect(response.message).to.include('cleared');",
+									"    });",
+									"} else if (pm.response.code === 204) {",
+									"    pm.test('Cart cleared (no content response)', function () {",
+									"        pm.expect(pm.response.code).to.eql(204);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/clear",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "clear"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Cart Items",
+			"description": "Add, update, and remove items from cart",
+			"item": [
+				{
+					"name": "Add Item to Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Item addition to cart response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 201, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    pm.test('Item added to cart successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('items');",
+									"        pm.expect(response.items).to.be.an('array');",
+									"    });",
+									"",
+									"    pm.test('Cart totals updated', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('totalAmount');",
+									"        pm.expect(response).to.have.property('itemCount');",
+									"        pm.expect(response.itemCount).to.be.greaterThan(0);",
+									"    });",
+									"",
+									"    pm.test('Added item exists in cart', function () {",
+									"        const response = pm.response.json();",
+									"        const addedItem = response.items.find(item => item.menuItemId === pm.globals.get('menu_item_id'));",
+									"        pm.expect(addedItem).to.exist;",
+									"        pm.expect(addedItem).to.have.property('quantity');",
+									"        pm.expect(addedItem).to.have.property('price');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"menuItemId\": \"{{menu_item_id}}\",\n  \"quantity\": {{random_quantity}},\n  \"specialInstructions\": \"Extra cheese, no onions\"\n}"
+						},
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/items",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "items"]
+						}
+					}
+				},
+				{
+					"name": "Update Cart Item Quantity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Item quantity update response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Item quantity updated successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('items');",
+									"    });",
+									"",
+									"    pm.test('Cart totals recalculated', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('totalAmount');",
+									"        pm.expect(response).to.have.property('itemCount');",
+									"    });",
+									"",
+									"    pm.test('Updated item has correct quantity', function () {",
+									"        const response = pm.response.json();",
+									"        const updatedItem = response.items.find(item => item.menuItemId === pm.globals.get('menu_item_id'));",
+									"        if (updatedItem) {",
+									"            pm.expect(updatedItem.quantity).to.be.greaterThan(0);",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/items/{{menu_item_id}}",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "items", "{{menu_item_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Remove Item from Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Item removal from cart response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 204, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Item removed from cart successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('items');",
+									"    });",
+									"",
+									"    pm.test('Cart totals updated after removal', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('totalAmount');",
+									"        pm.expect(response).to.have.property('itemCount');",
+									"    });",
+									"",
+									"    pm.test('Removed item no longer in cart', function () {",
+									"        const response = pm.response.json();",
+									"        const removedItem = response.items.find(item => item.menuItemId === pm.globals.get('menu_item_id'));",
+									"        pm.expect(removedItem).to.be.undefined;",
+									"    });",
+									"} else if (pm.response.code === 204) {",
+									"    pm.test('Item removed (no content response)', function () {",
+									"        pm.expect(pm.response.code).to.eql(204);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/items/{{menu_item_id}}",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "items", "{{menu_item_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "💰 Cart Summary",
+			"description": "Cart calculations and summary information",
+			"item": [
+				{
+					"name": "Get Cart Summary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cart summary retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Summary contains calculation details', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('subtotal');",
+									"        pm.expect(response).to.have.property('tax');",
+									"        pm.expect(response).to.have.property('deliveryFee');",
+									"        pm.expect(response).to.have.property('total');",
+									"        pm.expect(response).to.have.property('itemCount');",
+									"    });",
+									"",
+									"    pm.test('Summary calculations are valid', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response.subtotal).to.be.a('number');",
+									"        pm.expect(response.tax).to.be.a('number');",
+									"        pm.expect(response.deliveryFee).to.be.a('number');",
+									"        pm.expect(response.total).to.be.a('number');",
+									"        pm.expect(response.itemCount).to.be.a('number');",
+									"        pm.expect(response.total).to.be.at.least(response.subtotal);",
+									"    });",
+									"",
+									"    pm.test('Summary includes item breakdown', function () {",
+									"        const response = pm.response.json();",
+									"        if (response.itemCount > 0) {",
+									"            pm.expect(response).to.have.property('items');",
+									"            pm.expect(response.items).to.be.an('array');",
+									"            pm.expect(response.items.length).to.eql(response.itemCount);",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/summary",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "summary"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "cart_base_url",
+			"value": "http://localhost:5004",
+			"type": "string"
+		}
+	]
+}

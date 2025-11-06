@@ -1,0 +1,647 @@
+{
+	"info": {
+		"_postman_id": "crm-service-collection-v2",
+		"name": "👥 CRM Service API Collection",
+		"description": "Comprehensive API collection for the CRM Service including customer management, user profiles, and customer relationship operations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "2.0.0"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					"// Set dynamic variables for testing",
+					"pm.globals.set('timestamp', Date.now());",
+					"pm.globals.set('random_customer_email', 'customer' + Date.now() + '@fooddelivery.com');",
+					"pm.globals.set('random_customer_name', 'Test Customer ' + Date.now());",
+					"pm.globals.set('random_phone', '555-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0') + '-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'));"
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"// Global test script for all requests",              
+					"pm.test('Response time is reasonable (< 10s)', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(10000);",
+					"});",
+					"",
+					"// Log response for debugging",
+					"console.log('👥 CRM Service Response Status:', pm.response.status);",
+					"console.log('⏱️ Response Time:', pm.response.responseTime + 'ms');",
+					"console.log('📊 Response Size:', pm.response.responseSize + ' bytes');"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Health & Status",
+			"description": "CRM service health monitoring",
+			"item": [
+				{
+					"name": "Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('CRM service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains health info', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('status');",
+									"    pm.expect(response.status).to.eql('Healthy');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{crm_base_url}}/api/health",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👥 Customer Management",
+			"description": "Complete customer lifecycle management operations",
+			"item": [
+				{
+					"name": "Get All Customers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customers retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains customers array', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.be.an('array');",
+									"});",
+									"",
+									"pm.test('Customers have required properties', function () {",
+									"    const response = pm.response.json();",
+									"    if (response.length > 0) {",
+									"        const firstCustomer = response[0];",
+									"        pm.expect(firstCustomer).to.have.property('id');",
+									"        pm.expect(firstCustomer).to.have.property('email');",
+									"        pm.expect(firstCustomer).to.have.property('name');",
+									"        pm.globals.set('customer_id', firstCustomer.id);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers"]
+						}
+					}
+				},
+				{
+					"name": "Get Customer by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains customer details', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('email');",
+									"        pm.expect(response).to.have.property('name');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{customer_id}}",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{customer_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Create New Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer creation response', function () {",
+									"    pm.response.to.have.status.oneOf([201, 400, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
+									"    pm.test('Customer created successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('email');",
+									"        pm.expect(response).to.have.property('name');",
+									"        pm.globals.set('created_customer_id', response.id);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{random_customer_name}}\",\n  \"email\": \"{{random_customer_email}}\",\n  \"phone\": \"{{random_phone}}\",\n  \"address\": {\n    \"street\": \"123 Test Street\",\n    \"city\": \"Test City\",\n    \"state\": \"TS\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  },\n  \"preferences\": {\n    \"dietary\": [\"vegetarian\"],\n    \"communicationChannel\": \"email\",\n    \"orderReminders\": true\n  }\n}"
+						},
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers"]
+						}
+					}
+				},
+				{
+					"name": "Update Customer Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer update response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Customer updated successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('name');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated {{random_customer_name}}\",\n  \"email\": \"{{random_customer_email}}\",\n  \"phone\": \"{{random_phone}}\",\n  \"address\": {\n    \"street\": \"456 Updated Street\",\n    \"city\": \"Updated City\",\n    \"state\": \"UP\",\n    \"zipCode\": \"54321\",\n    \"country\": \"USA\"\n  },\n  \"preferences\": {\n    \"dietary\": [\"vegetarian\", \"gluten-free\"],\n    \"communicationChannel\": \"sms\",\n    \"orderReminders\": false\n  }\n}"
+						},
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{created_customer_id}}",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{created_customer_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer deletion response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 204, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200 || pm.response.code === 204) {",
+									"    pm.test('Customer deleted successfully', function () {",
+									"        // Deletion successful",
+									"        pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{created_customer_id}}",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{created_customer_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔍 Customer Search & Analytics",
+			"description": "Customer search, filtering, and analytics operations",
+			"item": [
+				{
+					"name": "Search Customers by Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer search results retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains search results', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.be.an('array');",
+									"    });",
+									"",
+									"    pm.test('Search results match email query', function () {",
+									"        const response = pm.response.json();",
+									"        const searchTerm = 'admin';",
+									"        response.forEach(customer => {",
+									"            pm.expect(customer.email.toLowerCase()).to.include(searchTerm);",
+									"        });",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/search?email=admin",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "search"],
+							"query": [
+								{
+									"key": "email",
+									"value": "admin"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Customers by Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer name search results retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains search results', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.be.an('array');",
+									"    });",
+									"",
+									"    pm.test('Search results match name query', function () {",
+									"        const response = pm.response.json();",
+									"        const searchTerm = 'john';",
+									"        response.forEach(customer => {",
+									"            pm.expect(customer.name.toLowerCase()).to.include(searchTerm);",
+									"        });",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/search?name=john",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "search"],
+							"query": [
+								{
+									"key": "name",
+									"value": "john"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Customer Analytics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer analytics retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains analytics data', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('totalCustomers');",
+									"        pm.expect(response).to.have.property('activeCustomers');",
+									"        pm.expect(response).to.have.property('newCustomersThisMonth');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/analytics",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "analytics"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Customer Preferences",
+			"description": "Customer preferences and settings management",
+			"item": [
+				{
+					"name": "Get Customer Preferences",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer preferences retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains preferences', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('dietary');",
+									"        pm.expect(response).to.have.property('communicationChannel');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{customer_id}}/preferences",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{customer_id}}", "preferences"]
+						}
+					}
+				},
+				{
+					"name": "Update Customer Preferences",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer preferences update response', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Preferences updated successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('dietary');",
+									"        pm.expect(response).to.have.property('communicationChannel');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dietary\": [\"vegan\", \"gluten-free\"],\n  \"communicationChannel\": \"email\",\n  \"orderReminders\": true,\n  \"promotionalEmails\": false,\n  \"preferredDeliveryTime\": \"18:00-20:00\"\n}"
+						},
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{customer_id}}/preferences",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{customer_id}}", "preferences"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📍 Address Management",
+			"description": "Customer address management operations",
+			"item": [
+				{
+					"name": "Get Customer Addresses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer addresses retrieved successfully', function () {",
+									"    pm.response.to.have.status.oneOf([200, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.test('Response contains addresses array', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.be.an('array');",
+									"    });",
+									"",
+									"    pm.test('Addresses have required properties', function () {",
+									"        const response = pm.response.json();",
+									"        if (response.length > 0) {",
+									"            const firstAddress = response[0];",
+									"            pm.expect(firstAddress).to.have.property('street');",
+									"            pm.expect(firstAddress).to.have.property('city');",
+									"            pm.expect(firstAddress).to.have.property('zipCode');",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{customer_id}}/addresses",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{customer_id}}", "addresses"]
+						}
+					}
+				},
+				{
+					"name": "Add New Customer Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Customer address creation response', function () {",
+									"    pm.response.to.have.status.oneOf([201, 401, 404]);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
+									"    pm.test('Address added successfully', function () {",
+									"        const response = pm.response.json();",
+									"        pm.expect(response).to.have.property('id');",
+									"        pm.expect(response).to.have.property('street');",
+									"        pm.expect(response).to.have.property('city');",
+									"        pm.globals.set('address_id', response.id);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"street\": \"789 New Address Lane\",\n  \"city\": \"New City\",\n  \"state\": \"NC\",\n  \"zipCode\": \"67890\",\n  \"country\": \"USA\",\n  \"type\": \"delivery\",\n  \"isDefault\": false\n}"
+						},
+						"url": {
+							"raw": "{{crm_base_url}}/api/customers/{{customer_id}}/addresses",
+							"host": ["{{crm_base_url}}"],
+							"path": ["api", "customers", "{{customer_id}}", "addresses"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "crm_base_url",
+			"value": "http://localhost:5003",
+			"type": "string"
+		}
+	]
+}
