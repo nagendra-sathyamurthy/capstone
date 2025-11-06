@@ -24,6 +24,9 @@ builder.Services.AddScoped<IMongoDatabase>(sp =>
 // Register CustomerService
 builder.Services.AddScoped<CustomerService>();
 
+// Register UserProfileService
+builder.Services.AddScoped<UserProfileService>();
+
 // JWT Authentication configuration
 var jwtKey = "GJ0VFqmRVBR0iE2ojyzh28HlayZgRcUI";
 builder.Services.AddAuthentication(options =>

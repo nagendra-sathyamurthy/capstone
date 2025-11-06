@@ -15,39 +15,9 @@ namespace Authentication.Models
         public string Password { get; set; }
 
         [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
-
-        [Required]
-        [Phone]
-        public string PhoneNumber { get; set; }
-
-        [Required]
         public UserRole Role { get; set; }
 
         public string? Organization { get; set; }
-
-        public DateTime? DateOfBirth { get; set; }
-
-        public Address? Address { get; set; }
-
-        // Customer-specific fields
-        public List<string>? DietaryPreferences { get; set; }
-        public List<string>? FavoriteRestaurants { get; set; }
-
-        // Employee-specific fields
-        public EmployeeInfo? EmployeeInfo { get; set; }
-
-        // Business-specific fields (for Biller role)
-        public BusinessInfo? BusinessInfo { get; set; }
-
-        // Delivery agent-specific fields
-        public DeliveryInfo? DeliveryInfo { get; set; }
-
-        // IT technician-specific fields
-        public TechInfo? TechInfo { get; set; }
     }
 
     public class LoginRequest
@@ -87,18 +57,10 @@ namespace Authentication.Models
     {
         public string Id { get; set; }
         public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
         public UserRole Role { get; set; }
         public string Organization { get; set; }
         public List<string> Permissions { get; set; }
         public DateTime? LastLoginTime { get; set; }
-
-        // Role-specific info (only populated if relevant to the user's role)
-        public EmployeeInfo? EmployeeInfo { get; set; }
-        public BusinessInfo? BusinessInfo { get; set; }
-        public DeliveryInfo? DeliveryInfo { get; set; }
-        public TechInfo? TechInfo { get; set; }
     }
 
     public class ValidateTokenResponse
@@ -108,13 +70,14 @@ namespace Authentication.Models
         public string? Error { get; set; }
     }
 
-    public class UpdateProfileRequest
+    public class UpdatePasswordRequest
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? PhoneNumber { get; set; }
-        public Address? Address { get; set; }
-        public List<string>? DietaryPreferences { get; set; }
+        [Required]
+        public string CurrentPassword { get; set; }
+
+        [Required]
+        [MinLength(6)]
+        public string NewPassword { get; set; }
     }
 
     public class GenerateOtpRequest

@@ -9,6 +9,7 @@ namespace catalog.DataAccess
         IEnumerable<T> GetAll();
         T GetById(string id);
         void Insert(T entity);
+        void InsertMany(IEnumerable<T> entities);
         void Update(string id, T entity);
         void Delete(string id);
         IEnumerable<T> Find(Expression<Func<T, bool>> filter);

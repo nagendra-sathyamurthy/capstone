@@ -52,8 +52,6 @@ namespace Authentication.Api.Controllers
                     {
                         id = user.Id,
                         email = user.Email,
-                        firstName = user.FirstName,
-                        lastName = user.LastName,
                         role = user.Role.ToString(),
                         organization = user.Organization,
                         permissions = user.Permissions
@@ -138,20 +136,9 @@ namespace Authentication.Api.Controllers
                 {
                     id = user.Id,
                     email = user.Email,
-                    firstName = user.FirstName,
-                    lastName = user.LastName,
-                    phoneNumber = user.PhoneNumber,
                     role = user.Role.ToString(),
                     organization = user.Organization,
                     permissions = user.Permissions,
-                    address = user.Address,
-                    dateOfBirth = user.DateOfBirth,
-                    dietaryPreferences = user.DietaryPreferences,
-                    favoriteRestaurants = user.FavoriteRestaurants,
-                    employeeInfo = user.EmployeeInfo,
-                    businessInfo = user.BusinessInfo,
-                    deliveryInfo = user.DeliveryInfo,
-                    techInfo = user.TechInfo,
                     isActive = user.IsActive,
                     isEmailVerified = user.IsEmailVerified,
                     lastLoginTime = user.LastLoginTime,
@@ -166,9 +153,9 @@ namespace Authentication.Api.Controllers
             }
         }
 
-        [HttpPut("profile")]
+        [HttpPut("password")]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest updateRequest)
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest updateRequest)
         {
             try
             {
@@ -178,29 +165,19 @@ namespace Authentication.Api.Controllers
                     return Unauthorized(new { message = "User ID not found in token" });
                 }
 
-                var updatedUser = await _authService.UpdateProfile(userId, updateRequest);
-                if (updatedUser == null)
+                var success = await _authService.UpdatePassword(userId, updateRequest.CurrentPassword, updateRequest.NewPassword);
+                if (!success)
                 {
-                    return NotFound(new { message = "User not found" });
+                    return BadRequest(new { message = "Current password is incorrect" });
                 }
 
                 return Ok(new { 
-                    message = "Profile updated successfully",
-                    user = new
-                    {
-                        id = updatedUser.Id,
-                        firstName = updatedUser.FirstName,
-                        lastName = updatedUser.LastName,
-                        phoneNumber = updatedUser.PhoneNumber,
-                        address = updatedUser.Address,
-                        dietaryPreferences = updatedUser.DietaryPreferences,
-                        updatedAt = updatedUser.UpdatedAt
-                    }
+                    message = "Password updated successfully"
                 });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Failed to update profile", error = ex.Message });
+                return BadRequest(new { message = "Failed to update password", error = ex.Message });
             }
         }
 
@@ -328,33 +305,7 @@ namespace Authentication.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Login with phone and password
-        /// </summary>
-        [HttpPost("login/phone")]
-        public async Task<IActionResult> LoginWithPhone([FromBody] PhonePasswordLoginRequest request)
-        {
-            try
-            {
-                var loginRequest = new LoginRequest
-                {
-                    PhoneNumber = request.PhoneNumber,
-                    Password = request.Password,
-                    LoginMethod = LoginMethod.PhonePassword
-                };
 
-                var response = await _authService.Login(loginRequest);
-                if (response == null)
-                {
-                    return Unauthorized(new { message = "Invalid phone number or password" });
-                }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Phone login failed", error = ex.Message });
-            }
-        }
 
         /// <summary>
         /// Login with email and OTP
@@ -384,57 +335,25 @@ namespace Authentication.Api.Controllers
             }
         }
 
-        /// <summary>
-        /// Login with phone and OTP
-        /// </summary>
-        [HttpPost("login/phone-otp")]
-        public async Task<IActionResult> LoginWithPhoneOtp([FromBody] PhoneOtpLoginRequest request)
-        {
-            try
-            {
-                var loginRequest = new LoginRequest
-                {
-                    PhoneNumber = request.PhoneNumber,
-                    Otp = request.Otp,
-                    LoginMethod = LoginMethod.PhoneOtp
-                };
 
-                var response = await _authService.Login(loginRequest);
-                if (response == null)
-                {
-                    return Unauthorized(new { message = "Invalid phone number or OTP" });
-                }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Phone OTP login failed", error = ex.Message });
-            }
-        }
     }
 
-    // Simplified login request classes for specific endpoints
+    // Simplified login and update request classes
     public class EmailPasswordLoginRequest
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class PhonePasswordLoginRequest
-    {
-        public string PhoneNumber { get; set; }
-        public string Password { get; set; }
+        public required string Email { get; set; }
+        public required string Password { get; set; }
     }
 
     public class EmailOtpLoginRequest
     {
-        public string Email { get; set; }
-        public string Otp { get; set; }
+        public required string Email { get; set; }
+        public required string Otp { get; set; }
     }
 
-    public class PhoneOtpLoginRequest
+    public class UpdatePasswordRequest
     {
-        public string PhoneNumber { get; set; }
-        public string Otp { get; set; }
+        public required string CurrentPassword { get; set; }
+        public required string NewPassword { get; set; }
     }
 }

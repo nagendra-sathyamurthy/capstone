@@ -13,8 +13,9 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSingleton<IMongoClient>(sp =>
     new MongoClient(Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING")));
 
-// Register ItemService
-builder.Services.AddScoped<ItemService>();
+// Register services
+builder.Services.AddScoped<ItemService>(); // Keep for backward compatibility
+builder.Services.AddScoped<MenuService>(); // New food delivery menu service
 
 // Add controllers
 builder.Services.AddControllers();

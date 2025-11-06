@@ -35,20 +35,11 @@ namespace Authentication.Services
 
             UserAccount? user = null;
 
-            // Get user based on login method
+            // Get user based on login method - simplified to email only
             switch (request.LoginMethod)
             {
                 case LoginMethod.EmailPassword:
                     user = await GetUserByEmail(request.Email!);
-                    if (user == null || !VerifyPassword(request.Password!, user.Password) || !user.IsActive)
-                    {
-                        await HandleFailedLogin(user);
-                        return null;
-                    }
-                    break;
-
-                case LoginMethod.PhonePassword:
-                    user = await GetUserByPhone(request.PhoneNumber!);
                     if (user == null || !VerifyPassword(request.Password!, user.Password) || !user.IsActive)
                     {
                         await HandleFailedLogin(user);
@@ -68,17 +59,10 @@ namespace Authentication.Services
                     }
                     break;
 
+                case LoginMethod.PhonePassword:
                 case LoginMethod.PhoneOtp:
-                    if (!await VerifyOtp(null, request.PhoneNumber, request.Otp!, OtpPurpose.Login))
-                    {
-                        return null;
-                    }
-                    user = await GetUserByPhone(request.PhoneNumber!);
-                    if (user == null || !user.IsActive)
-                    {
-                        return null;
-                    }
-                    break;
+                    // Phone-based authentication is now handled by CRM service
+                    return null;
 
                 default:
                     return null;
@@ -109,33 +93,13 @@ namespace Authentication.Services
                 throw new InvalidOperationException("User with this email already exists.");
             }
 
-            var existingPhone = await GetUserByPhone(request.PhoneNumber);
-            if (existingPhone != null)
-            {
-                throw new InvalidOperationException("User with this phone number already exists.");
-            }
-
-            // Validate role-specific required information
-            ValidateRegistrationData(request);
-
             var user = new UserAccount
             {
                 Email = request.Email,
                 Password = HashPassword(request.Password), // In production, use proper hashing
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                PhoneNumber = request.PhoneNumber,
                 Role = request.Role,
-                Organization = DetermineOrganization(request.Role, request.Organization),
+                Organization = Organizations.GetOrganizationForRole(request.Role, request.Organization),
                 Permissions = Permissions.GetPermissionsForRole(request.Role),
-                DateOfBirth = request.DateOfBirth,
-                Address = request.Address,
-                DietaryPreferences = request.DietaryPreferences,
-                FavoriteRestaurants = request.FavoriteRestaurants,
-                EmployeeInfo = request.EmployeeInfo,
-                BusinessInfo = request.BusinessInfo,
-                DeliveryInfo = request.DeliveryInfo,
-                TechInfo = request.TechInfo,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -145,60 +109,7 @@ namespace Authentication.Services
             return user;
         }
 
-        private void ValidateRegistrationData(RegisterRequest request)
-        {
-            switch (request.Role)
-            {
-                case UserRole.Biller:
-                    if (request.BusinessInfo == null)
-                        throw new InvalidOperationException("BusinessInfo is required for Biller role.");
-                    if (string.IsNullOrEmpty(request.BusinessInfo.RestaurantName))
-                        throw new InvalidOperationException("Restaurant name is required for Biller role.");
-                    if (string.IsNullOrEmpty(request.BusinessInfo.UpiId))
-                        throw new InvalidOperationException("UPI ID is required for Biller role (payment recipient).");
-                    break;
-
-                case UserRole.Operator:
-                case UserRole.Worker:
-                    if (request.EmployeeInfo == null)
-                        throw new InvalidOperationException($"EmployeeInfo is required for {request.Role} role.");
-                    if (string.IsNullOrEmpty(request.EmployeeInfo.EmployeeId))
-                        throw new InvalidOperationException($"Employee ID is required for {request.Role} role.");
-                    if (string.IsNullOrEmpty(request.EmployeeInfo.Position))
-                        throw new InvalidOperationException($"Position is required for {request.Role} role.");
-                    break;
-
-                case UserRole.DeliveryAgent:
-                    if (request.DeliveryInfo == null)
-                        throw new InvalidOperationException("DeliveryInfo is required for DeliveryAgent role.");
-                    if (string.IsNullOrEmpty(request.DeliveryInfo.EmployeeId))
-                        throw new InvalidOperationException("Employee ID is required for DeliveryAgent role.");
-                    if (string.IsNullOrEmpty(request.DeliveryInfo.VehicleType))
-                        throw new InvalidOperationException("Vehicle type is required for DeliveryAgent role.");
-                    if (string.IsNullOrEmpty(request.DeliveryInfo.LicensePlate))
-                        throw new InvalidOperationException("License plate is required for DeliveryAgent role.");
-                    break;
-
-                case UserRole.Developer:
-                case UserRole.Tester:
-                case UserRole.NetworkAdmin:
-                case UserRole.DatabaseAdmin:
-                    if (request.TechInfo == null)
-                        throw new InvalidOperationException($"TechInfo is required for {request.Role} role.");
-                    if (string.IsNullOrEmpty(request.TechInfo.EmployeeId))
-                        throw new InvalidOperationException($"Employee ID is required for {request.Role} role.");
-                    if (string.IsNullOrEmpty(request.TechInfo.Specialization))
-                        throw new InvalidOperationException($"Specialization is required for {request.Role} role.");
-                    break;
-
-                case UserRole.Customer:
-                    // No additional validation required for customers
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Unknown role: {request.Role}");
-            }
-        }
+        // Role-specific validation removed - UserProfile data is now handled by CRM service
 
         public async Task<ValidateTokenResponse> ValidateToken(string token)
         {
@@ -242,21 +153,21 @@ namespace Authentication.Services
             return await _repository.GetByIdAsync(userId);
         }
 
-        public async Task<UserAccount?> UpdateProfile(string userId, UpdateProfileRequest request)
+        public async Task<bool> UpdatePassword(string userId, string currentPassword, string newPassword)
         {
             var user = await _repository.GetByIdAsync(userId);
-            if (user == null) return null;
+            if (user == null) return false;
 
-            if (!string.IsNullOrEmpty(request.FirstName)) user.FirstName = request.FirstName;
-            if (!string.IsNullOrEmpty(request.LastName)) user.LastName = request.LastName;
-            if (!string.IsNullOrEmpty(request.PhoneNumber)) user.PhoneNumber = request.PhoneNumber;
-            if (request.Address != null) user.Address = request.Address;
-            if (request.DietaryPreferences != null) user.DietaryPreferences = request.DietaryPreferences;
-            
+            if (!VerifyPassword(currentPassword, user.Password))
+            {
+                return false;
+            }
+
+            user.Password = HashPassword(newPassword);
             user.UpdatedAt = DateTime.UtcNow;
             await _repository.UpdateAsync(user);
             
-            return user;
+            return true;
         }
 
         public async Task ForgotPassword(string email)
@@ -289,49 +200,40 @@ namespace Authentication.Services
             return permissions.Any(p => user.Permissions.Contains(p));
         }
 
-        // Enhanced role-specific validation methods for refined RBAC
+        // Simplified role-based validation methods - detailed role info now handled by CRM service
         public bool CanReceivePayments(UserAccount user)
         {
-            return user.Role == UserRole.Biller && 
-                   user.BusinessInfo != null && 
-                   !string.IsNullOrEmpty(user.BusinessInfo.UpiId);
+            return user.Role == UserRole.Biller;
         }
 
         public bool CanConfirmOrders(UserAccount user)
         {
-            return user.Role == UserRole.Operator && 
-                   user.EmployeeInfo != null;
+            return user.Role == UserRole.Operator;
         }
 
         public bool CanPrepareFood(UserAccount user)
         {
-            return user.Role == UserRole.Worker && 
-                   user.EmployeeInfo != null;
+            return user.Role == UserRole.Worker;
         }
 
         public bool CanConfirmDelivery(UserAccount user)
         {
-            return user.Role == UserRole.DeliveryAgent && 
-                   user.DeliveryInfo != null && 
-                   !string.IsNullOrEmpty(user.DeliveryInfo.VehicleType);
+            return user.Role == UserRole.DeliveryAgent;
         }
 
         public bool CanAccessAllEndpoints(UserAccount user)
         {
-            return (user.Role == UserRole.Developer || user.Role == UserRole.Tester) && 
-                   user.TechInfo != null;
+            return user.Role == UserRole.Developer || user.Role == UserRole.Tester;
         }
 
         public bool CanAccessHealthcheck(UserAccount user)
         {
-            return user.Role == UserRole.NetworkAdmin && 
-                   user.TechInfo != null;
+            return user.Role == UserRole.NetworkAdmin;
         }
 
         public bool CanAccessDatabase(UserAccount user)
         {
-            return user.Role == UserRole.DatabaseAdmin && 
-                   user.TechInfo != null;
+            return user.Role == UserRole.DatabaseAdmin;
         }
 
         public bool IsRestaurantStaff(UserAccount user)
@@ -362,12 +264,7 @@ namespace Authentication.Services
             return users.FirstOrDefault();
         }
 
-        private async Task<UserAccount?> GetUserByPhone(string phoneNumber)
-        {
-            var filter = Builders<UserAccount>.Filter.Eq(u => u.PhoneNumber, phoneNumber);
-            var users = await _repository.FindAsync(filter);
-            return users.FirstOrDefault();
-        }
+        // Removed GetUserByPhone - phone numbers are now handled by CRM service
 
         private bool ValidateLoginRequest(LoginRequest request)
         {
@@ -375,12 +272,12 @@ namespace Authentication.Services
             {
                 case LoginMethod.EmailPassword:
                     return !string.IsNullOrEmpty(request.Email) && !string.IsNullOrEmpty(request.Password);
-                case LoginMethod.PhonePassword:
-                    return !string.IsNullOrEmpty(request.PhoneNumber) && !string.IsNullOrEmpty(request.Password);
                 case LoginMethod.EmailOtp:
                     return !string.IsNullOrEmpty(request.Email) && !string.IsNullOrEmpty(request.Otp);
+                case LoginMethod.PhonePassword:
                 case LoginMethod.PhoneOtp:
-                    return !string.IsNullOrEmpty(request.PhoneNumber) && !string.IsNullOrEmpty(request.Otp);
+                    // Phone-based authentication now handled by CRM service
+                    return false;
                 default:
                     return false;
             }
@@ -404,8 +301,6 @@ namespace Authentication.Services
             {
                 new Claim("userId", user.Id!),
                 new Claim("email", user.Email),
-                new Claim("firstName", user.FirstName),
-                new Claim("lastName", user.LastName),
                 new Claim("role", user.Role.ToString()),
                 new Claim("organization", user.Organization),
                 new Claim(ClaimTypes.Name, user.Email),
@@ -416,61 +311,6 @@ namespace Authentication.Services
             foreach (var permission in user.Permissions)
             {
                 claims.Add(new Claim("permission", permission));
-            }
-
-            // Add role-specific claims based on refined RBAC system
-            switch (user.Role)
-            {
-                case UserRole.Biller:
-                    if (user.BusinessInfo != null)
-                    {
-                        claims.Add(new Claim("restaurantName", user.BusinessInfo.RestaurantName ?? ""));
-                        claims.Add(new Claim("upiId", user.BusinessInfo.UpiId ?? ""));
-                        claims.Add(new Claim("isUpiVerified", user.BusinessInfo.IsUpiVerified.ToString()));
-                        claims.Add(new Claim("businessLicense", user.BusinessInfo.BusinessLicense ?? ""));
-                    }
-                    break;
-
-                case UserRole.Operator:
-                case UserRole.Worker:
-                    if (user.EmployeeInfo != null)
-                    {
-                        claims.Add(new Claim("employeeId", user.EmployeeInfo.EmployeeId ?? ""));
-                        claims.Add(new Claim("position", user.EmployeeInfo.Position ?? ""));
-                        claims.Add(new Claim("department", user.EmployeeInfo.Department ?? ""));
-                    }
-                    break;
-
-                case UserRole.DeliveryAgent:
-                    if (user.DeliveryInfo != null)
-                    {
-                        claims.Add(new Claim("employeeId", user.DeliveryInfo.EmployeeId ?? ""));
-                        claims.Add(new Claim("vehicleType", user.DeliveryInfo.VehicleType ?? ""));
-                        claims.Add(new Claim("licensePlate", user.DeliveryInfo.LicensePlate ?? ""));
-                        claims.Add(new Claim("averageRating", user.DeliveryInfo.AverageRating.ToString()));
-                    }
-                    break;
-
-                case UserRole.Developer:
-                case UserRole.Tester:
-                case UserRole.NetworkAdmin:
-                case UserRole.DatabaseAdmin:
-                    if (user.TechInfo != null)
-                    {
-                        claims.Add(new Claim("employeeId", user.TechInfo.EmployeeId ?? ""));
-                        claims.Add(new Claim("specialization", user.TechInfo.Specialization ?? ""));
-                        claims.Add(new Claim("department", user.TechInfo.Department ?? ""));
-                        claims.Add(new Claim("securityClearance", user.TechInfo.SecurityClearance.ToString()));
-                    }
-                    break;
-
-                case UserRole.Customer:
-                    // Add customer-specific claims if needed
-                    if (user.DietaryPreferences?.Count > 0)
-                    {
-                        claims.Add(new Claim("dietaryPreferences", string.Join(",", user.DietaryPreferences)));
-                    }
-                    break;
             }
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -492,23 +332,14 @@ namespace Authentication.Services
             {
                 Id = user.Id!,
                 Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
                 Role = user.Role,
                 Organization = user.Organization,
                 Permissions = user.Permissions,
-                LastLoginTime = user.LastLoginTime,
-                EmployeeInfo = user.EmployeeInfo,
-                BusinessInfo = user.BusinessInfo,
-                DeliveryInfo = user.DeliveryInfo,
-                TechInfo = user.TechInfo
+                LastLoginTime = user.LastLoginTime
             };
         }
 
-        private string DetermineOrganization(UserRole role, string? customOrganization)
-        {
-            return Organizations.GetOrganizationForRole(role, customOrganization);
-        }
+
 
         private string HashPassword(string password)
         {
@@ -534,25 +365,27 @@ namespace Authentication.Services
                 };
             }
 
-            // Check if user exists for login OTP
+            // Check if user exists for login OTP - only email supported now
             if (request.Purpose == OtpPurpose.Login)
             {
-                UserAccount? user = null;
                 if (!string.IsNullOrEmpty(request.Email))
                 {
-                    user = await GetUserByEmail(request.Email);
+                    var user = await GetUserByEmail(request.Email);
+                    if (user == null)
+                    {
+                        return new GenerateOtpResponse 
+                        { 
+                            Success = false, 
+                            Message = "User not found" 
+                        };
+                    }
                 }
-                else if (!string.IsNullOrEmpty(request.PhoneNumber))
-                {
-                    user = await GetUserByPhone(request.PhoneNumber);
-                }
-
-                if (user == null)
+                else
                 {
                     return new GenerateOtpResponse 
                     { 
                         Success = false, 
-                        Message = "User not found" 
+                        Message = "Email is required for authentication" 
                     };
                 }
             }

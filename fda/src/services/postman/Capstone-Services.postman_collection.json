@@ -2,9 +2,9 @@
 	"info": {
 		"_postman_id": "capstone-api-collection",
 		"name": "Capstone Services API Collection - Local Debug",
-		"description": "Comprehensive API collection for testing Authentication, Catalog, CRM, and Cart services running locally in VS Code debug mode. Includes health checks, CRUD operations, and integration test scenarios.",
+		"description": "Comprehensive API collection for testing Authentication, Catalog, CRM (with UserProfile), and Cart services running locally in VS Code debug mode. Updated for architectural separation: Authentication handles login/security, CRM handles user profiles. Includes health checks, CRUD operations, and integration test scenarios.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"version": "2.0.0"
+		"version": "3.0.0"
 	},
 	"event": [
 		{
@@ -111,9 +111,9 @@
 									"",
 									"if (pm.response.code === 201) {",
 									"    const response = pm.response.json();",
-									"    if (response.id) {",
-									"        pm.environment.set('registered_user_id', response.id);",
-									"        console.log('Registered user ID:', response.id);",
+									"    if (response.user && response.user.id) {",
+									"        pm.environment.set('registered_user_id', response.user.id);",
+									"        console.log('Registered user ID:', response.user.id);",
 									"    }",
 									"}"
 								],
@@ -131,14 +131,14 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"TestPassword123!\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"TestPassword123!\",\n  \"role\": \"Customer\",\n  \"organization\": \"Individual\"\n}"
 						},
 						"url": {
 							"raw": "{{auth_base_url}}/api/auth/register",
 							"host": ["{{auth_base_url}}"],
 							"path": ["api", "auth", "register"]
 						},
-						"description": "Register a new user account"
+						"description": "Register a new user account (authentication only - simplified model)"
 					}
 				},
 				{
@@ -162,9 +162,9 @@
 									"    const response = pm.response.json();",
 									"    if (response.token) {",
 									"        pm.environment.set('jwt_token', response.token);",
-									"        pm.environment.set('current_user_id', response.userId || response.id);",
+									"        pm.environment.set('current_user_id', response.user.id);",
 									"        console.log('Login successful, token saved');",
-									"        console.log('User ID:', response.userId || response.id);",
+									"        console.log('User ID:', response.user.id);",
 									"    }",
 									"}"
 								],
@@ -182,7 +182,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"TestPassword123!\"\n}"
+							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"TestPassword123!\",\n  \"loginMethod\": \"EmailPassword\"\n}"
 						},
 						"url": {
 							"raw": "{{auth_base_url}}/api/auth/login",
@@ -193,19 +193,21 @@
 					}
 				},
 				{
-					"name": "Get Current User Profile",
+					"name": "Get Current User Auth Profile",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test('Profile retrieved successfully', function () {",
+									"pm.test('Auth profile retrieved successfully', function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test('Profile contains user data', function () {",
+									"pm.test('Auth profile contains authentication data', function () {",
 									"    const response = pm.response.json();",
 									"    pm.expect(response).to.have.property('email');",
+									"    pm.expect(response).to.have.property('role');",
+									"    pm.expect(response).to.have.property('organization');",
 									"});"
 								],
 								"type": "text/javascript"
@@ -226,7 +228,53 @@
 							"host": ["{{auth_base_url}}"],
 							"path": ["api", "auth", "profile"]
 						},
-						"description": "Get current user profile information"
+						"description": "Get current user authentication profile (simplified - no personal info)"
+					}
+				},
+				{
+					"name": "Update Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Password updated successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Update response is valid', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('message');",
+									"    pm.expect(response.message).to.include('Password updated successfully');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"TestPassword123!\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/password",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "password"]
+						},
+						"description": "Update user password (authentication service only handles password changes)"
 					}
 				},
 				{
@@ -380,22 +428,51 @@
 			]
 		},
 		{
-			"name": "CRM Service",
+			"name": "🏢 CRM Service",
+			"description": "Customer Relationship Management and User Profile endpoints",
 			"item": [
 				{
-					"name": "Health Check",
+					"name": "Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('CRM service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{crm_base_url}}/health",
+							"raw": "{{crm_base_url}}/api/health",
 							"host": ["{{crm_base_url}}"],
-							"path": ["health"]
-						}
+							"path": ["api", "health"]
+						},
+						"description": "Check if the CRM service is running and healthy"
 					}
 				},
 				{
-					"name": "Swagger UI",
+					"name": "Swagger UI - CRM Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Swagger UI loads successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include('CRM Service');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -403,86 +480,435 @@
 							"raw": "{{crm_base_url}}/",
 							"host": ["{{crm_base_url}}"],
 							"path": [""]
-						}
-					}
-				},
-				{
-					"name": "Get All Customers",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{jwt_token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{crm_base_url}}/api/customers",
-							"host": ["{{crm_base_url}}"],
-							"path": ["api", "customers"]
-						}
-					}
-				},
-				{
-					"name": "Create Customer",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
-									"    const response = pm.response.json();",
-									"    if (response.id) {",
-									"        pm.environment.set('customer_id', response.id);",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{jwt_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phoneNumber\": \"+1-555-123-4567\",\n  \"address\": \"123 Main St, Anytown, USA\"\n}"
 						},
-						"url": {
-							"raw": "{{crm_base_url}}/api/customers",
-							"host": ["{{crm_base_url}}"],
-							"path": ["api", "customers"]
-						}
+						"description": "Load CRM service Swagger UI"
 					}
 				},
 				{
-					"name": "Get Customer by ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{jwt_token}}",
-								"type": "text"
+					"name": "👤 User Profile Management",
+					"description": "Complete user profile management (moved from Authentication service)",
+					"item": [
+						{
+							"name": "Create User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile created successfully', function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    if (response.id) {",
+											"        pm.environment.set('user_profile_id', response.id);",
+											"        console.log('User profile created with ID:', response.id);",
+											"    }",
+											"    if (response.customerId) {",
+											"        pm.environment.set('customer_id', response.customerId);",
+											"        console.log('Associated customer ID:', response.customerId);",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{current_user_id}}\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1-555-123-4567\",\n  \"dateOfBirth\": \"1990-01-15T00:00:00Z\",\n  \"gender\": \"Male\",\n  \"role\": \"Customer\",\n  \"addresses\": [\n    {\n      \"type\": \"Home\",\n      \"street\": \"123 Main Street\",\n      \"city\": \"Anytown\",\n      \"state\": \"CA\",\n      \"zipCode\": \"12345\",\n      \"country\": \"USA\",\n      \"isPrimary\": true\n    }\n  ],\n  \"dietaryPreferences\": [\"Vegetarian\", \"Gluten-Free\"],\n  \"favoriteRestaurants\": [\"Veggie Delight\", \"Green Eats\"]\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile"]
+								},
+								"description": "Create a comprehensive user profile with personal information, addresses, and preferences. Automatically creates Customer record for Customer role."
 							}
-						],
-						"url": {
-							"raw": "{{crm_base_url}}/api/customers/{{customer_id}}",
-							"host": ["{{crm_base_url}}"],
-							"path": ["api", "customers", "{{customer_id}}"]
+						},
+						{
+							"name": "Get User Profile by Auth ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile retrieved successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Profile contains comprehensive data', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('userId');",
+											"    pm.expect(response).to.have.property('firstName');",
+											"    pm.expect(response).to.have.property('lastName');",
+											"    pm.expect(response).to.have.property('addresses');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/user/{{current_user_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "user", "{{current_user_id}}"]
+								},
+								"description": "Get user profile by Authentication service User ID"
+							}
+						},
+						{
+							"name": "Get User Profile by Profile ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile retrieved successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Profile data is complete', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('id');",
+											"    pm.expect(response).to.have.property('userId');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{user_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{user_profile_id}}"]
+								},
+								"description": "Get user profile by CRM Profile ID"
+							}
+						},
+						{
+							"name": "Update User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile updated successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Updated profile contains changes', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('firstName');",
+											"    pm.expect(response.firstName).to.equal('John Updated');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"John Updated\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1-555-123-9999\",\n  \"addresses\": [\n    {\n      \"type\": \"Home\",\n      \"street\": \"456 Updated Street\",\n      \"city\": \"New City\",\n      \"state\": \"CA\",\n      \"zipCode\": \"54321\",\n      \"country\": \"USA\",\n      \"isPrimary\": true\n    }\n  ],\n  \"dietaryPreferences\": [\"Vegetarian\", \"Organic\"]\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{user_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{user_profile_id}}"]
+								},
+								"description": "Update user profile information with automatic Customer record synchronization"
+							}
+						},
+						{
+							"name": "Search User Profiles by Name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Search completed successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Search results are array', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.be.an('array');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/search?name=John",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "search"],
+									"query": [
+										{
+											"key": "name",
+											"value": "John"
+										}
+									]
+								},
+								"description": "Search user profiles by first or last name"
+							}
+						},
+						{
+							"name": "Get User Profiles by Role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Role-based query successful', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Results contain profiles with correct role', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.be.an('array');",
+											"    if (response.length > 0) {",
+											"        pm.expect(response[0]).to.have.property('role');",
+											"        pm.expect(response[0].role).to.equal('Customer');",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/role/Customer",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "role", "Customer"]
+								},
+								"description": "Get all user profiles by role (Customer, Biller, Operator, etc.)"
+							}
+						},
+						{
+							"name": "Delete User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile deleted successfully', function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{user_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{user_profile_id}}"]
+								},
+								"description": "Delete user profile and associated Customer record if applicable"
+							}
 						}
-					}
+					]
+				},
+				{
+					"name": "🧑‍🤝‍🧑 Customer Management",
+					"description": "CRM-specific customer relationship endpoints",
+					"item": [
+						{
+							"name": "Get All Customers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customers retrieved successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response is array of customers', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.be.an('array');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/customers",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customers"]
+								},
+								"description": "Get all customers with CRM-specific information (Status, Tier, TotalSpent, etc.)"
+							}
+						},
+						{
+							"name": "Get Customer by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer retrieved successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Customer has CRM data', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('status');",
+											"    pm.expect(response).to.have.property('tier');",
+											"    pm.expect(response).to.have.property('userProfileId');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/customers/{{customer_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customers", "{{customer_id}}"]
+								},
+								"description": "Get customer by ID with full CRM and UserProfile information"
+							}
+						},
+						{
+							"name": "Update Customer CRM Data",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer CRM data updated successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Customer data reflects changes', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('tier');",
+											"    pm.expect(response.tier).to.equal('Gold');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"Active\",\n  \"tier\": \"Gold\",\n  \"totalSpent\": 1250.75,\n  \"orderCount\": 15,\n  \"notes\": \"Excellent customer, frequent orders\"\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/customers/{{customer_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customers", "{{customer_id}}"]
+								},
+								"description": "Update CRM-specific customer data (Status, Tier, Spending, etc.)"
+							}
+						}
+					]
 				}
 			]
 		},
@@ -719,13 +1145,14 @@
 		},
 		{
 			"name": "🧪 Integration Test Scenarios",
-			"description": "End-to-end test scenarios combining multiple services",
+			"description": "End-to-end test scenarios combining multiple services with new architecture",
 			"item": [
 				{
-					"name": "Complete User Journey",
+					"name": "Complete User Journey - New Architecture",
+					"description": "Full user lifecycle: Authentication → User Profile → Customer → Cart",
 					"item": [
 						{
-							"name": "1. Register User",
+							"name": "1. Register User (Auth Service)",
 							"event": [
 								{
 									"listen": "test",
@@ -737,7 +1164,10 @@
 											"",
 											"if (pm.response.code === 201) {",
 											"    const response = pm.response.json();",
-											"    pm.environment.set('test_user_id', response.id);",
+											"    if (response.user && response.user.id) {",
+											"        pm.environment.set('test_user_id', response.user.id);",
+											"        console.log('Test User ID:', response.user.id);",
+											"    }",
 											"}"
 										],
 										"type": "text/javascript"
@@ -754,17 +1184,18 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"email\": \"integration.test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"firstName\": \"Integration\",\n  \"lastName\": \"Test\"\n}"
+									"raw": "{\n  \"email\": \"integration.test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"role\": \"Customer\",\n  \"organization\": \"Individual\"\n}"
 								},
 								"url": {
 									"raw": "{{auth_base_url}}/api/auth/register",
 									"host": ["{{auth_base_url}}"],
 									"path": ["api", "auth", "register"]
-								}
+								},
+								"description": "Register user with simplified authentication data only"
 							}
 						},
 						{
-							"name": "2. Login User",
+							"name": "2. Login User (Auth Service)",
 							"event": [
 								{
 									"listen": "test",
@@ -777,6 +1208,9 @@
 											"if (pm.response.code === 200) {",
 											"    const response = pm.response.json();",
 											"    pm.environment.set('test_jwt_token', response.token);",
+											"    if (response.user && response.user.id) {",
+											"        pm.environment.set('test_user_id', response.user.id);",
+											"    }",
 											"}"
 										],
 										"type": "text/javascript"
@@ -793,29 +1227,37 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"email\": \"integration.test@example.com\",\n  \"password\": \"TestPassword123!\"\n}"
+									"raw": "{\n  \"email\": \"integration.test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"loginMethod\": \"EmailPassword\"\n}"
 								},
 								"url": {
 									"raw": "{{auth_base_url}}/api/auth/login",
 									"host": ["{{auth_base_url}}"],
 									"path": ["api", "auth", "login"]
-								}
+								},
+								"description": "Login to get JWT token for authenticated requests"
 							}
 						},
 						{
-							"name": "3. Create Customer Profile",
+							"name": "3. Create User Profile (CRM Service)",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test('Customer created successfully', function () {",
+											"pm.test('User profile created successfully', function () {",
 											"    pm.response.to.have.status(201);",
 											"});",
 											"",
 											"if (pm.response.code === 201) {",
 											"    const response = pm.response.json();",
-											"    pm.environment.set('test_customer_id', response.id);",
+											"    if (response.id) {",
+											"        pm.environment.set('test_profile_id', response.id);",
+											"        console.log('Test Profile ID:', response.id);",
+											"    }",
+											"    if (response.customerId) {",
+											"        pm.environment.set('test_customer_id', response.customerId);",
+											"        console.log('Test Customer ID:', response.customerId);",
+											"    }",
 											"}"
 										],
 										"type": "text/javascript"
@@ -837,17 +1279,57 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"firstName\": \"Integration\",\n  \"lastName\": \"Test\",\n  \"email\": \"integration.test@example.com\",\n  \"phoneNumber\": \"+1-555-TEST-001\",\n  \"address\": \"123 Test Street, Test City, TS 12345\"\n}"
+									"raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"firstName\": \"Integration\",\n  \"lastName\": \"Test\",\n  \"phoneNumber\": \"+1-555-TEST-001\",\n  \"dateOfBirth\": \"1990-01-15T00:00:00Z\",\n  \"gender\": \"Other\",\n  \"role\": \"Customer\",\n  \"addresses\": [\n    {\n      \"type\": \"Home\",\n      \"street\": \"123 Test Street\",\n      \"city\": \"Test City\",\n      \"state\": \"TS\",\n      \"zipCode\": \"12345\",\n      \"country\": \"USA\",\n      \"isPrimary\": true\n    }\n  ],\n  \"dietaryPreferences\": [\"No Preferences\"],\n  \"favoriteRestaurants\": [\"Test Restaurant\"]\n}"
 								},
 								"url": {
-									"raw": "{{crm_base_url}}/api/customer",
+									"raw": "{{crm_base_url}}/api/userprofile",
 									"host": ["{{crm_base_url}}"],
-									"path": ["api", "customer"]
-								}
+									"path": ["api", "userprofile"]
+								},
+								"description": "Create comprehensive user profile in CRM service (automatically creates Customer record)"
 							}
 						},
 						{
-							"name": "4. Create Cart",
+							"name": "4. Verify Customer Creation (CRM Service)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer record exists', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Customer has correct data', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('userProfileId');",
+											"    pm.expect(response).to.have.property('userId');",
+											"    pm.expect(response.userId).to.equal(pm.environment.get('test_user_id'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{test_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/customers/{{test_customer_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customers", "{{test_customer_id}}"]
+								},
+								"description": "Verify that Customer record was automatically created with UserProfile"
+							}
+						},
+						{
+							"name": "5. Create Cart (Cart Service)",
 							"event": [
 								{
 									"listen": "test",
@@ -887,7 +1369,106 @@
 									"raw": "{{cart_base_url}}/api/cart",
 									"host": ["{{cart_base_url}}"],
 									"path": ["api", "cart"]
+								},
+								"description": "Create shopping cart using Authentication user ID"
+							}
+						},
+						{
+							"name": "6. Update User Profile (CRM Service)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Profile updated successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Customer record updated automatically', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('firstName');",
+											"    pm.expect(response.firstName).to.equal('Integration Updated');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
 								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{test_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Integration Updated\",\n  \"lastName\": \"Test Updated\",\n  \"phoneNumber\": \"+1-555-UPDATED\",\n  \"addresses\": [\n    {\n      \"type\": \"Home\",\n      \"street\": \"456 Updated Street\",\n      \"city\": \"Updated City\",\n      \"state\": \"UC\",\n      \"zipCode\": \"54321\",\n      \"country\": \"USA\",\n      \"isPrimary\": true\n    }\n  ],\n  \"dietaryPreferences\": [\"Vegetarian\", \"Organic\"]\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{test_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{test_profile_id}}"]
+								},
+								"description": "Update user profile (automatically syncs with Customer record)"
+							}
+						}
+					]
+				},
+				{
+					"name": "Employee Profile Test",
+					"description": "Test creating employee profiles with role-specific information",
+					"item": [
+						{
+							"name": "Create Biller Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Biller profile created successfully', function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test('Business info is included', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('businessInfo');",
+											"    pm.expect(response.businessInfo).to.have.property('restaurantName');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{current_user_id}}\",\n  \"firstName\": \"Restaurant\",\n  \"lastName\": \"Owner\",\n  \"phoneNumber\": \"+1-555-BILLER\",\n  \"role\": \"Biller\",\n  \"businessInfo\": {\n    \"restaurantName\": \"Test Restaurant\",\n    \"businessLicense\": \"BL-123456\",\n    \"upiId\": \"testrestaurant@upi\",\n    \"isUpiVerified\": true,\n    \"cuisineTypes\": [\"Italian\", \"American\"],\n    \"operatingHours\": \"9 AM - 10 PM\",\n    \"deliveryRadius\": 15.5\n  }\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile"]
+								},
+								"description": "Create Biller profile with business information"
 							}
 						}
 					]

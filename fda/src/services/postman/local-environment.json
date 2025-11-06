@@ -1,0 +1,31 @@
+{
+  "id": "local-debug-environment",
+  "name": "Local Debug Environment",
+  "values": [
+    {
+      "key": "auth_base_url",
+      "value": "http://localhost:5001",
+      "enabled": true
+    },
+    {
+      "key": "catalog_base_url",
+      "value": "http://localhost:5002",
+      "enabled": true
+    },
+    {
+      "key": "crm_base_url",
+      "value": "http://localhost:5003",
+      "enabled": true
+    },
+    {
+      "key": "cart_base_url",
+      "value": "http://localhost:5004",
+      "enabled": true
+    },
+    {
+      "key": "base_url",
+      "value": "http://localhost",
+      "enabled": true
+    }
+  ]
+}
