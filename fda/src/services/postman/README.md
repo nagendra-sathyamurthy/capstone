@@ -1,118 +1,178 @@
-# Postman Configuration for Capstone Services
+# Capstone Services Postman Collection - Local Debug Testing
 
-This directory contains Postman environment and collection files for testing the Capstone microservices when running locally through VS Code debugging.
+This folder contains comprehensive Postman collection and environment files for testing the Capstone microservices locally during VS Code development and debugging.
 
-## Files
+## 📁 Files
 
-- **`Capstone-Local-Debug.postman_environment.json`** - Environment configuration with service URLs and variables
-- **`Capstone-Services.postman_collection.json`** - API collection with sample requests for all services
+- `Capstone-Services.postman_collection.json` - Enhanced API collection with test scripts
+- `Capstone-Local-Debug.postman_environment.json` - Local development environment with dynamic variables
+- `README.md` - This documentation file
 
-## Service URLs (Local Debug)
+## 🚀 Quick Setup
 
-When running services through VS Code "Debug All Services":
-
-| Service | URL | Port |
-|---------|-----|------|
-| 🔐 Authentication | http://localhost:5038 | 5038 |
-| 📦 Catalog | http://localhost:5270 | 5270 |
-| 👥 CRM | http://localhost:5023 | 5023 |
-| 🛒 Cart | http://localhost:5124 | 5124 |
-
-## Setup Instructions
-
-### 1. Import Environment
+### 1. Import into Postman
 1. Open Postman
-2. Click "Import" in the top left
-3. Select `Capstone-Local-Debug.postman_environment.json`
-4. The environment will appear in your environments list
+2. Import both JSON files:
+   - Collection: `Capstone-Services.postman_collection.json`
+   - Environment: `Capstone-Local-Debug.postman_environment.json`
+3. Select "Capstone Local Debug Environment" in the environment dropdown
 
-### 2. Import Collection
-1. In Postman, click "Import"
-2. Select `Capstone-Services.postman_collection.json`
-3. The collection will appear in your collections list
+### 2. Start All Services
+Ensure all four services are running locally in VS Code debug mode:
 
-### 3. Select Environment
-1. In the top right of Postman, click the environment dropdown
-2. Select "Capstone Local Debug"
-
-## Usage Workflow
-
-### Prerequisites
-- Start all services using VS Code "Debug All Services" (F5)
-- Ensure all four services are running without errors
-
-### Testing Flow
-
-1. **Health Checks** - Test each service is responding:
-   - Authentication Service → Health Check
-   - Catalog Service → Health Check
-   - CRM Service → Health Check
-   - Cart Service → Health Check
-
-2. **Authentication** - Get JWT token:
-   - Run "Register User" (optional, if user doesn't exist)
-   - Run "Login User" - This automatically saves the JWT token to environment
-
-3. **Test Services** (JWT token now available for authenticated requests):
-   - **Catalog**: Create items, retrieve items
-   - **CRM**: Create customers, retrieve customers  
-   - **Cart**: Add items to cart, retrieve cart
-
-### Environment Variables
-
-The environment includes these variables that get automatically populated:
-
-| Variable | Description | Auto-populated by |
-|----------|-------------|-------------------|
-| `jwt_token` | JWT bearer token | Login User request |
-| `user_id` | Current user ID | Login User request |
-| `customer_id` | Sample customer ID | Create Customer request |
-| `item_id` | Sample item ID | Create Item request |
-| `cart_id` | Sample cart ID | Add Item to Cart request |
-
-### Swagger Documentation
-
-Each service also provides Swagger UI for API exploration:
-- Authentication: http://localhost:5038/
-- Catalog: http://localhost:5270/
-- CRM: http://localhost:5023/
-- Cart: http://localhost:5124/
-
-## Troubleshooting
-
-### Services Not Responding
-- Ensure all services are running in VS Code debugger
-- Check VS Code terminal output for any service startup errors
-- Verify ports are not blocked by firewall
-
-### Authentication Errors
-- Run "Login User" request first to get JWT token
-- Check that `jwt_token` environment variable is populated
-- Ensure the token hasn't expired (re-login if needed)
-
-### MongoDB Connection Issues
-- Ensure MongoDB is running locally or connection strings are properly configured
-- Check service logs in VS Code terminal for database connection errors
-
-## Extending the Collection
-
-To add new requests:
-1. Create new request in appropriate service folder
-2. Use environment variables like `{{auth_base_url}}`, `{{jwt_token}}`
-3. Add test scripts to auto-populate environment variables from responses
-4. Follow the existing naming convention
-
-## Example Test Script
-
-To auto-save response data to environment variables:
-
-```javascript
-if (pm.response.code === 200) {
-    const response = pm.response.json();
-    if (response.id) {
-        pm.environment.set('entity_id', response.id);
-    }
-}
+```bash
+# Service URLs and Ports
+Authentication Service: http://localhost:5038
+Catalog Service:        http://localhost:5270
+CRM Service:           http://localhost:5023
+Cart Service:          http://localhost:5124
 ```
 
-This setup provides a complete testing environment for all Capstone services running in local development mode.
+### 3. Verify Services
+Use the "Service Health Check" requests in each service folder to confirm all services are running.
+
+## 🧪 Testing Workflows
+
+### Individual Service Testing
+1. **🔐 Authentication Service**
+   - Register a new user (generates random email automatically)
+   - Login to get JWT token (saves token automatically)
+   - Test token validation
+   - Get user profile
+
+2. **📦 Catalog Service**
+   - View all items
+   - Create new items
+   - Search/filter items
+
+3. **👥 CRM Service**
+   - Create customer profiles
+   - Manage customer data
+   - Search customers
+
+4. **🛒 Cart Service**
+   - Create shopping carts
+   - Add items to cart
+   - Remove items from cart
+   - Manage cart contents
+
+### Integration Testing
+Use the "🧪 Integration Test Scenarios" folder for end-to-end testing:
+1. Complete user journey from registration to cart creation
+2. Multi-service workflows
+3. Data consistency testing
+
+## 🔧 Features
+
+### Automatic Variable Management
+- **Dynamic Data Generation**: Emails, timestamps, and names are generated automatically
+- **Token Management**: JWT tokens are captured and stored automatically from login requests
+- **ID Tracking**: User, customer, item, and cart IDs are saved automatically for subsequent requests
+
+### Built-in Test Scripts
+- **Response Validation**: All requests include test scripts to validate responses
+- **Performance Testing**: Response time validation for all endpoints
+- **Error Handling**: Proper error detection and reporting
+- **Debug Logging**: Console logging for troubleshooting
+
+### Environment Variables
+The environment includes these auto-managed variables:
+- `jwt_token` - JWT authentication token
+- `current_user_id` - Logged-in user ID
+- `customer_id` - Created customer ID
+- `item_id` - Created item ID
+- `cart_id` - Created cart ID
+- `random_email` - Generated unique email addresses
+- `timestamp` - Current timestamp for unique data
+
+## 📊 Service Details
+
+### 🔐 Authentication Service (Port 5038)
+**Endpoints:**
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User authentication
+- `GET /api/auth/profile` - Get user profile
+- `POST /api/auth/validate` - Token validation
+
+**Features:**
+- JWT token generation and validation
+- User account management
+- Secure authentication flow
+
+### 📦 Catalog Service (Port 5270)
+**Endpoints:**
+- `GET /api/items` - List all items
+- `POST /api/items` - Create new item
+- `GET /api/items/{id}` - Get item by ID
+- `PUT /api/items/{id}` - Update item
+- `DELETE /api/items/{id}` - Delete item
+
+**Features:**
+- Product catalog management
+- Inventory tracking
+- Search and filtering
+
+### 👥 CRM Service (Port 5023)
+**Endpoints:**
+- `GET /api/customer` - List all customers
+- `POST /api/customer` - Create new customer
+- `GET /api/customer/{id}` - Get customer by ID
+- `PUT /api/customer/{id}` - Update customer
+- `DELETE /api/customer/{id}` - Delete customer
+
+**Features:**
+- Customer profile management
+- Contact information tracking
+- Customer relationship management
+
+### 🛒 Cart Service (Port 5124)
+**Endpoints:**
+- `POST /api/cart` - Create new cart
+- `GET /api/cart/{id}` - Get cart by ID
+- `POST /api/cart/{cartId}/items` - Add item to cart
+- `DELETE /api/cart/{cartId}/items/{itemId}` - Remove item from cart
+
+**Features:**
+- Shopping cart management
+- Item quantity tracking
+- Cart persistence
+
+## 🐛 Debugging Tips
+
+### Service Not Responding
+1. Check VS Code terminal for service startup messages
+2. Verify ports are not in use by other processes
+3. Use health check endpoints to verify service status
+4. Check MongoDB connection (services require MongoDB)
+
+### Authentication Issues
+1. Ensure you've run the "Login User" request first
+2. Check that JWT token is saved in environment variables
+3. Verify token hasn't expired
+4. Check Authorization headers in requests
+
+### Test Failures
+1. Review Postman console for detailed error logs
+2. Check service logs in VS Code terminals
+3. Verify request body formats match API expectations
+4. Ensure proper sequence for dependent requests
+
+## 🔄 Development Workflow
+
+1. **Start Services**: Launch all 4 services in VS Code debug mode
+2. **Health Check**: Run health check requests to verify all services
+3. **Authentication**: Register and login to get JWT token
+4. **Service Testing**: Test individual service endpoints
+5. **Integration Testing**: Run complete user journey scenarios
+6. **Debug Issues**: Use VS Code breakpoints and Postman console for troubleshooting
+
+## 📝 Environment Configuration
+
+The collection is pre-configured for local development with:
+- Standard debug ports (5038, 5270, 5023, 5124)
+- Automatic token management
+- Dynamic test data generation
+- Comprehensive error handling
+- Performance monitoring
+
+For production or different environments, update the base URLs in the environment file accordingly.

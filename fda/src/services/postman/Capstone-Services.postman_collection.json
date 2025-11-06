@@ -1,28 +1,92 @@
 {
 	"info": {
 		"_postman_id": "capstone-api-collection",
-		"name": "Capstone Services API Collection",
-		"description": "API collection for testing Authentication, Catalog, CRM, and Cart services running locally in VS Code debug mode",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"name": "Capstone Services API Collection - Local Debug",
+		"description": "Comprehensive API collection for testing Authentication, Catalog, CRM, and Cart services running locally in VS Code debug mode. Includes health checks, CRUD operations, and integration test scenarios.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "2.0.0"
 	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"exec": [
+					"// Set dynamic variables for testing",
+					"pm.globals.set('timestamp', Date.now());",
+					"pm.globals.set('random_email', 'user' + Date.now() + '@example.com');",
+					"pm.globals.set('random_customer_name', 'Customer_' + Date.now());"
+				],
+				"type": "text/javascript"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"exec": [
+					"// Global test script for all requests",
+					"pm.test('Response time is less than 5000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"// Log response for debugging",
+					"console.log('Response Status:', pm.response.status);",
+					"console.log('Response Time:', pm.response.responseTime + 'ms');"
+				],
+				"type": "text/javascript"
+			}
+		}
+	],
 	"item": [
 		{
-			"name": "Authentication Service",
+			"name": "🔐 Authentication Service",
+			"description": "User authentication and authorization endpoints",
 			"item": [
 				{
-					"name": "Health Check",
+					"name": "Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Authentication service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Service responds quickly', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{auth_base_url}}/health",
+							"raw": "{{auth_base_url}}/api/health",
 							"host": ["{{auth_base_url}}"],
-							"path": ["health"]
-						}
+							"path": ["api", "health"]
+						},
+						"description": "Check if the Authentication service is running and healthy"
 					}
 				},
 				{
-					"name": "Swagger UI",
+					"name": "Swagger UI - Auth Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Swagger UI loads successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include('swagger');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -30,42 +94,26 @@
 							"raw": "{{auth_base_url}}/",
 							"host": ["{{auth_base_url}}"],
 							"path": [""]
-						}
-					}
-				},
-				{
-					"name": "Register User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"TestPassword123!\"\n}"
 						},
-						"url": {
-							"raw": "{{auth_base_url}}/api/auth/register",
-							"host": ["{{auth_base_url}}"],
-							"path": ["api", "auth", "register"]
-						}
+						"description": "Load Authentication service Swagger UI"
 					}
 				},
 				{
-					"name": "Login User",
+					"name": "Register New User",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"if (pm.response.code === 200) {",
+									"pm.test('User registration successful', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
 									"    const response = pm.response.json();",
-									"    if (response.token) {",
-									"        pm.environment.set('jwt_token', response.token);",
-									"        pm.environment.set('user_id', response.userId || response.id);",
+									"    if (response.id) {",
+									"        pm.environment.set('registered_user_id', response.id);",
+									"        console.log('Registered user ID:', response.id);",
 									"    }",
 									"}"
 								],
@@ -83,13 +131,143 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"TestPassword123!\"\n}"
+							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"TestPassword123!\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/register",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a new user account"
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Login successful', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('JWT token received', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('token');",
+									"    pm.expect(response.token).to.be.a('string');",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.environment.set('jwt_token', response.token);",
+									"        pm.environment.set('current_user_id', response.userId || response.id);",
+									"        console.log('Login successful, token saved');",
+									"        console.log('User ID:', response.userId || response.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"TestPassword123!\"\n}"
 						},
 						"url": {
 							"raw": "{{auth_base_url}}/api/auth/login",
 							"host": ["{{auth_base_url}}"],
 							"path": ["api", "auth", "login"]
+						},
+						"description": "Login with user credentials to get JWT token"
+					}
+				},
+				{
+					"name": "Get Current User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Profile retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Profile contains user data', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/profile",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "profile"]
+						},
+						"description": "Get current user profile information"
+					}
+				},
+				{
+					"name": "Test Token Validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Token is valid', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Token validation response', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('valid');",
+									"    pm.expect(response.valid).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"{{jwt_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_base_url}}/api/auth/validate",
+							"host": ["{{auth_base_url}}"],
+							"path": ["api", "auth", "validate"]
+						},
+						"description": "Validate JWT token"
 					}
 				}
 			]
@@ -309,22 +487,51 @@
 			]
 		},
 		{
-			"name": "Cart Service",
+			"name": "🛒 Cart Service",
+			"description": "Shopping cart management endpoints",
 			"item": [
 				{
-					"name": "Health Check",
+					"name": "Service Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cart service is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{cart_base_url}}/health",
+							"raw": "{{cart_base_url}}/api/health",
 							"host": ["{{cart_base_url}}"],
-							"path": ["health"]
-						}
+							"path": ["api", "health"]
+						},
+						"description": "Check if the Cart service is running and healthy"
 					}
 				},
 				{
-					"name": "Swagger UI",
+					"name": "Swagger UI - Cart Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Swagger UI loads successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include('Cart Service');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -332,38 +539,26 @@
 							"raw": "{{cart_base_url}}/",
 							"host": ["{{cart_base_url}}"],
 							"path": [""]
-						}
+						},
+						"description": "Load Cart service Swagger UI"
 					}
 				},
 				{
-					"name": "Get Cart",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{jwt_token}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{cart_base_url}}/api/cart/{{user_id}}",
-							"host": ["{{cart_base_url}}"],
-							"path": ["api", "cart", "{{user_id}}"]
-						}
-					}
-				},
-				{
-					"name": "Add Item to Cart",
+					"name": "Create New Cart",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"pm.test('Cart created successfully', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"if (pm.response.code === 201) {",
 									"    const response = pm.response.json();",
 									"    if (response.id) {",
 									"        pm.environment.set('cart_id', response.id);",
+									"        console.log('Cart created with ID:', response.id);",
 									"    }",
 									"}"
 								],
@@ -386,14 +581,316 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"itemId\": \"{{item_id}}\",\n  \"quantity\": 2,\n  \"price\": 29.99\n}"
+							"raw": "{\n  \"userId\": \"{{current_user_id}}\"\n}"
 						},
 						"url": {
-							"raw": "{{cart_base_url}}/api/cart/{{user_id}}/items",
+							"raw": "{{cart_base_url}}/api/cart",
 							"host": ["{{cart_base_url}}"],
-							"path": ["api", "cart", "{{user_id}}", "items"]
-						}
+							"path": ["api", "cart"]
+						},
+						"description": "Create a new shopping cart for the current user"
 					}
+				},
+				{
+					"name": "Get Cart by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cart retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Cart has expected structure', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('id');",
+									"    pm.expect(response).to.have.property('userId');",
+									"    pm.expect(response).to.have.property('items');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/{{cart_id}}",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "{{cart_id}}"]
+						},
+						"description": "Retrieve cart details by cart ID"
+					}
+				},
+				{
+					"name": "Add Item to Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Item added to cart successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Cart contains the added item', function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.items).to.be.an('array');",
+									"    pm.expect(response.items.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"itemId\": \"{{item_id}}\",\n  \"name\": \"Test Product\",\n  \"quantity\": 2,\n  \"price\": 29.99\n}"
+						},
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/{{cart_id}}/items",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "{{cart_id}}", "items"]
+						},
+						"description": "Add an item to the shopping cart"
+					}
+				},
+				{
+					"name": "Remove Item from Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Item removed from cart successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Item no longer in cart', function () {",
+									"    const response = pm.response.json();",
+									"    const removedItemId = pm.environment.get('item_id');",
+									"    const itemExists = response.items.some(item => item.itemId === removedItemId);",
+									"    pm.expect(itemExists).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cart_base_url}}/api/cart/{{cart_id}}/items/{{item_id}}",
+							"host": ["{{cart_base_url}}"],
+							"path": ["api", "cart", "{{cart_id}}", "items", "{{item_id}}"]
+						},
+						"description": "Remove a specific item from the cart"
+					}
+				}
+			]
+		},
+		{
+			"name": "🧪 Integration Test Scenarios",
+			"description": "End-to-end test scenarios combining multiple services",
+			"item": [
+				{
+					"name": "Complete User Journey",
+					"item": [
+						{
+							"name": "1. Register User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User registration successful', function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    pm.environment.set('test_user_id', response.id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"integration.test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"firstName\": \"Integration\",\n  \"lastName\": \"Test\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/register",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "register"]
+								}
+							}
+						},
+						{
+							"name": "2. Login User",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Login successful', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    const response = pm.response.json();",
+											"    pm.environment.set('test_jwt_token', response.token);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"integration.test@example.com\",\n  \"password\": \"TestPassword123!\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/login",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "login"]
+								}
+							}
+						},
+						{
+							"name": "3. Create Customer Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer created successfully', function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    pm.environment.set('test_customer_id', response.id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{test_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Integration\",\n  \"lastName\": \"Test\",\n  \"email\": \"integration.test@example.com\",\n  \"phoneNumber\": \"+1-555-TEST-001\",\n  \"address\": \"123 Test Street, Test City, TS 12345\"\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer"]
+								}
+							}
+						},
+						{
+							"name": "4. Create Cart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Cart created successfully', function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    pm.environment.set('test_cart_id', response.id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{test_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{test_user_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{cart_base_url}}/api/cart",
+									"host": ["{{cart_base_url}}"],
+									"path": ["api", "cart"]
+								}
+							}
+						}
+					]
 				}
 			]
 		}
