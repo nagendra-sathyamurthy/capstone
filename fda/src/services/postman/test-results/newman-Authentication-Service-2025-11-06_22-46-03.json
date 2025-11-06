@@ -1,0 +1,1746 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "auth-service-collection-v2"
+    },
+    "item": [
+      {
+        "id": "def92b69-4dc4-4613-887c-ac6d5b8783e0",
+        "name": "Health & Status",
+        "description": {
+          "content": "Authentication service health monitoring",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+            "name": "Service Health Check",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "health"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Authentication service is healthy', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test('Response contains health info', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('status');",
+                    "    pm.expect(response.status).to.eql('Healthy');",
+                    "});"
+                  ],
+                  "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "731e2bd6-2929-4a15-91ba-c5e0d0d8fe42",
+        "name": "🔑 Authentication Flows",
+        "description": {
+          "content": "User login, registration, and authentication flows",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "56dc74a4-5b2f-45a9-bb14-abb180125612",
+            "name": "User Registration",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "register"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"UserPass123!\",\n  \"role\": \"Customer\",\n  \"organization\": \"FoodDelivery\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "e95aed64-54e1-4ee3-a38d-cbb16abe61cf",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Registration successful', function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test('Response contains user info', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('user');",
+                    "    pm.expect(response.user).to.have.property('email');",
+                    "    pm.globals.set('registered_user_id', response.user.id);",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "187e8c0e-345f-473b-ac3b-ee12284fe6e6",
+            "name": "User Login (Email/Password)",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "login"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "730065ab-729b-42ca-ba12-912c5c7b3857",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Login successful', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test('Response contains auth token', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('token');",
+                    "    pm.globals.set('auth_token', response.token);",
+                    "    pm.globals.set('current_user_id', response.user.id);",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "1905adda-ec3a-4449-9af4-e57514ccb92a",
+            "name": "Email/Password Login",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "login",
+                  "email"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "19bef619-e61d-4479-ad09-18446e7396a6",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Email login successful', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test('Response contains auth token', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('token');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "31c5c98f-ab70-466b-9d17-ce6748975296",
+        "name": "🔐 Token Management",
+        "description": {
+          "content": "JWT token validation and management",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "a1a3b6f7-a8fc-4887-a4e7-9c5e4b10c777",
+            "name": "Validate Token",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "validate"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "bca2acdc-9d71-4ce2-9aba-13039dca210d",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Token validation response', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 401]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('Token is valid', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('valid');",
+                    "        pm.expect(response.valid).to.be.true;",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "ce9e3387-25f4-471a-81a9-77e18fb2dd6b",
+        "name": "👤 User Profile Management",
+        "description": {
+          "content": "User profile and account management",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "3f033c85-c38a-4f65-9682-12578af64246",
+            "name": "Get User Profile",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "profile"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "6c47af6c-e0f2-4bc6-a09c-ea85a27a3e79",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Profile retrieval successful', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 401]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('Profile contains user info', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('email');",
+                    "        pm.expect(response).to.have.property('role');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "7c0f8c79-c12e-4f8e-ac56-63307d6afd4f",
+            "name": "Update Password",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "password"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"currentPassword\": \"AdminPass123!\",\n  \"newPassword\": \"NewAdminPass123!\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "511bafa6-ca5b-4246-a5ae-d1a8fc173cb7",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Password update response', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 400, 401]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('Password updated successfully', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('message');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "cbde9485-d196-475d-99d0-6f918fac3884",
+        "name": "🔄 Password Recovery",
+        "description": {
+          "content": "Password reset and recovery flows",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "880fe4e3-5979-423e-825b-479b6e3ec542",
+            "name": "Forgot Password",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "forgot-password"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "\"admin@restaurant.com\""
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "2409312d-8122-4970-ab2e-bbef9eef1828",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Forgot password request processed', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test('Response contains confirmation message', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('message');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "4c352be2-755b-4d06-b3e9-027f9a11e38b",
+        "name": "🏷️ Roles & Permissions",
+        "description": {
+          "content": "Role and permission management endpoints",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "ddd78208-ec2d-4c3a-bd4e-a5b1ba7ea34e",
+            "name": "Get Available Roles",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "roles"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "29f3d4ef-975d-4ba1-ac3c-3d33f5ffedd7",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Roles retrieved successfully', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test('Response contains roles array', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.be.an('array');",
+                    "    pm.expect(response.length).to.be.greaterThan(0);",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "fef98cfc-9898-4770-8fbe-69ac12482fd7",
+            "name": "Get Permissions for Role",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "permissions",
+                  "Admin"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "bff615fa-6e65-435d-b6b3-bf7d6b48cd0d",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Permissions retrieved successfully', function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test('Response contains permissions', function () {",
+                    "    const response = pm.response.json();",
+                    "    pm.expect(response).to.have.property('role');",
+                    "    pm.expect(response).to.have.property('permissions');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "9c0fd9d9-4488-4cc5-ba9c-c5bfd6bb3c7d",
+            "name": "Check User Permission",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "check-permission"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "\"manage_menu\""
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "859dc503-6cc4-4dae-9396-240b8850e7b5",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Permission check response', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 401]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('Permission check contains result', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('hasPermission');",
+                    "        pm.expect(response).to.have.property('permission');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "077c0a45-2a2c-4fcf-a63e-81f7f72a6d2d",
+        "name": "📱 OTP Authentication",
+        "description": {
+          "content": "One-Time Password generation and verification",
+          "type": "text/plain"
+        },
+        "item": [
+          {
+            "id": "39469f0e-6ea7-4dad-817a-ec3bd6d75c7f",
+            "name": "Generate OTP",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "generate-otp"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"purpose\": \"login\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "568e6bf8-2337-4967-9066-6ac7139a951a",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('OTP generation response', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 400]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('OTP generated successfully', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('success');",
+                    "        pm.expect(response.success).to.be.true;",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "0385eef2-b40d-4506-b5e3-7297b0983310",
+            "name": "Verify OTP",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "verify-otp"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"otp\": \"123456\",\n  \"purpose\": \"login\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "bcfd525f-a325-4c67-a4fc-31402666a973",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('OTP verification response', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 400]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('OTP verification result', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('success');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "09afd2b1-517a-40cc-a862-fc427359806f",
+            "name": "Login with Email/OTP",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "login",
+                  "email-otp"
+                ],
+                "host": [
+                  "{{auth_base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"otp\": \"123456\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "ba3a1d90-598d-431d-854d-534d58bf3147",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Email/OTP login response', function () {",
+                    "    pm.response.to.have.status.oneOf([200, 401]);",
+                    "});",
+                    "",
+                    "if (pm.response.code === 200) {",
+                    "    pm.test('Login successful with OTP', function () {",
+                    "        const response = pm.response.json();",
+                    "        pm.expect(response).to.have.property('token');",
+                    "    });",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      }
+    ],
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "id": "adf3cf81-6e43-4956-865b-054b451c36fb",
+          "type": "text/javascript",
+          "exec": [
+            "// Set dynamic variables for testing",
+            "pm.globals.set('timestamp', Date.now());",
+            "pm.globals.set('random_email', 'user' + Date.now() + '@fooddelivery.com');",
+            "pm.globals.set('random_name', 'TestUser_' + Date.now());"
+          ],
+          "_lastExecutionId": "9ba2ead0-d530-4295-88a4-c11bbf044da2"
+        }
+      },
+      {
+        "listen": "test",
+        "script": {
+          "id": "8bb7a852-3be5-4c52-9dd5-1de644459ede",
+          "type": "text/javascript",
+          "exec": [
+            "// Global test script for all requests",
+            "pm.test('Response time is reasonable (< 10s)', function () {",
+            "    pm.expect(pm.response.responseTime).to.be.below(10000);",
+            "});",
+            "",
+            "// Log response for debugging",
+            "console.log('🔍 Auth Service Response Status:', pm.response.status);",
+            "console.log('⏱️ Response Time:', pm.response.responseTime + 'ms');",
+            "console.log('📊 Response Size:', pm.response.responseSize + ' bytes');"
+          ],
+          "_lastExecutionId": "715bbe6a-0d89-4e47-af2d-657416680d8e"
+        }
+      }
+    ],
+    "variable": [
+      {
+        "type": "string",
+        "value": "http://localhost:5001",
+        "key": "auth_base_url"
+      }
+    ],
+    "info": {
+      "_postman_id": "auth-service-collection-v2",
+      "name": "🔐 Authentication Service API Collection",
+      "version": {
+        "raw": "2.0.0",
+        "major": 2,
+        "minor": 0,
+        "patch": 0,
+        "prerelease": [],
+        "build": [],
+        "string": "2.0.0"
+      },
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Comprehensive API collection for the Authentication Service including user registration, login flows, token management, roles, permissions, and OTP authentication.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment"
+    },
+    "id": "food-delivery-local-env",
+    "name": "Food Delivery - Local Development",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://localhost:5001",
+        "key": "auth_base_url"
+      },
+      {
+        "type": "any",
+        "value": "http://localhost:5002",
+        "key": "menu_base_url"
+      },
+      {
+        "type": "any",
+        "value": "http://localhost:5003",
+        "key": "crm_base_url"
+      },
+      {
+        "type": "any",
+        "value": "http://localhost:5004",
+        "key": "cart_base_url"
+      },
+      {
+        "type": "any",
+        "value": "http://localhost:5005",
+        "key": "legacy_base_url"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "auth_token"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "current_user_id"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "customer_id"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "menu_item_id"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "category_id"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "cart_id"
+      },
+      {
+        "type": "any",
+        "value": "admin@restaurant.com",
+        "key": "admin_email"
+      },
+      {
+        "type": "any",
+        "value": "AdminPass123!",
+        "key": "admin_password"
+      }
+    ]
+  },
+  "globals": {
+    "id": "d24e4dba-cf11-4cd2-acc0-ce00228ee996",
+    "values": [
+      {
+        "type": "any",
+        "value": 1762449365356,
+        "key": "timestamp"
+      },
+      {
+        "type": "any",
+        "value": "user1762449365356@fooddelivery.com",
+        "key": "random_email"
+      },
+      {
+        "type": "any",
+        "value": "TestUser_1762449365356",
+        "key": "random_name"
+      }
+    ]
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 3,
+        "pending": 0,
+        "failed": 1
+      },
+      "prerequests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 3,
+        "pending": 0,
+        "failed": 2
+      },
+      "testScripts": {
+        "total": 2,
+        "pending": 0,
+        "failed": 1
+      },
+      "prerequestScripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 30,
+      "responseMin": 30,
+      "responseMax": 30,
+      "responseSd": 0,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1762449365014,
+      "completed": 1762449365472
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 14,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "ddc5fe77-9e09-44b8-be86-00a545056fe2",
+          "httpRequestId": "dc281ec9-4cec-4e13-8203-2dc189ac4232"
+        },
+        "item": {
+          "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+          "name": "Service Health Check",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "health"
+              ],
+              "host": [
+                "{{auth_base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Authentication service is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains health info', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('status');",
+                  "    pm.expect(response.status).to.eql('Healthy');",
+                  "});"
+                ],
+                "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "5001",
+            "path": [
+              "api",
+              "health"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "87131cb8-f1c9-48c6-884f-6eaaee348b1a",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:5001",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "dbda09ad-df33-4890-aa3d-5abe15ae31af",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "Content-Length",
+              "value": "0"
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 06 Nov 2025 17:16:04 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Kestrel"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": []
+          },
+          "cookie": [],
+          "responseTime": 30,
+          "responseSize": 0
+        },
+        "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+        "assertions": [
+          {
+            "assertion": "Response time is reasonable (< 10s)",
+            "skipped": false
+          },
+          {
+            "assertion": "Authentication service is healthy",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Authentication service is healthy",
+              "message": "expected response to have status code 200 but got 404",
+              "stack": "AssertionError: expected response to have status code 200 but got 404\n   at Object.eval sandbox-script.js:1:1)"
+            }
+          },
+          {
+            "assertion": "Response contains health info",
+            "skipped": false,
+            "error": {
+              "name": "JSONError",
+              "index": 1,
+              "test": "Response contains health info",
+              "message": "No data, empty input at 1:1\n\n^",
+              "stack": "JSONError: No data, empty input at 1:1\n\n^\n   at Object.eval sandbox-script.js:2:1)"
+            }
+          }
+        ],
+        "testScript": [
+          {
+            "error": {
+              "name": "AssertionFailure",
+              "message": "Authentication service is healthy, Response contains health info",
+              "stack": "AssertionFailure: Authentication service is healthy, Response contains health info\n    at postProcessContext (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js:41:17)\n    at PostmanCollectionRun.<anonymous> (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js:513:39)\n    at PostmanSandbox.<anonymous> (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-sandbox\\lib\\postman-sandbox.js:139:13)\n    at Object.onceWrapper (node:events:623:26)\n    at PostmanSandbox.emit (node:events:508:28)\n    at context.__uvm_emit (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\uvm\\lib\\bridge.js:71:21)\n    at Object.dispatch (evalmachine.<anonymous>:20:13)\n    at Object.<anonymous> (evalmachine.<anonymous>:66:7860)\n    at t.exports.terminate (evalmachine.<anonymous>:66:22105)\n    at Immediate._onImmediate (evalmachine.<anonymous>:66:5993)\n    at process.processImmediate (node:internal/timers:506:21)",
+              "checksum": "5b7b787d3a78b5a872188ce1bf568b7b",
+              "id": "f129b9a1-6941-4adb-9409-58677e194668",
+              "timestamp": 1762449365453,
+              "stacktrace": [
+                {
+                  "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js",
+                  "lineNumber": 41,
+                  "functionName": "postProcessContext",
+                  "typeName": "Object",
+                  "methodName": null,
+                  "columnNumber": 17,
+                  "native": false
+                },
+                {
+                  "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js",
+                  "lineNumber": 513,
+                  "functionName": "",
+                  "typeName": "PostmanCollectionRun",
+                  "methodName": null,
+                  "columnNumber": 39,
+                  "native": false
+                },
+                {
+                  "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-sandbox\\lib\\postman-sandbox.js",
+                  "lineNumber": 139,
+                  "functionName": "",
+                  "typeName": "PostmanSandbox",
+                  "methodName": null,
+                  "columnNumber": 13,
+                  "native": false
+                },
+                {
+                  "fileName": "node:events",
+                  "lineNumber": 623,
+                  "functionName": "Object.onceWrapper",
+                  "typeName": "Object",
+                  "methodName": "onceWrapper",
+                  "columnNumber": 26,
+                  "native": false
+                },
+                {
+                  "fileName": "node:events",
+                  "lineNumber": 508,
+                  "functionName": "PostmanSandbox.emit",
+                  "typeName": "PostmanSandbox",
+                  "methodName": "emit",
+                  "columnNumber": 28,
+                  "native": false
+                },
+                {
+                  "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\uvm\\lib\\bridge.js",
+                  "lineNumber": 71,
+                  "functionName": "context.__uvm_emit",
+                  "typeName": "context",
+                  "methodName": "__uvm_emit",
+                  "columnNumber": 21,
+                  "native": false
+                },
+                {
+                  "fileName": "evalmachine.<anonymous>",
+                  "lineNumber": 20,
+                  "functionName": "Object.dispatch",
+                  "typeName": "Object",
+                  "methodName": "dispatch",
+                  "columnNumber": 13,
+                  "native": false
+                },
+                {
+                  "fileName": "evalmachine.<anonymous>",
+                  "lineNumber": 66,
+                  "functionName": "",
+                  "typeName": "Object",
+                  "methodName": null,
+                  "columnNumber": 7860,
+                  "native": false
+                },
+                {
+                  "fileName": "evalmachine.<anonymous>",
+                  "lineNumber": 66,
+                  "functionName": "t.exports.terminate",
+                  "typeName": "t",
+                  "methodName": "exports.terminate",
+                  "columnNumber": 22105,
+                  "native": false
+                },
+                {
+                  "fileName": "evalmachine.<anonymous>",
+                  "lineNumber": 66,
+                  "functionName": "Immediate._onImmediate",
+                  "typeName": "Immediate",
+                  "methodName": "_onImmediate",
+                  "columnNumber": 5993,
+                  "native": false
+                },
+                {
+                  "fileName": "node:internal/timers",
+                  "lineNumber": 506,
+                  "functionName": "process.processImmediate",
+                  "typeName": "process",
+                  "methodName": "processImmediate",
+                  "columnNumber": 21,
+                  "native": false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 0
+    },
+    "failures": [
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Authentication service is healthy",
+          "message": "expected response to have status code 200 but got 404",
+          "stack": "AssertionError: expected response to have status code 200 but got 404\n   at Object.eval sandbox-script.js:1:1)",
+          "checksum": "80566ec153cd7e2d765ef350b98ca000",
+          "id": "22c4a594-af64-492d-a09a-cfce743f7744",
+          "timestamp": 1762449365447,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+          "name": "Service Health Check",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "health"
+              ],
+              "host": [
+                "{{auth_base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Authentication service is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains health info', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('status');",
+                  "    pm.expect(response.status).to.eql('Healthy');",
+                  "});"
+                ],
+                "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "def92b69-4dc4-4613-887c-ac6d5b8783e0",
+          "name": "Health & Status",
+          "description": {
+            "content": "Authentication service health monitoring",
+            "type": "text/plain"
+          },
+          "item": [
+            {
+              "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+              "name": "Service Health Check",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "health"
+                  ],
+                  "host": [
+                    "{{auth_base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Authentication service is healthy', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Response contains health info', function () {",
+                      "    const response = pm.response.json();",
+                      "    pm.expect(response).to.have.property('status');",
+                      "    pm.expect(response.status).to.eql('Healthy');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 14,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "ddc5fe77-9e09-44b8-be86-00a545056fe2",
+          "httpRequestId": "dc281ec9-4cec-4e13-8203-2dc189ac4232",
+          "scriptId": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+          "execution": "28036010-4256-4587-bbbe-66bbfd598f2d"
+        }
+      },
+      {
+        "error": {
+          "name": "JSONError",
+          "index": 1,
+          "test": "Response contains health info",
+          "message": "No data, empty input at 1:1\n\n^",
+          "stack": "JSONError: No data, empty input at 1:1\n\n^\n   at Object.eval sandbox-script.js:2:1)",
+          "checksum": "7ed1791de5e6cf977e00b872cc235fd9",
+          "id": "468ad9a6-84ea-4a4b-b480-d18de15f5f94",
+          "timestamp": 1762449365451,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+          "name": "Service Health Check",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "health"
+              ],
+              "host": [
+                "{{auth_base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Authentication service is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains health info', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('status');",
+                  "    pm.expect(response.status).to.eql('Healthy');",
+                  "});"
+                ],
+                "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "def92b69-4dc4-4613-887c-ac6d5b8783e0",
+          "name": "Health & Status",
+          "description": {
+            "content": "Authentication service health monitoring",
+            "type": "text/plain"
+          },
+          "item": [
+            {
+              "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+              "name": "Service Health Check",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "health"
+                  ],
+                  "host": [
+                    "{{auth_base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Authentication service is healthy', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Response contains health info', function () {",
+                      "    const response = pm.response.json();",
+                      "    pm.expect(response).to.have.property('status');",
+                      "    pm.expect(response.status).to.eql('Healthy');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 14,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "ddc5fe77-9e09-44b8-be86-00a545056fe2",
+          "httpRequestId": "dc281ec9-4cec-4e13-8203-2dc189ac4232",
+          "scriptId": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+          "execution": "28036010-4256-4587-bbbe-66bbfd598f2d"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionFailure",
+          "message": "Authentication service is healthy, Response contains health info",
+          "stack": "AssertionFailure: Authentication service is healthy, Response contains health info\n    at postProcessContext (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js:41:17)\n    at PostmanCollectionRun.<anonymous> (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js:513:39)\n    at PostmanSandbox.<anonymous> (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-sandbox\\lib\\postman-sandbox.js:139:13)\n    at Object.onceWrapper (node:events:623:26)\n    at PostmanSandbox.emit (node:events:508:28)\n    at context.__uvm_emit (C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\uvm\\lib\\bridge.js:71:21)\n    at Object.dispatch (evalmachine.<anonymous>:20:13)\n    at Object.<anonymous> (evalmachine.<anonymous>:66:7860)\n    at t.exports.terminate (evalmachine.<anonymous>:66:22105)\n    at Immediate._onImmediate (evalmachine.<anonymous>:66:5993)\n    at process.processImmediate (node:internal/timers:506:21)",
+          "checksum": "5b7b787d3a78b5a872188ce1bf568b7b",
+          "id": "f129b9a1-6941-4adb-9409-58677e194668",
+          "timestamp": 1762449365453,
+          "stacktrace": [
+            {
+              "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js",
+              "lineNumber": 41,
+              "functionName": "postProcessContext",
+              "typeName": "Object",
+              "methodName": null,
+              "columnNumber": 17,
+              "native": false
+            },
+            {
+              "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-runtime\\lib\\runner\\extensions\\event.command.js",
+              "lineNumber": 513,
+              "functionName": "",
+              "typeName": "PostmanCollectionRun",
+              "methodName": null,
+              "columnNumber": 39,
+              "native": false
+            },
+            {
+              "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\postman-sandbox\\lib\\postman-sandbox.js",
+              "lineNumber": 139,
+              "functionName": "",
+              "typeName": "PostmanSandbox",
+              "methodName": null,
+              "columnNumber": 13,
+              "native": false
+            },
+            {
+              "fileName": "node:events",
+              "lineNumber": 623,
+              "functionName": "Object.onceWrapper",
+              "typeName": "Object",
+              "methodName": "onceWrapper",
+              "columnNumber": 26,
+              "native": false
+            },
+            {
+              "fileName": "node:events",
+              "lineNumber": 508,
+              "functionName": "PostmanSandbox.emit",
+              "typeName": "PostmanSandbox",
+              "methodName": "emit",
+              "columnNumber": 28,
+              "native": false
+            },
+            {
+              "fileName": "C:\\Users\\Nagen\\AppData\\Roaming\\npm\\node_modules\\newman\\node_modules\\uvm\\lib\\bridge.js",
+              "lineNumber": 71,
+              "functionName": "context.__uvm_emit",
+              "typeName": "context",
+              "methodName": "__uvm_emit",
+              "columnNumber": 21,
+              "native": false
+            },
+            {
+              "fileName": "evalmachine.<anonymous>",
+              "lineNumber": 20,
+              "functionName": "Object.dispatch",
+              "typeName": "Object",
+              "methodName": "dispatch",
+              "columnNumber": 13,
+              "native": false
+            },
+            {
+              "fileName": "evalmachine.<anonymous>",
+              "lineNumber": 66,
+              "functionName": "",
+              "typeName": "Object",
+              "methodName": null,
+              "columnNumber": 7860,
+              "native": false
+            },
+            {
+              "fileName": "evalmachine.<anonymous>",
+              "lineNumber": 66,
+              "functionName": "t.exports.terminate",
+              "typeName": "t",
+              "methodName": "exports.terminate",
+              "columnNumber": 22105,
+              "native": false
+            },
+            {
+              "fileName": "evalmachine.<anonymous>",
+              "lineNumber": 66,
+              "functionName": "Immediate._onImmediate",
+              "typeName": "Immediate",
+              "methodName": "_onImmediate",
+              "columnNumber": 5993,
+              "native": false
+            },
+            {
+              "fileName": "node:internal/timers",
+              "lineNumber": 506,
+              "functionName": "process.processImmediate",
+              "typeName": "process",
+              "methodName": "processImmediate",
+              "columnNumber": 21,
+              "native": false
+            }
+          ]
+        },
+        "at": "test-script:39:17",
+        "source": {
+          "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+          "name": "Service Health Check",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "health"
+              ],
+              "host": [
+                "{{auth_base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Authentication service is healthy', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains health info', function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response).to.have.property('status');",
+                  "    pm.expect(response.status).to.eql('Healthy');",
+                  "});"
+                ],
+                "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "def92b69-4dc4-4613-887c-ac6d5b8783e0",
+          "name": "Health & Status",
+          "description": {
+            "content": "Authentication service health monitoring",
+            "type": "text/plain"
+          },
+          "item": [
+            {
+              "id": "01a494ed-fa17-4b7e-8fa6-4104dce1b903",
+              "name": "Service Health Check",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "health"
+                  ],
+                  "host": [
+                    "{{auth_base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "ba041e5d-e631-41eb-be0e-062daace6cc9",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Authentication service is healthy', function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Response contains health info', function () {",
+                      "    const response = pm.response.json();",
+                      "    pm.expect(response).to.have.property('status');",
+                      "    pm.expect(response.status).to.eql('Healthy');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "28036010-4256-4587-bbbe-66bbfd598f2d"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 14,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "ddc5fe77-9e09-44b8-be86-00a545056fe2",
+          "httpRequestId": "dc281ec9-4cec-4e13-8203-2dc189ac4232",
+          "scriptId": "ba041e5d-e631-41eb-be0e-062daace6cc9"
+        }
+      }
+    ],
+    "error": null
+  }
+}
