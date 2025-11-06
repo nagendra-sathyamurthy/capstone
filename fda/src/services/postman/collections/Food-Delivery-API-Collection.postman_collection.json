@@ -852,78 +852,1440 @@
 		},
 		{
 			"name": "🔐 Authentication Service",
-			"description": "User authentication and authorization endpoints",
+			"description": "Comprehensive user authentication and authorization endpoints",
 			"item": [
 				{
-					"name": "Service Health Check",
-					"event": [
+					"name": "Health & Status",
+					"description": "Authentication service health monitoring",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Authentication service is healthy', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response contains health info', function () {",
-									"    const response = pm.response.json();",
-									"    pm.expect(response).to.have.property('status');",
-									"    pm.expect(response.status).to.eql('Healthy');",
-									"});"
-								],
-								"type": "text/javascript"
+							"name": "Service Health Check",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Authentication service is healthy', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains health info', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('status');",
+											"    pm.expect(response.status).to.eql('Healthy');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{auth_base_url}}/api/health",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "health"]
+								}
 							}
 						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{auth_base_url}}/api/health",
-							"host": ["{{auth_base_url}}"],
-							"path": ["api", "health"]
-						}
-					}
+					]
 				},
 				{
-					"name": "User Login",
-					"event": [
+					"name": "🔑 Authentication Flows",
+					"description": "User login, registration, and authentication flows",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Login successful', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response contains auth token', function () {",
-									"    const response = pm.response.json();",
-									"    pm.expect(response).to.have.property('token');",
-									"    pm.globals.set('auth_token', response.token);",
-									"});"
+							"name": "User Registration",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Registration successful', function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test('Response contains user info', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('user');",
+											"    pm.expect(response.user).to.have.property('email');",
+											"    pm.globals.set('registered_user_id', response.user.id);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
 								],
-								"type": "text/javascript"
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{random_email}}\",\n  \"password\": \"UserPass123!\",\n  \"role\": \"Customer\",\n  \"organization\": \"FoodDelivery\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/register",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "register"]
+								}
 							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
 						},
-						"url": {
-							"raw": "{{auth_base_url}}/api/auth/login",
-							"host": ["{{auth_base_url}}"],
-							"path": ["api", "auth", "login"]
+						{
+							"name": "User Login (Email/Password)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Login successful', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains auth token', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('token');",
+											"    pm.globals.set('auth_token', response.token);",
+											"    pm.globals.set('current_user_id', response.user.id);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/login",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "login"]
+								}
+							}
+						},
+						{
+							"name": "Email/Password Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Email login successful', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains auth token', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('token');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"AdminPass123!\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/login/email",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "login", "email"]
+								}
+							}
 						}
-					}
+					]
+				},
+				{
+					"name": "🔐 Token Management",
+					"description": "JWT token validation and management",
+					"item": [
+						{
+							"name": "Validate Token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Token validation response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Token is valid', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('valid');",
+											"        pm.expect(response.valid).to.be.true;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/validate",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "validate"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "👤 User Profile Management",
+					"description": "User profile and account management",
+					"item": [
+						{
+							"name": "Get User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Profile retrieval successful', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Profile contains user info', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('email');",
+											"        pm.expect(response).to.have.property('role');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/profile",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "profile"]
+								}
+							}
+						},
+						{
+							"name": "Update Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Password update response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 400, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Password updated successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('message');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"currentPassword\": \"AdminPass123!\",\n  \"newPassword\": \"NewAdminPass123!\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/password",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "password"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🔄 Password Recovery",
+					"description": "Password reset and recovery flows",
+					"item": [
+						{
+							"name": "Forgot Password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Forgot password request processed', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains confirmation message', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('message');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"admin@restaurant.com\""
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/forgot-password",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "forgot-password"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🏷️ Roles & Permissions",
+					"description": "Role and permission management endpoints",
+					"item": [
+						{
+							"name": "Get Available Roles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Roles retrieved successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains roles array', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.be.an('array');",
+											"    pm.expect(response.length).to.be.greaterThan(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/roles",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "roles"]
+								}
+							}
+						},
+						{
+							"name": "Get Permissions for Role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Permissions retrieved successfully', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains permissions', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('role');",
+											"    pm.expect(response).to.have.property('permissions');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/permissions/Admin",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "permissions", "Admin"]
+								}
+							}
+						},
+						{
+							"name": "Check User Permission",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Permission check response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Permission check contains result', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('hasPermission');",
+											"        pm.expect(response).to.have.property('permission');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"manage_menu\""
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/check-permission",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "check-permission"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "📱 OTP Authentication",
+					"description": "One-Time Password generation and verification",
+					"item": [
+						{
+							"name": "Generate OTP",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('OTP generation response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 400]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('OTP generated successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('success');",
+											"        pm.expect(response.success).to.be.true;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"purpose\": \"login\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/generate-otp",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "generate-otp"]
+								}
+							}
+						},
+						{
+							"name": "Verify OTP",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('OTP verification response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 400]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('OTP verification result', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('success');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"otp\": \"123456\",\n  \"purpose\": \"login\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/verify-otp",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "verify-otp"]
+								}
+							}
+						},
+						{
+							"name": "Login with Email/OTP",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Email/OTP login response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Login successful with OTP', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('token');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"otp\": \"123456\"\n}"
+								},
+								"url": {
+									"raw": "{{auth_base_url}}/api/auth/login/email-otp",
+									"host": ["{{auth_base_url}}"],
+									"path": ["api", "auth", "login", "email-otp"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "👥 CRM Customer Service",
+			"description": "Customer Relationship Management - Customer data and profiles",
+			"item": [
+				{
+					"name": "Health & Status",
+					"description": "CRM service health monitoring",
+					"item": [
+						{
+							"name": "CRM Service Health Check",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('CRM service is healthy', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains health info', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('status');",
+											"    pm.expect(response.status).to.eql('Healthy');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{crm_base_url}}/api/health",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "health"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "👤 Customer Management",
+					"description": "Complete customer CRUD operations",
+					"item": [
+						{
+							"name": "Get All Customers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customers retrieved successfully', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Response is array of customers', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.be.an('array');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer"]
+								}
+							}
+						},
+						{
+							"name": "Get Customer by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer retrieval response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Customer details retrieved', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.expect(response).to.have.property('email');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer/{{customer_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer", "{{customer_id}}"]
+								}
+							}
+						},
+						{
+							"name": "Create New Customer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer creation response', function () {",
+											"    pm.response.to.have.status.oneOf([201, 409, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    pm.test('Customer created successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.globals.set('customer_id', response.id);",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"{{random_customer_name}}\",\n  \"lastName\": \"Customer\",\n  \"email\": \"{{random_email}}\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"address\": {\n    \"street\": \"123 Food Street\",\n    \"city\": \"Delivery Town\",\n    \"state\": \"CA\",\n    \"zipCode\": \"12345\",\n    \"country\": \"USA\"\n  },\n  \"dateOfBirth\": \"1990-01-15\",\n  \"isActive\": true\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer"]
+								}
+							}
+						},
+						{
+							"name": "Create Multiple Customers (Bulk)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Bulk customer creation response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Bulk creation successful', function () {",
+											"        pm.expect(pm.response.text()).to.not.be.empty;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n  {\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phoneNumber\": \"+1-555-0111\",\n    \"address\": {\n      \"street\": \"111 Main St\",\n      \"city\": \"Anytown\",\n      \"state\": \"CA\",\n      \"zipCode\": \"12345\",\n      \"country\": \"USA\"\n    },\n    \"isActive\": true\n  },\n  {\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Smith\",\n    \"email\": \"jane.smith@example.com\",\n    \"phoneNumber\": \"+1-555-0222\",\n    \"address\": {\n      \"street\": \"222 Oak Ave\",\n      \"city\": \"Somewhere\",\n      \"state\": \"NY\",\n      \"zipCode\": \"67890\",\n      \"country\": \"USA\"\n    },\n    \"isActive\": true\n  }\n]"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer/bulk",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer", "bulk"]
+								}
+							}
+						},
+						{
+							"name": "Update Customer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer update response', function () {",
+											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 204) {",
+											"    pm.test('Customer updated successfully', function () {",
+											"        // No content expected for 204",
+											"        pm.expect(pm.response.text()).to.be.empty;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Updated Customer\",\n  \"lastName\": \"Name\",\n  \"email\": \"{{random_email}}\",\n  \"phoneNumber\": \"+1-555-9999\",\n  \"address\": {\n    \"street\": \"999 Updated Street\",\n    \"city\": \"New City\",\n    \"state\": \"TX\",\n    \"zipCode\": \"99999\",\n    \"country\": \"USA\"\n  },\n  \"isActive\": true\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer/{{customer_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer", "{{customer_id}}"]
+								}
+							}
+						},
+						{
+							"name": "Delete Customer",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Customer deletion response', function () {",
+											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 204) {",
+											"    pm.test('Customer deleted successfully', function () {",
+											"        // No content expected for 204",
+											"        pm.expect(pm.response.text()).to.be.empty;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/customer/{{customer_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "customer", "{{customer_id}}"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "👤 User Profile Management",
+					"description": "Comprehensive user profile management for food delivery system",
+					"item": [
+						{
+							"name": "Create User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile creation response', function () {",
+											"    pm.response.to.have.status.oneOf([201, 409, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    pm.test('User profile created successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.globals.set('user_profile_id', response.id);",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{current_user_id}}\",\n  \"firstName\": \"Food\",\n  \"lastName\": \"Lover\",\n  \"email\": \"{{random_email}}\",\n  \"phoneNumber\": \"+1-555-FOOD\",\n  \"role\": \"Customer\",\n  \"organization\": \"FoodDelivery\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": {\n    \"street\": \"123 Hunger Ave\",\n    \"city\": \"Foodville\",\n    \"state\": \"CA\",\n    \"zipCode\": \"90210\",\n    \"country\": \"USA\"\n  },\n  \"dietaryPreferences\": [\"vegetarian\", \"gluten-free\"],\n  \"favoriteRestaurants\": [\"Pizza Palace\", \"Burger Barn\"],\n  \"deliveryInfo\": {\n    \"preferredDeliveryTime\": \"evening\",\n    \"specialInstructions\": \"Ring doorbell twice\"\n  }\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile"]
+								}
+							}
+						},
+						{
+							"name": "Get User Profile by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile retrieval response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('User profile details retrieved', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.expect(response).to.have.property('email');",
+											"        pm.expect(response).to.have.property('role');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{user_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{user_profile_id}}"]
+								}
+							}
+						},
+						{
+							"name": "Get User Profile by User ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile by userId response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('User profile found by userId', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('userId');",
+											"        pm.expect(response).to.have.property('firstName');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/by-user/{{current_user_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "by-user", "{{current_user_id}}"]
+								}
+							}
+						},
+						{
+							"name": "Get User Profile by Email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile by email response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('User profile found by email', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('email');",
+											"        pm.expect(response).to.have.property('firstName');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/by-email/admin@restaurant.com",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "by-email", "admin@restaurant.com"]
+								}
+							}
+						},
+						{
+							"name": "Get User Profiles by Role",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profiles by role response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('User profiles retrieved by role', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.be.an('array');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/by-role/Customer",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "by-role", "Customer"]
+								}
+							}
+						},
+						{
+							"name": "Search User Profiles",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile search response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 400, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Search results returned', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.be.an('array');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/search?searchTerm=Food",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "search"],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "Food"
+										}
+									]
+								}
+							}
+						},
+						{
+							"name": "Update User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile update response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('User profile updated successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"firstName\": \"Updated Food\",\n  \"lastName\": \"Enthusiast\",\n  \"email\": \"updated@restaurant.com\",\n  \"phoneNumber\": \"+1-555-UPDATED\",\n  \"role\": \"Customer\",\n  \"organization\": \"FoodDelivery\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"address\": {\n    \"street\": \"456 New Address St\",\n    \"city\": \"Updated City\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"dietaryPreferences\": [\"vegan\", \"organic\"],\n  \"favoriteRestaurants\": [\"Healthy Eats\", \"Green Garden\"]\n}"
+								},
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{user_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{user_profile_id}}"]
+								}
+							}
+						},
+						{
+							"name": "Delete User Profile",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('User profile deletion response', function () {",
+											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 204) {",
+											"    pm.test('User profile deleted successfully', function () {",
+											"        // No content expected for 204",
+											"        pm.expect(pm.response.text()).to.be.empty;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{crm_base_url}}/api/userprofile/{{user_profile_id}}",
+									"host": ["{{crm_base_url}}"],
+									"path": ["api", "userprofile", "{{user_profile_id}}"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "🛒 Cart Service",
+			"description": "Shopping cart management for food delivery orders",
+			"item": [
+				{
+					"name": "Health & Status",
+					"description": "Cart service health monitoring",
+					"item": [
+						{
+							"name": "Cart Service Health Check",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Cart service is healthy', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response contains health info', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.have.property('status');",
+											"    pm.expect(response.status).to.eql('Healthy');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{cart_base_url}}/api/health",
+									"host": ["{{cart_base_url}}"],
+									"path": ["api", "health"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🛍️ Cart Management",
+					"description": "Complete shopping cart operations",
+					"item": [
+						{
+							"name": "Create New Cart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Cart creation response', function () {",
+											"    pm.response.to.have.status.oneOf([201, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    pm.test('Cart created successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.globals.set('cart_id', response.id);",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"userId\": \"{{current_user_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{cart_base_url}}/api/cart",
+									"host": ["{{cart_base_url}}"],
+									"path": ["api", "cart"]
+								}
+							}
+						},
+						{
+							"name": "Get Cart by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Cart retrieval response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Cart details retrieved', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.expect(response).to.have.property('userId');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{cart_base_url}}/api/cart/{{cart_id}}",
+									"host": ["{{cart_base_url}}"],
+									"path": ["api", "cart", "{{cart_id}}"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🍕 Cart Item Management",
+					"description": "Add, update, and remove items from cart",
+					"item": [
+						{
+							"name": "Add Item to Cart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Add item to cart response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Item added to cart successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.expect(response).to.have.property('items');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"menuItemId\": \"sample-pizza-margherita\",\n  \"quantity\": 2,\n  \"specialInstructions\": \"Extra cheese, light on sauce\",\n  \"unitPrice\": 18.99\n}"
+								},
+								"url": {
+									"raw": "{{cart_base_url}}/api/cart/{{cart_id}}/items",
+									"host": ["{{cart_base_url}}"],
+									"path": ["api", "cart", "{{cart_id}}", "items"]
+								}
+							}
+						},
+						{
+							"name": "Remove Item from Cart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Remove item from cart response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Item removed from cart successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{cart_base_url}}/api/cart/{{cart_id}}/items/sample-pizza-margherita",
+									"host": ["{{cart_base_url}}"],
+									"path": ["api", "cart", "{{cart_id}}", "items", "sample-pizza-margherita"]
+								}
+							}
+						}
+					]
 				}
 			]
 		},
@@ -932,34 +2294,201 @@
 			"description": "Legacy catalog endpoints for backward compatibility testing",
 			"item": [
 				{
-					"name": "Get Legacy Items",
-					"event": [
+					"name": "📦 Legacy Item Operations",
+					"description": "Backward compatible catalog item operations",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Legacy items endpoint still works', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test('Response is array of legacy items', function () {",
-									"    const response = pm.response.json();",
-									"    pm.expect(response).to.be.an('array');",
-									"});"
+							"name": "Get All Legacy Items",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Legacy items endpoint still works', function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Response is array of legacy items', function () {",
+											"    const response = pm.response.json();",
+											"    pm.expect(response).to.be.an('array');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{catalog_base_url}}/api/item",
+									"host": ["{{catalog_base_url}}"],
+									"path": ["api", "item"]
+								}
+							}
+						},
+						{
+							"name": "Get Legacy Item by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Legacy item retrieval response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 404]);",
+											"});",
+											"",
+											"if (pm.response.code === 200) {",
+											"    pm.test('Legacy item details retrieved', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.expect(response).to.have.property('name');",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{catalog_base_url}}/api/item/sample-item-id",
+									"host": ["{{catalog_base_url}}"],
+									"path": ["api", "item", "sample-item-id"]
+								}
+							}
+						},
+						{
+							"name": "Create Legacy Item",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Legacy item creation response', function () {",
+											"    pm.response.to.have.status.oneOf([201, 409, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    pm.test('Legacy item created successfully', function () {",
+											"        const response = pm.response.json();",
+											"        pm.expect(response).to.have.property('id');",
+											"        pm.globals.set('legacy_item_id', response.id);",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
 								],
-								"type": "text/javascript"
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Legacy Item {{timestamp}}\",\n  \"description\": \"A legacy catalog item for backward compatibility testing\",\n  \"price\": 12.99,\n  \"category\": \"Legacy\",\n  \"isAvailable\": true\n}"
+								},
+								"url": {
+									"raw": "{{catalog_base_url}}/api/item",
+									"host": ["{{catalog_base_url}}"],
+									"path": ["api", "item"]
+								}
+							}
+						},
+						{
+							"name": "Update Legacy Item",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Legacy item update response', function () {",
+											"    pm.response.to.have.status.oneOf([200, 204, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 200 || pm.response.code === 204) {",
+											"    pm.test('Legacy item updated successfully', function () {",
+											"        // Success response received",
+											"        pm.expect([200, 204]).to.include(pm.response.code);",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated Legacy Item\",\n  \"description\": \"An updated legacy catalog item\",\n  \"price\": 15.99,\n  \"category\": \"Updated Legacy\",\n  \"isAvailable\": true\n}"
+								},
+								"url": {
+									"raw": "{{catalog_base_url}}/api/item/{{legacy_item_id}}",
+									"host": ["{{catalog_base_url}}"],
+									"path": ["api", "item", "{{legacy_item_id}}"]
+								}
+							}
+						},
+						{
+							"name": "Delete Legacy Item",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('Legacy item deletion response', function () {",
+											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"});",
+											"",
+											"if (pm.response.code === 204) {",
+											"    pm.test('Legacy item deleted successfully', function () {",
+											"        // No content expected for 204",
+											"        pm.expect(pm.response.text()).to.be.empty;",
+											"    });",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{catalog_base_url}}/api/item/{{legacy_item_id}}",
+									"host": ["{{catalog_base_url}}"],
+									"path": ["api", "item", "{{legacy_item_id}}"]
+								}
 							}
 						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{catalog_base_url}}/api/item",
-							"host": ["{{catalog_base_url}}"],
-							"path": ["api", "item"]
-						}
-					}
+					]
 				}
 			]
 		}
