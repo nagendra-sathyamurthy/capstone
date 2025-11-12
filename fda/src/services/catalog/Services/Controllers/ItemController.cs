@@ -1,10 +1,12 @@
 using catalog.Models;
 using catalog.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Catalog.Services.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class ItemController : ControllerBase
     {
@@ -15,9 +17,15 @@ namespace Catalog.Services.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Get all items (requires authentication)
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<Item>>> Get() => await _service.GetAllAsync();
 
+        /// <summary>
+        /// Get item by ID (requires authentication)
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Item>> Get(string id)
         {
@@ -26,6 +34,9 @@ namespace Catalog.Services.Controllers
             return item;
         }
 
+        /// <summary>
+        /// Create new item (requires authentication)
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult> Create(Item item)
         {
@@ -33,6 +44,9 @@ namespace Catalog.Services.Controllers
             return CreatedAtAction(nameof(Get), new { id = item.Id }, item);
         }
 
+        /// <summary>
+        /// Create multiple items (requires authentication)
+        /// </summary>
         [HttpPost("bulk")]
         public async Task<ActionResult> CreateMany(List<Item> items)
         {
@@ -40,6 +54,9 @@ namespace Catalog.Services.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Update item (requires authentication)
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(string id, Item item)
         {
@@ -49,6 +66,9 @@ namespace Catalog.Services.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete item (requires authentication)
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Catalog.Services.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class MenuController : ControllerBase
     {
@@ -20,7 +21,6 @@ namespace Catalog.Services.Controllers
         /// Get all menu items (including unavailable ones - for admin)
         /// </summary>
         [HttpGet("all")]
-        [Authorize] // Require authentication for admin view
         public async Task<ActionResult<List<MenuItem>>> GetAllMenuItems()
         {
             var items = await _menuService.GetAllMenuItemsAsync();
@@ -28,7 +28,7 @@ namespace Catalog.Services.Controllers
         }
 
         /// <summary>
-        /// Get all available menu items (public endpoint)
+        /// Get all available menu items
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<MenuItem>>> GetAvailableMenuItems()
@@ -54,7 +54,6 @@ namespace Catalog.Services.Controllers
         /// Create a new menu item
         /// </summary>
         [HttpPost]
-        [Authorize] // Require authentication for creating menu items
         public async Task<ActionResult<MenuItem>> CreateMenuItem([FromBody] MenuItem menuItem)
         {
             if (!ModelState.IsValid)
@@ -68,7 +67,6 @@ namespace Catalog.Services.Controllers
         /// Create multiple menu items at once
         /// </summary>
         [HttpPost("bulk")]
-        [Authorize]
         public async Task<ActionResult> CreateMenuItems([FromBody] List<MenuItem> menuItems)
         {
             if (menuItems == null || !menuItems.Any())
@@ -82,7 +80,6 @@ namespace Catalog.Services.Controllers
         /// Update a menu item
         /// </summary>
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<ActionResult> UpdateMenuItem(string id, [FromBody] MenuItem menuItem)
         {
             if (!ModelState.IsValid)
@@ -100,7 +97,6 @@ namespace Catalog.Services.Controllers
         /// Delete a menu item
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize]
         public async Task<ActionResult> DeleteMenuItem(string id)
         {
             var existing = await _menuService.GetMenuItemByIdAsync(id);
@@ -115,7 +111,6 @@ namespace Catalog.Services.Controllers
         /// Update menu item availability
         /// </summary>
         [HttpPatch("{id}/availability")]
-        [Authorize]
         public async Task<ActionResult> UpdateAvailability(string id, [FromBody] bool isAvailable)
         {
             var existing = await _menuService.GetMenuItemByIdAsync(id);

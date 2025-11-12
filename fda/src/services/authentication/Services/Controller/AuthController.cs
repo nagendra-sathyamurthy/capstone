@@ -182,6 +182,7 @@ namespace Authentication.Api.Controllers
         }
 
         [HttpGet("roles")]
+        [Authorize]
         public IActionResult GetRoles()
         {
             var roles = Enum.GetValues(typeof(UserRole))
@@ -199,6 +200,7 @@ namespace Authentication.Api.Controllers
         }
 
         [HttpGet("permissions/{role}")]
+        [Authorize]
         public IActionResult GetPermissionsForRole(UserRole role)
         {
             var permissions = Permissions.GetPermissionsForRole(role);
@@ -259,6 +261,7 @@ namespace Authentication.Api.Controllers
         /// Verify OTP for various purposes
         /// </summary>
         [HttpPost("verify-otp")]
+        [Authorize]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
         {
             try

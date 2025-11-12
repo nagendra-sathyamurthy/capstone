@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Catalog.Services.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class SeedController : ControllerBase
     {
@@ -19,7 +20,6 @@ namespace Catalog.Services.Controllers
         /// Seed the database with sample menu items for testing
         /// </summary>
         [HttpPost("sample-menu")]
-        [Authorize] // Require authentication for seeding
         public async Task<ActionResult> SeedSampleMenu()
         {
             try

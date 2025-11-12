@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using catalog.Services;
 
 namespace Catalog.Services.Controllers
@@ -34,6 +35,7 @@ namespace Catalog.Services.Controllers
         /// Detailed health check with database connectivity
         /// </summary>
         [HttpGet("detailed")]
+        [Authorize]
         public async Task<ActionResult> GetDetailedHealth()
         {
             try

@@ -6,6 +6,16 @@
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"version": "4.0.0"
 	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -1030,7 +1040,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Token validation response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1074,7 +1084,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Profile retrieval successful', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1112,7 +1122,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Password update response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 400, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 400, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1270,7 +1280,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Permission check response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1322,7 +1332,7 @@
 									"script": {
 										"exec": [
 											"pm.test('OTP generation response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 400]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1364,7 +1374,7 @@
 									"script": {
 										"exec": [
 											"pm.test('OTP verification response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 400]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1405,7 +1415,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Email/OTP login response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1495,7 +1505,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Customers retrieved successfully', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1532,7 +1542,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Customer retrieval response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1570,7 +1580,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Customer creation response', function () {",
-											"    pm.response.to.have.status.oneOf([201, 409, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 409, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 201) {",
@@ -1616,7 +1626,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Bulk customer creation response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1660,7 +1670,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Customer update response', function () {",
-											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([204, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 204) {",
@@ -1705,7 +1715,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Customer deletion response', function () {",
-											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([204, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 204) {",
@@ -1748,7 +1758,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile creation response', function () {",
-											"    pm.response.to.have.status.oneOf([201, 409, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 409, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 201) {",
@@ -1794,7 +1804,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile retrieval response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1833,7 +1843,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile by userId response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1871,7 +1881,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile by email response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1909,7 +1919,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profiles by role response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1946,7 +1956,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile search response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 400, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 400, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -1989,7 +1999,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile update response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -2034,7 +2044,7 @@
 									"script": {
 										"exec": [
 											"pm.test('User profile deletion response', function () {",
-											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([204, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 204) {",
@@ -2120,7 +2130,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Cart creation response', function () {",
-											"    pm.response.to.have.status.oneOf([201, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 201) {",
@@ -2166,7 +2176,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Cart retrieval response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -2210,7 +2220,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Add item to cart response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -2256,7 +2266,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Remove item from cart response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -2335,7 +2345,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Legacy item retrieval response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 404]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
 											"});",
 											"",
 											"if (pm.response.code === 200) {",
@@ -2368,7 +2378,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Legacy item creation response', function () {",
-											"    pm.response.to.have.status.oneOf([201, 409, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([201, 409, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 201) {",
@@ -2414,7 +2424,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Legacy item update response', function () {",
-											"    pm.response.to.have.status.oneOf([200, 204, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 204, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 200 || pm.response.code === 204) {",
@@ -2459,7 +2469,7 @@
 									"script": {
 										"exec": [
 											"pm.test('Legacy item deletion response', function () {",
-											"    pm.response.to.have.status.oneOf([204, 404, 401]);",
+											"    pm.expect(pm.response.code).to.be.oneOf([204, 404, 401]);",
 											"});",
 											"",
 											"if (pm.response.code === 204) {",
