@@ -5,21 +5,21 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "authentication", "authentication", "{4695A4CC-2808-B473-78D8-BE303A4A5026}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{76D411DE-03B8-F1B8-A606-76B3291C1BC7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{76D411DE-03B8-F1B8-A606-76B3291C1BC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.Services", "authentication\Services\Authentication.Services.csproj", "{2EA66EA8-4C43-4B01-8739-A9C8421C762D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.API", "authentication\API\Authentication.API.csproj", "{2EA66EA8-4C43-4B01-8739-A9C8421C762D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "catalog", "catalog", "{50761A8C-3A0B-6B1B-86AD-17AC9E1B806D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{C31C3475-1A10-0CB6-150A-4A234D84F871}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{C31C3475-1A10-0CB6-150A-4A234D84F871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Services", "catalog\Services\Catalog.Services.csproj", "{4AA3B1FF-A540-4723-A4E4-A6C5F4C24BEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "catalog\API\Catalog.API.csproj", "{4AA3B1FF-A540-4723-A4E4-A6C5F4C24BEB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "crm", "crm", "{6C04245A-EBAD-5A33-2982-8A909F7FF904}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D8B02507-2BA5-14F2-4A95-7CB9FEF57665}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{D8B02507-2BA5-14F2-4A95-7CB9FEF57665}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crm.Services", "crm\Services\Crm.Services.csproj", "{08FB6CA0-A3C8-4245-B93E-4AE013D99CFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crm.API", "crm\API\Crm.API.csproj", "{08FB6CA0-A3C8-4245-B93E-4AE013D99CFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
