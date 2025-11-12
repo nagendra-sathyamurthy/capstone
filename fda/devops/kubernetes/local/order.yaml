@@ -1,27 +1,27 @@
-# Local Development - Catalog Service
+# Local Development - Order Service
 # Uses shared MongoDB instance (mongodb-service)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-deployment
+  name: order-deployment
   namespace: capstone-services
   labels:
-    app: catalog
+    app: order
     environment: local
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: catalog
+      app: order
   template:
     metadata:
       labels:
-        app: catalog
+        app: order
         environment: local
     spec:
       containers:
-      - name: catalog
-        image: services-catalog:latest
+      - name: order
+        image: services-order:latest
         imagePullPolicy: Never  # Use local image
         ports:
         - containerPort: 8080
@@ -32,21 +32,21 @@ spec:
           valueFrom:
             secretKeyRef:
               name: mongodb-secret  # Uses shared MongoDB secret
-              key: catalog-connection-string
+              key: order-connection-string
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
               name: mongodb-secret  # Uses shared MongoDB secret
-              key: catalog-connection-string
+              key: order-connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
               name: mongodb-secret  # Uses shared MongoDB secret
-              key: catalog-connection-string
+              key: order-connection-string
         - name: DatabaseSettings__DatabaseName
-          value: "catalogdb"
+          value: "orderdb"
         - name: DatabaseSettings__CollectionName
-          value: "items"
+          value: "orders"
         resources:
           requests:
             memory: "128Mi"  # Reduced for local dev
@@ -58,16 +58,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog-service
+  name: order-service
   namespace: capstone-services
   labels:
     environment: local
 spec:
   selector:
-    app: catalog
+    app: order
   ports:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30002
+    nodePort: 30005
   type: NodePort

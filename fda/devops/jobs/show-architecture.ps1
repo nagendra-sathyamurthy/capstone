@@ -25,7 +25,7 @@ Write-Host "• MongoDB: Single instance serving all services" -ForegroundColor 
 Write-Host "• Storage: Temporary (EmptyDir)" -ForegroundColor White
 
 Write-Host "`n🔄 Available Deployments:" -ForegroundColor Cyan
-Write-Host "1. .\deploy-local.ps1       - Current (Shared MongoDB)" -ForegroundColor Green
+Write-Host "1. .\deploy-local-k8s.ps1   - Current (Shared MongoDB)" -ForegroundColor Green
 Write-Host "2. .\deploy-production.ps1  - Dedicated MongoDB per service" -ForegroundColor Yellow
 
 Write-Host "`n🧹 Cleanup Options:" -ForegroundColor Cyan

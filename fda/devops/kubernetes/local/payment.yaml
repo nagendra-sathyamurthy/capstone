@@ -1,27 +1,27 @@
-# Local Development - Catalog Service
+# Local Development - Payment Service
 # Uses shared MongoDB instance (mongodb-service)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-deployment
+  name: payment-deployment
   namespace: capstone-services
   labels:
-    app: catalog
+    app: payment
     environment: local
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: catalog
+      app: payment
   template:
     metadata:
       labels:
-        app: catalog
+        app: payment
         environment: local
     spec:
       containers:
-      - name: catalog
-        image: services-catalog:latest
+      - name: payment
+        image: services-payment:latest
         imagePullPolicy: Never  # Use local image
         ports:
         - containerPort: 8080
@@ -32,21 +32,21 @@ spec:
           valueFrom:
             secretKeyRef:
               name: mongodb-secret  # Uses shared MongoDB secret
-              key: catalog-connection-string
+              key: payment-connection-string
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
               name: mongodb-secret  # Uses shared MongoDB secret
-              key: catalog-connection-string
+              key: payment-connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
               name: mongodb-secret  # Uses shared MongoDB secret
-              key: catalog-connection-string
+              key: payment-connection-string
         - name: DatabaseSettings__DatabaseName
-          value: "catalogdb"
+          value: "paymentdb"
         - name: DatabaseSettings__CollectionName
-          value: "items"
+          value: "payments"
         resources:
           requests:
             memory: "128Mi"  # Reduced for local dev
@@ -58,16 +58,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalog-service
+  name: payment-service
   namespace: capstone-services
   labels:
     environment: local
 spec:
   selector:
-    app: catalog
+    app: payment
   ports:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30002
+    nodePort: 30006
   type: NodePort
