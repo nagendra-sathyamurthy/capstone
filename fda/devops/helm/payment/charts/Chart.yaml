@@ -1,0 +1,17 @@
+apiVersion: v2
+name: payment-mongodb
+version: 1.0.0
+description: Helm chart for MongoDB database for Payment microservice
+type: application
+appVersion: "7.0"
+maintainers:
+  - name: DevOps Team
+    email: devops@capstone.com
+keywords:
+  - mongodb
+  - database
+  - payment
+  - microservice
+home: https://github.com/nagendra-sathyamurthy/capstone
+sources:
+  - https://github.com/nagendra-sathyamurthy/capstone

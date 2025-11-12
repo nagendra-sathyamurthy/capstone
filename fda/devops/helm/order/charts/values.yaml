@@ -1,0 +1,77 @@
+# Default values for order-mongodb
+replicaCount: 1
+
+image:
+  repository: mongo
+  tag: "7.0"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 27017
+  targetPort: 27017
+
+# MongoDB Configuration
+mongodb:
+  auth:
+    enabled: true
+    rootUser: admin
+    rootPassword: "OrderPass123!"
+    database: orderdb
+    username: orderuser
+    password: "OrderPass123!"
+  
+  # Resource limits and requests
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+# Persistence configuration
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 2Gi
+  annotations: {}
+
+# Security context
+securityContext:
+  enabled: true
+  fsGroup: 999
+  runAsUser: 999
+
+# Pod annotations
+podAnnotations: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Liveness and readiness probes
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 10

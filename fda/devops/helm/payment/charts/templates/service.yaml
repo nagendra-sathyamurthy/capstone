@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "payment-mongodb.fullname" . }}
+  labels:
+    {{- include "payment-mongodb.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: mongodb
+  selector:
+    {{- include "payment-mongodb.selectorLabels" . | nindent 4 }}
