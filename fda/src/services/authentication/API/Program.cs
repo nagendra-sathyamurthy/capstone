@@ -86,8 +86,9 @@ builder.Services.AddCors(options =>
 // MongoDB setup
 builder.Services.AddSingleton<IMongoDatabase>(sp =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? 
-                          "mongodb://athena:athena2024!@localhost:27017";
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = configuration["MONGO_CONNECTION_STRING"] ?? 
+                          "mongodb://localhost:27017";
     var mongoClient = new MongoClient(connectionString);
     
     // Extract database name from connection string, default to "authenticationdb"

@@ -11,7 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Register MongoDB client
 builder.Services.AddSingleton<IMongoClient>(sp =>
-    new MongoClient(Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING")));
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var connectionString = configuration["MONGO_CONNECTION_STRING"] ?? "mongodb://localhost:27017";
+    return new MongoClient(connectionString);
+});
 
 // Register IMongoDatabase for DI
 builder.Services.AddScoped<IMongoDatabase>(sp =>

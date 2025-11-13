@@ -69,22 +69,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
-        {
-            "name": "All Services",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build-all",
-            "program": "${workspaceFolder}/fda/src/services/authentication/API/bin/Debug/net8.0/Authentication.API.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/fda/src/services/authentication/API",
-            "stopAtEntry": false,
-            "compounds": [
-                "Authentication Service",
-                "Cart Service",
-                "Catalog Service",
-                "CRM Service"
-            ]
-        }
+
     ],
     "compounds": [
         {
