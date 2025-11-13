@@ -27,7 +27,7 @@ bld/
 
 # Visual Studio / Visual Studio Code
 .vs/
-.vscode/
+# .vscode/ - Included for team collaboration (launch.json, tasks.json, settings.json)
 *.pidb
 *.svclog
 *.scc

@@ -1,0 +1,5 @@
+{
+    "chat.checkpoints.showFileChanges": false,
+    "chat.agent.thinking.collapsedTools": "all",
+    "chat.commandCenter.enabled": false
+}

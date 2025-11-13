@@ -7,8 +7,7 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:30002",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "MONGO_CONNECTION_STRING": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@localhost:27017/catalogdb?authSource=admin"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "https": {
@@ -17,8 +16,7 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:30012;http://localhost:30002",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "MONGO_CONNECTION_STRING": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@localhost:27017/catalogdb?authSource=admin"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

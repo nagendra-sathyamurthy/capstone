@@ -1,0 +1,163 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-authentication",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/fda/src/services/authentication/authentication.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "build-cart",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/fda/src/services/cart/Cart.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "build-catalog",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/fda/src/services/catalog/Catalog.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "build-crm",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/fda/src/services/crm/crm.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "build-all",
+            "dependsOn": [
+                "build-authentication",
+                "build-cart",
+                "build-catalog",
+                "build-crm"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean-all",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "${workspaceFolder}/fda/src/services/capstone.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "restore-all",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "restore",
+                "${workspaceFolder}fda/src/services/capstone.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-authentication",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/fda/src/services/authentication/API"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-cart",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/fda/src/services/cart/API"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-catalog",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/fda/src/services/catalog/API"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-crm",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/fda/src/services/crm/API"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "deploy-local-k8s",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/fda/devops/jobs/deploy-local-k8s.ps1"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "cleanup-local-k8s",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/fda/devops/jobs/cleanup-local-k8s.ps1"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

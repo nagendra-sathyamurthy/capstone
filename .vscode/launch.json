@@ -1,0 +1,101 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Authentication Service",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-authentication",
+            "program": "${workspaceFolder}/fda/src/services/authentication/API/bin/Debug/net8.0/Authentication.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/fda/src/services/authentication/API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Cart Service",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-cart",
+            "program": "${workspaceFolder}/fda/src/services/cart/API/bin/Debug/net8.0/Cart.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/fda/src/services/cart/API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Catalog Service",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-catalog",
+            "program": "${workspaceFolder}/fda/src/services/catalog/API/bin/Debug/net8.0/Catalog.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/fda/src/services/catalog/API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "CRM Service",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-crm",
+            "program": "${workspaceFolder}/fda/src/services/crm/API/bin/Debug/net8.0/Crm.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/fda/src/services/crm/API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "All Services",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-all",
+            "program": "${workspaceFolder}/fda/src/services/authentication/API/bin/Debug/net8.0/Authentication.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/fda/src/services/authentication/API",
+            "stopAtEntry": false,
+            "compounds": [
+                "Authentication Service",
+                "Cart Service",
+                "Catalog Service",
+                "CRM Service"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All Microservices",
+            "configurations": [
+                "Authentication Service",
+                "Cart Service",
+                "Catalog Service",
+                "CRM Service"
+            ],
+            "stopAll": true
+        }
+    ]
+}
