@@ -5,18 +5,20 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5124",
+      "applicationUrl": "http://localhost:30004",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_CONNECTION_STRING": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@localhost:27017/cartdb?authSource=admin"
       }
     },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "https://localhost:7229;http://localhost:5124",
+      "applicationUrl": "https://localhost:30014;http://localhost:30004",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MONGO_CONNECTION_STRING": "mongodb://Athena:Ath3n@Str0ngP@ssw0rd2024!@localhost:27017/cartdb?authSource=admin"
       }
     }
   }
