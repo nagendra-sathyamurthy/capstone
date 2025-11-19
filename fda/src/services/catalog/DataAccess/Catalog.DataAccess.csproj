@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Models\catalog.Models.csproj" />
+    <ProjectReference Include="..\Models\Catalog.Models.csproj" />
   </ItemGroup>
 
 </Project>
