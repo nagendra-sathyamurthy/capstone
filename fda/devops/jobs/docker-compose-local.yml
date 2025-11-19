@@ -23,6 +23,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
+      - MONGO_CONNECTION_STRING=${MONGO_AUTH_CONNECTION}
       - ConnectionStrings__DefaultConnection=${MONGO_AUTH_CONNECTION}
       - DatabaseSettings__ConnectionString=${MONGO_AUTH_CONNECTION}
       - DatabaseSettings__DatabaseName=${MONGO_AUTH_DB}
@@ -40,6 +41,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
+      - MONGO_CONNECTION_STRING=${MONGO_CATALOG_CONNECTION}
       - ConnectionStrings__DefaultConnection=${MONGO_CATALOG_CONNECTION}
       - DatabaseSettings__ConnectionString=${MONGO_CATALOG_CONNECTION}
       - DatabaseSettings__DatabaseName=${MONGO_CATALOG_DB}
@@ -57,6 +59,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
+      - MONGO_CONNECTION_STRING=${MONGO_CRM_CONNECTION}
       - ConnectionStrings__DefaultConnection=${MONGO_CRM_CONNECTION}
       - DatabaseSettings__ConnectionString=${MONGO_CRM_CONNECTION}
       - DatabaseSettings__DatabaseName=${MONGO_CRM_DB}
@@ -74,6 +77,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
+      - MONGO_CONNECTION_STRING=${MONGO_CART_CONNECTION}
       - ConnectionStrings__DefaultConnection=${MONGO_CART_CONNECTION}
       - DatabaseSettings__ConnectionString=${MONGO_CART_CONNECTION}
       - DatabaseSettings__DatabaseName=${MONGO_CART_DB}
