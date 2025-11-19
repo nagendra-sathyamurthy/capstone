@@ -7,8 +7,8 @@ services:
     ports:
       - "30000:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: AdminPass2024
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: admin
     networks:
       - capstone-network
@@ -23,10 +23,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=mongodb://admin:AdminPass2024@mongodb:27017/authenticationdb?authSource=admin
-      - DatabaseSettings__ConnectionString=mongodb://admin:AdminPass2024@mongodb:27017/authenticationdb?authSource=admin
-      - DatabaseSettings__DatabaseName=authenticationdb
-      - DatabaseSettings__CollectionName=users
+      - ConnectionStrings__DefaultConnection=${MONGO_AUTH_CONNECTION}
+      - DatabaseSettings__ConnectionString=${MONGO_AUTH_CONNECTION}
+      - DatabaseSettings__DatabaseName=${MONGO_AUTH_DB}
+      - DatabaseSettings__CollectionName=${AUTH_COLLECTION}
     depends_on:
       - mongodb
     networks:
@@ -40,10 +40,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=mongodb://admin:AdminPass2024@mongodb:27017/catalogdb?authSource=admin
-      - DatabaseSettings__ConnectionString=mongodb://admin:AdminPass2024@mongodb:27017/catalogdb?authSource=admin
-      - DatabaseSettings__DatabaseName=catalogdb
-      - DatabaseSettings__CollectionName=items
+      - ConnectionStrings__DefaultConnection=${MONGO_CATALOG_CONNECTION}
+      - DatabaseSettings__ConnectionString=${MONGO_CATALOG_CONNECTION}
+      - DatabaseSettings__DatabaseName=${MONGO_CATALOG_DB}
+      - DatabaseSettings__CollectionName=${CATALOG_COLLECTION}
     depends_on:
       - mongodb
     networks:
@@ -57,10 +57,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=mongodb://admin:AdminPass2024@mongodb:27017/crmdb?authSource=admin
-      - DatabaseSettings__ConnectionString=mongodb://admin:AdminPass2024@mongodb:27017/crmdb?authSource=admin
-      - DatabaseSettings__DatabaseName=crmdb
-      - DatabaseSettings__CollectionName=customers
+      - ConnectionStrings__DefaultConnection=${MONGO_CRM_CONNECTION}
+      - DatabaseSettings__ConnectionString=${MONGO_CRM_CONNECTION}
+      - DatabaseSettings__DatabaseName=${MONGO_CRM_DB}
+      - DatabaseSettings__CollectionName=${CRM_COLLECTION}
     depends_on:
       - mongodb
     networks:
@@ -74,10 +74,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=mongodb://admin:AdminPass2024@mongodb:27017/cartdb?authSource=admin
-      - DatabaseSettings__ConnectionString=mongodb://admin:AdminPass2024@mongodb:27017/cartdb?authSource=admin
-      - DatabaseSettings__DatabaseName=cartdb
-      - DatabaseSettings__CollectionName=carts
+      - ConnectionStrings__DefaultConnection=${MONGO_CART_CONNECTION}
+      - DatabaseSettings__ConnectionString=${MONGO_CART_CONNECTION}
+      - DatabaseSettings__DatabaseName=${MONGO_CART_DB}
+      - DatabaseSettings__CollectionName=${CART_COLLECTION}
     depends_on:
       - mongodb
     networks:
