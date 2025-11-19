@@ -1,4 +1,4 @@
-# kubectl Issue and Workarounds
+# kubectl Issue and Solutions
 
 ## Problem
 
@@ -14,7 +14,32 @@ https://dl.k8s.io/release/vX.XX.X/bin/windows/amd64/kubectl.exe.sha512:
 GET ... returned http status 403 Forbidden
 ```
 
-## Solutions
+## ✅ RESOLVED: Working kubectl Available
+
+**A working kubectl v1.33.4 is available at:**
+```
+C:\Intel\Kubernetes KubeCTL 1.33.4\kubectl.exe
+```
+
+This has been added to the system PATH and will be used by default.
+
+## Verification
+
+To verify kubectl is working from any directory:
+
+```powershell
+# Check kubectl version
+kubectl version --client
+
+# Check which kubectl is being used
+where.exe kubectl
+# Should show: C:\Intel\Kubernetes KubeCTL 1.33.4\kubectl.exe first
+
+# Use kubectl wrapper script
+.\kubectl-wrapper.ps1 version --client
+```
+
+## Solutions (All Available)
 
 ### ✅ Solution 1: Use Docker Compose (Recommended for Local Development)
 
