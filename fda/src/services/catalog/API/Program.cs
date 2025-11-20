@@ -40,7 +40,21 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-builder.Services.AddAuthorization();
+// Add role-based authorization
+builder.Services.AddAuthorization(options =>
+{
+    // Restaurant Owner policy (role: Biller in the system, represents Restaurant Owner)
+    options.AddPolicy("RestaurantOwnerOnly", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("role", "Biller")));
+    
+    // Restaurant Staff (Biller, Operator, Worker)
+    options.AddPolicy("RestaurantStaff", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("role", "Biller") ||
+            context.User.HasClaim("role", "Operator") ||
+            context.User.HasClaim("role", "Worker")));
+});
 
 var app = builder.Build();
 

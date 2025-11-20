@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace catalog.API.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "RestaurantOwnerOnly")]
     [Route("api/[controller]")]
     public class RestaurantController : ControllerBase
     {
@@ -45,6 +45,7 @@ namespace catalog.API.Controllers
         /// <summary>
         /// Get all active restaurants (Customer view)
         /// </summary>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<List<Restaurant>>> GetActiveRestaurants()
         {
@@ -55,6 +56,7 @@ namespace catalog.API.Controllers
         /// <summary>
         /// Get restaurant by ID
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Restaurant>> GetRestaurant(string id)
         {
@@ -178,6 +180,7 @@ namespace catalog.API.Controllers
         /// <summary>
         /// Get restaurants by city
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("city/{city}")]
         public async Task<ActionResult<List<Restaurant>>> GetRestaurantsByCity(string city)
         {
@@ -188,6 +191,7 @@ namespace catalog.API.Controllers
         /// <summary>
         /// Get restaurants by cuisine type
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("cuisine/{cuisineType}")]
         public async Task<ActionResult<List<Restaurant>>> GetRestaurantsByCuisine(string cuisineType)
         {
