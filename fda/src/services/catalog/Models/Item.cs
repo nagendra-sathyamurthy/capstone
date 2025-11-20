@@ -63,6 +63,11 @@ namespace catalog.Models
 
         public bool IsAvailable { get; set; } = true;
 
+        // Time-based Availability (Optional - for items available only during specific hours)
+        public string? AvailableFromTime { get; set; } // Format: "HH:mm" (e.g., "11:00" for 11 AM)
+        
+        public string? AvailableToTime { get; set; } // Format: "HH:mm" (e.g., "15:00" for 3 PM)
+
         [StringLength(500)]
         public string? ImageUrl { get; set; }
 

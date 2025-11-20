@@ -20,6 +20,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 // Register services
 builder.Services.AddScoped<ItemService>(); // Keep for backward compatibility
 builder.Services.AddScoped<MenuService>(); // New food delivery menu service
+builder.Services.AddScoped<RestaurantService>(); // Restaurant management service
 
 // Add controllers
 builder.Services.AddControllers();

@@ -62,12 +62,12 @@ $testCollections = @(
     },
     @{
         Name = "Catalog"
-        Collection = "Catalog-Service.postman_collection.json"
+        Collection = "Catalog-Service-WithAuth.postman_collection.json"
         Report = "catalog-test-report"
     },
     @{
         Name = "CRM"
-        Collection = "CRM-Service.postman_collection.json"
+        Collection = "CRM-Service-WithAuth.postman_collection.json"
         Report = "crm-test-report"
     },
     @{
@@ -95,19 +95,20 @@ foreach ($test in $testCollections) {
     
     try {
         # Run newman with both HTML and JSON reporters
-        $result = npx newman run $collectionPath `
+        npx newman run $collectionPath `
             -e $environment `
             --reporters cli,htmlextra,json `
             --reporter-htmlextra-export $reportPath `
             --reporter-json-export $jsonReportPath `
             --timeout-request 10000 `
-            --bail 2>&1
+            --color on 2>&1 | Tee-Object -Variable output
         
         if ($LASTEXITCODE -eq 0) {
             Write-Host "✓ $($test.Name) tests completed successfully" -ForegroundColor Green
             $passedTests++
         } else {
-            Write-Host "✗ $($test.Name) tests failed" -ForegroundColor Red
+            Write-Host "✗ $($test.Name) tests failed (exit code: $LASTEXITCODE)" -ForegroundColor Red
+            Write-Host "Output: $($output | Out-String)" -ForegroundColor Gray
             $failedTests++
         }
     } catch {
