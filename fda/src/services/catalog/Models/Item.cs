@@ -80,6 +80,10 @@ namespace catalog.Models
         public decimal? Protein { get; set; } // in grams
         public decimal? Carbohydrates { get; set; } // in grams
         public decimal? Fat { get; set; } // in grams
+
+        // Kitchen Inventory Management
+        public int? QuantityAvailable { get; set; } // Available quantity in kitchen
+        public int? MinimumQuantity { get; set; } // Alert threshold for low stock
     }
 
     // Keep the old Item class for backward compatibility during migration

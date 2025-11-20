@@ -73,16 +73,24 @@ Food Delivery Platform (FDA)
 
 ### 3. Operator (Order Receiver & Single Point of Contact)
 **Organization**: Restaurant-specific
-**Primary Functions**: Order confirmation, customer service coordination, staff management
+**Primary Functions**: Order confirmation, customer service coordination, staff management, food item management, order handover
 
 **Core Features**:
 - Single Point of Contact (SPOC) for order management
 - Customer query handling and service coordination
 - Order workflow management
+- Food item availability and timing management
+- Kitchen inventory visibility
+- Order packaging and delivery handover with OTP verification
 
 **Permissions**:
 - Receive and confirm incoming orders
 - Process order acceptance/rejection/modification
+- Update food item availability status (available/unavailable)
+- Modify food item timings (availableFromTime, availableToTime)
+- View kitchen inventory availability and quantities
+- Handle order packaging (with/without cutlery)
+- Handover orders to delivery agents with OTP verification
 - Handle customer inquiries and complaints
 - Manage order status updates
 - Coordinate with kitchen staff (Workers)
