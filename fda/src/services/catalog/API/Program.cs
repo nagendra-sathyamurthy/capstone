@@ -25,6 +25,7 @@ builder.Services.AddScoped<MenuService>(); // New food delivery menu service
 builder.Services.AddControllers();
 
 // Add JWT authentication
+var jwtKey = "GJ0VFqmRVBR0iE2ojyzh28HlayZgRcUI";
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -34,7 +35,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("YourSuperSecretKey"))
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtKey))
         };
     });
 

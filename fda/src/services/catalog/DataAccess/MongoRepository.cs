@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,12 @@ namespace catalog.DataAccess
 
         public T GetById(string id)
         {
+            // Try to parse as ObjectId first, if fails use string comparison
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                return _collection.Find(Builders<T>.Filter.Eq("_id", objectId)).FirstOrDefault();
+            }
+            // Fallback to string comparison for non-ObjectId IDs
             return _collection.Find(Builders<T>.Filter.Eq("_id", id)).FirstOrDefault();
         }
 
@@ -38,12 +45,28 @@ namespace catalog.DataAccess
 
         public void Update(string id, T entity)
         {
-            _collection.ReplaceOne(Builders<T>.Filter.Eq("_id", id), entity);
+            // Try to parse as ObjectId first, if fails use string comparison
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                _collection.ReplaceOne(Builders<T>.Filter.Eq("_id", objectId), entity);
+            }
+            else
+            {
+                _collection.ReplaceOne(Builders<T>.Filter.Eq("_id", id), entity);
+            }
         }
 
         public void Delete(string id)
         {
-            _collection.DeleteOne(Builders<T>.Filter.Eq("_id", id));
+            // Try to parse as ObjectId first, if fails use string comparison
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                _collection.DeleteOne(Builders<T>.Filter.Eq("_id", objectId));
+            }
+            else
+            {
+                _collection.DeleteOne(Builders<T>.Filter.Eq("_id", id));
+            }
         }
 
         public IEnumerable<T> Find(Expression<Func<T, bool>> filter)

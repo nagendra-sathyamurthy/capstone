@@ -62,6 +62,8 @@ namespace catalog.API.Controllers
         {
             var existing = await _service.GetByIdAsync(id);
             if (existing == null) return NotFound();
+            // Ensure the item has the correct ID
+            item.Id = id;
             await _service.UpdateAsync(id, item);
             return NoContent();
         }
