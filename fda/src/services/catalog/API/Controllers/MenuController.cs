@@ -269,6 +269,56 @@ namespace catalog.API.Controllers
             return Ok(items);
         }
 
+        // Restaurant-based endpoints
+        /// <summary>
+        /// Get menu items by restaurant ID
+        /// </summary>
+        [HttpGet("restaurant/{restaurantId}")]
+        public async Task<ActionResult<List<MenuItem>>> GetMenuItemsByRestaurant(string restaurantId)
+        {
+            if (string.IsNullOrWhiteSpace(restaurantId))
+                return BadRequest("Restaurant ID cannot be empty");
+
+            var items = await _menuService.GetMenuItemsByRestaurantIdAsync(restaurantId);
+            return Ok(items);
+        }
+
+        /// <summary>
+        /// Get available menu items by restaurant ID
+        /// </summary>
+        [HttpGet("restaurant/{restaurantId}/available")]
+        public async Task<ActionResult<List<MenuItem>>> GetAvailableMenuItemsByRestaurant(string restaurantId)
+        {
+            if (string.IsNullOrWhiteSpace(restaurantId))
+                return BadRequest("Restaurant ID cannot be empty");
+
+            var items = await _menuService.GetAvailableMenuItemsByRestaurantIdAsync(restaurantId);
+            return Ok(items);
+        }
+
+        /// <summary>
+        /// Get menu items by owner ID (restaurant owner's user account)
+        /// </summary>
+        [HttpGet("owner/{ownerId}")]
+        public async Task<ActionResult<List<MenuItem>>> GetMenuItemsByOwner(string ownerId)
+        {
+            if (string.IsNullOrWhiteSpace(ownerId))
+                return BadRequest("Owner ID cannot be empty");
+
+            var items = await _menuService.GetMenuItemsByOwnerIdAsync(ownerId);
+            return Ok(items);
+        }
+
+        /// <summary>
+        /// Get menu organized by restaurants
+        /// </summary>
+        [HttpGet("menu/restaurants")]
+        public async Task<ActionResult<Dictionary<string, List<MenuItem>>>> GetMenuByRestaurants()
+        {
+            var menu = await _menuService.GetMenuByRestaurantsAsync();
+            return Ok(menu);
+        }
+
         /// <summary>
         /// Advanced filter endpoint
         /// </summary>

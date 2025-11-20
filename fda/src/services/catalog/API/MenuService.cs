@@ -115,6 +115,33 @@ namespace catalog.API
             return Task.FromResult(_menuItemRepository.GetItemsByPreparationTime(maxMinutes).ToList());
         }
 
+        // Restaurant-based query methods
+        public Task<List<MenuItem>> GetMenuItemsByRestaurantIdAsync(string restaurantId)
+        {
+            return Task.FromResult(_menuItemRepository.GetByRestaurantId(restaurantId).ToList());
+        }
+
+        public Task<List<MenuItem>> GetAvailableMenuItemsByRestaurantIdAsync(string restaurantId)
+        {
+            return Task.FromResult(_menuItemRepository.GetAvailableByRestaurantId(restaurantId).ToList());
+        }
+
+        public Task<List<MenuItem>> GetMenuItemsByOwnerIdAsync(string ownerId)
+        {
+            return Task.FromResult(_menuItemRepository.GetByOwnerId(ownerId).ToList());
+        }
+
+        public Task<Dictionary<string, List<MenuItem>>> GetMenuByRestaurantsAsync()
+        {
+            var allItems = _menuItemRepository.GetAvailableItems();
+            var restaurantMenu = allItems
+                .Where(item => !string.IsNullOrEmpty(item.RestaurantId))
+                .GroupBy(item => item.RestaurantName ?? item.RestaurantId ?? "Unknown")
+                .ToDictionary(g => g.Key, g => g.ToList());
+            
+            return Task.FromResult(restaurantMenu);
+        }
+
         // Menu organization methods
         public Task<Dictionary<string, List<MenuItem>>> GetMenuByCategoriesAsync()
         {

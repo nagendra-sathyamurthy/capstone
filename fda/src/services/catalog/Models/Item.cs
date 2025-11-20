@@ -10,6 +10,14 @@ namespace catalog.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
+        // Restaurant Association
+        public string? RestaurantId { get; set; }
+        
+        [StringLength(200)]
+        public string? RestaurantName { get; set; }
+        
+        public string? OwnerId { get; set; }
+
         [Required]
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;

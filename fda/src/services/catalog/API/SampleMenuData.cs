@@ -11,6 +11,9 @@ namespace catalog.API
                 // Appetizers
                 new MenuItem
                 {
+                    RestaurantId = "rest-001",
+                    RestaurantName = "Pizza Palace",
+                    OwnerId = "owner-pizzapalace",
                     Name = "Margherita Pizza Slice",
                     Description = "Classic pizza with fresh mozzarella, tomato sauce, and basil leaves",
                     PreparationTimeMinutes = 15,
@@ -33,6 +36,9 @@ namespace catalog.API
                 },
                 new MenuItem
                 {
+                    RestaurantId = "rest-002",
+                    RestaurantName = "Burger Hub",
+                    OwnerId = "owner-burgerhub",
                     Name = "Chicken Wings",
                     Description = "Crispy buffalo chicken wings served with ranch dipping sauce",
                     PreparationTimeMinutes = 20,
@@ -57,6 +63,9 @@ namespace catalog.API
                 // Main Courses
                 new MenuItem
                 {
+                    RestaurantId = "rest-003",
+                    RestaurantName = "Indian Cuisine",
+                    OwnerId = "owner-indiancuisine",
                     Name = "Chicken Biryani",
                     Description = "Aromatic basmati rice cooked with tender chicken pieces and traditional Indian spices",
                     PreparationTimeMinutes = 45,
@@ -79,6 +88,9 @@ namespace catalog.API
                 },
                 new MenuItem
                 {
+                    RestaurantId = "rest-004",
+                    RestaurantName = "Thai Delight",
+                    OwnerId = "owner-thaidelight",
                     Name = "Vegetable Pad Thai",
                     Description = "Stir-fried rice noodles with tofu, vegetables, and tamarind-based sauce",
                     PreparationTimeMinutes = 25,
@@ -101,6 +113,9 @@ namespace catalog.API
                 },
                 new MenuItem
                 {
+                    RestaurantId = "rest-002",
+                    RestaurantName = "Burger Hub",
+                    OwnerId = "owner-burgerhub",
                     Name = "Classic Beef Burger",
                     Description = "Juicy beef patty with lettuce, tomato, onion, and house sauce on a brioche bun",
                     PreparationTimeMinutes = 18,
@@ -125,6 +140,9 @@ namespace catalog.API
                 // Desserts
                 new MenuItem
                 {
+                    RestaurantId = "rest-005",
+                    RestaurantName = "Italian Bistro",
+                    OwnerId = "owner-italianbistro",
                     Name = "Chocolate Lava Cake",
                     Description = "Warm chocolate cake with molten chocolate center, served with vanilla ice cream",
                     PreparationTimeMinutes = 12,
@@ -149,6 +167,9 @@ namespace catalog.API
                 // Beverages
                 new MenuItem
                 {
+                    RestaurantId = "rest-003",
+                    RestaurantName = "Indian Cuisine",
+                    OwnerId = "owner-indiancuisine",
                     Name = "Fresh Mango Lassi",
                     Description = "Traditional Indian yogurt-based drink blended with fresh mango and cardamom",
                     PreparationTimeMinutes = 5,
@@ -171,6 +192,9 @@ namespace catalog.API
                 },
                 new MenuItem
                 {
+                    RestaurantId = "rest-006",
+                    RestaurantName = "Sushi Spot",
+                    OwnerId = "owner-sushispot",
                     Name = "Green Smoothie",
                     Description = "Healthy blend of spinach, banana, apple, and coconut water",
                     PreparationTimeMinutes = 3,
@@ -195,6 +219,9 @@ namespace catalog.API
                 // Quick Options
                 new MenuItem
                 {
+                    RestaurantId = "rest-005",
+                    RestaurantName = "Italian Bistro",
+                    OwnerId = "owner-italianbistro",
                     Name = "Caesar Salad",
                     Description = "Crisp romaine lettuce with Caesar dressing, croutons, and parmesan cheese",
                     PreparationTimeMinutes = 8,
@@ -217,6 +244,9 @@ namespace catalog.API
                 },
                 new MenuItem
                 {
+                    RestaurantId = "rest-006",
+                    RestaurantName = "Sushi Spot",
+                    OwnerId = "owner-sushispot",
                     Name = "Quinoa Buddha Bowl",
                     Description = "Nutritious bowl with quinoa, roasted vegetables, avocado, and tahini dressing",
                     PreparationTimeMinutes = 15,

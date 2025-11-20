@@ -68,6 +68,23 @@ namespace catalog.DataAccess
                 item.IsAvailable == true).ToList();
         }
 
+        public IEnumerable<MenuItem> GetByRestaurantId(string restaurantId)
+        {
+            return _collection.Find(item => item.RestaurantId == restaurantId).ToList();
+        }
+
+        public IEnumerable<MenuItem> GetByOwnerId(string ownerId)
+        {
+            return _collection.Find(item => item.OwnerId == ownerId).ToList();
+        }
+
+        public IEnumerable<MenuItem> GetAvailableByRestaurantId(string restaurantId)
+        {
+            return _collection.Find(item => 
+                item.RestaurantId == restaurantId && 
+                item.IsAvailable == true).ToList();
+        }
+
         public void UpdateAvailability(string id, bool isAvailable)
         {
             var filter = Builders<MenuItem>.Filter.Eq(item => item.Id, id);
