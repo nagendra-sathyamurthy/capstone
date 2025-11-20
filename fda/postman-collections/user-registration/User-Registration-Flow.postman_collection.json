@@ -1,0 +1,172 @@
+{
+  "info": {
+    "name": "User Registration Flow",
+    "description": "Complete user registration flow for all user roles with authentication",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "auth_base_url",
+      "value": "{{auth_base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "crm_base_url",
+      "value": "{{crm_base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_email",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Register User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Registration successful', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
+              "});",
+              "",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    if (response.id) {",
+              "        pm.collectionVariables.set('user_id', response.id);",
+              "    }",
+              "}",
+              "",
+              "// Store email for login",
+              "const requestBody = JSON.parse(pm.request.body.raw);",
+              "pm.collectionVariables.set('user_email', requestBody.email);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{{user_data}}"
+        },
+        "url": {
+          "raw": "{{auth_base_url}}/api/auth/register",
+          "host": ["{{auth_base_url}}"],
+          "path": ["api", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login successful', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Token received', function () {",
+              "    const response = pm.response.json();",
+              "    pm.expect(response).to.have.property('token');",
+              "    pm.collectionVariables.set('auth_token', response.token);",
+              "    ",
+              "    if (response.id) {",
+              "        pm.collectionVariables.set('user_id', response.id);",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{auth_base_url}}/api/auth/login",
+          "host": ["{{auth_base_url}}"],
+          "path": ["api", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Validate Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Token is valid', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('User info returned', function () {",
+              "    const response = pm.response.json();",
+              "    pm.expect(response).to.have.property('valid');",
+              "    pm.expect(response.valid).to.be.true;",
+              "    pm.expect(response).to.have.property('user');",
+              "    pm.expect(response.user).to.have.property('email');",
+              "    pm.expect(response.user).to.have.property('role');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{auth_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{auth_base_url}}/api/auth/validate",
+          "host": ["{{auth_base_url}}"],
+          "path": ["api", "auth", "validate"]
+        }
+      }
+    }
+  ]
+}
