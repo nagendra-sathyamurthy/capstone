@@ -1,1029 +1,1217 @@
 {
-	"info": {
-		"_postman_id": "operator-service-workflows-001",
-		"name": "Operator Service Workflows",
-		"description": "Complete workflow collection for restaurant operators to manage orders, inventory, packaging, and handover to delivery agents",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{auth_token}}",
-				"type": "string"
-			}
-		]
-	},
-	"variable": [
-		{
-			"key": "auth_token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "operator_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "restaurant_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "order_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "menu_item_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "delivery_agent_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "handover_otp",
-			"value": "",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "1. Authentication",
-			"item": [
-				{
-					"name": "Login Operator",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response has token\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('token');",
-									"    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
-									"});",
-									"",
-									"pm.test(\"Response has userId\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('userId');",
-									"    pm.collectionVariables.set(\"operator_id\", jsonData.userId);",
-									"});",
-									"",
-									"pm.test(\"User has Operator role\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.role).to.equal('Operator');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"operator.pizzapalace@example.com\",\n  \"password\": \"Operator123!\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30001/api/auth/login",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30001",
-							"path": ["api", "auth", "login"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set Restaurant Context",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// Set the restaurant ID for the operator's restaurant",
-									"pm.collectionVariables.set(\"restaurant_id\", \"6738a123456789abcdef0001\");"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "2. Order Management - View Orders",
-			"item": [
-				{
-					"name": "Get Pending Orders",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response is array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.be.an('array');",
-									"});",
-									"",
-									"pm.test(\"Save first order ID if exists\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    if (jsonData.length > 0) {",
-									"        pm.collectionVariables.set(\"order_id\", jsonData[0].id);",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/pending/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "pending", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Orders Ready for Pickup",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response is array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/ready/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "ready", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Order Details",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Order has required fields\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('customerId');",
-									"    pm.expect(jsonData).to.have.property('restaurantId');",
-									"    pm.expect(jsonData).to.have.property('status');",
-									"    pm.expect(jsonData).to.have.property('items');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "3. Order Management - Accept/Decline",
-			"item": [
-				{
-					"name": "Accept Order",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Success message returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"    pm.expect(jsonData.message).to.include('accepted');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/accept",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "accept"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Decline Order",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Success message returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"    pm.expect(jsonData.message).to.include('declined');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/decline",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "decline"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "4. Inventory Management - View",
-			"item": [
-				{
-					"name": "View Kitchen Inventory",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response is array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.be.an('array');",
-									"});",
-									"",
-									"pm.test(\"Save first menu item ID if exists\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    if (jsonData.length > 0) {",
-									"        pm.collectionVariables.set(\"menu_item_id\", jsonData[0].id);",
-									"    }",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Low Stock Items",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response is array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.be.an('array');",
-									"});",
-									"",
-									"pm.test(\"All items have low stock\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    jsonData.forEach(function(item) {",
-									"        if (item.minimumQuantity && item.quantityAvailable !== null) {",
-									"            pm.expect(item.quantityAvailable).to.be.at.most(item.minimumQuantity);",
-									"        }",
-									"    });",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{restaurant_id}}/low-stock",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{restaurant_id}}", "low-stock"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "5. Inventory Management - Update",
-			"item": [
-				{
-					"name": "Update Food Item Availability",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Success message returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"quantityAvailable\": 50,\n  \"isAvailable\": true\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Food Item Timings",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Success message returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"availableFromTime\": \"09:00\",\n  \"availableToTime\": \"22:00\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Mark Item Out of Stock",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"quantityAvailable\": 0,\n  \"isAvailable\": false\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Mark Item Back in Stock",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"quantityAvailable\": 25,\n  \"isAvailable\": true\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "6. Order Packaging",
-			"item": [
-				{
-					"name": "Package Order with Cutlery",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Success message returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"    pm.expect(jsonData.message).to.include('packaged');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 2,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/package",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "package"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Package Order without Cutlery",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"includeCutlery\": false,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 1,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/package",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "package"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Package Fragile Order",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 3,\n  \"isFragile\": true,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/package",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "package"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "7. Handover to Delivery Agent",
-			"item": [
-				{
-					"name": "Generate Handover OTP",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// Set delivery agent ID",
-									"pm.collectionVariables.set(\"delivery_agent_id\", \"674abc123def456789012345\");"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"OTP generated successfully\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('otp');",
-									"    pm.expect(jsonData.otp).to.have.lengthOf(6);",
-									"    pm.collectionVariables.set(\"handover_otp\", jsonData.otp);",
-									"});",
-									"",
-									"pm.test(\"Expiry information provided\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('expiresIn');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "\"{{delivery_agent_id}}\""
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/generate-handover-otp",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "generate-handover-otp"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Verify OTP and Complete Handover",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Handover successful\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('message');",
-									"    pm.expect(jsonData.message).to.include('handed over');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"{{handover_otp}}\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/handover",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "handover"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Verify with Invalid OTP",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"pm.test(\"Error message returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('error');",
-									"    pm.expect(jsonData.error).to.include('Invalid');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"999999\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/handover",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "handover"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "8. Complete Operator Workflow",
-			"description": "End-to-end workflow demonstrating all operator activities in sequence",
-			"item": [
-				{
-					"name": "Step 1 - View Pending Orders",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/pending/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "pending", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 2 - Get Order Details",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 3 - Check Low Stock Items",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{restaurant_id}}/low-stock",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{restaurant_id}}", "low-stock"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 4 - Accept Order",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/accept",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "accept"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 5 - Update Food Item Availability",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"quantityAvailable\": 45,\n  \"isAvailable\": true\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/inventory/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "inventory", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 6 - Package Order with Cutlery",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 2,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/package",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "package"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 7 - Generate Handover OTP",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"if (jsonData.otp) {",
-									"    pm.collectionVariables.set('handover_otp', jsonData.otp);",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "\"{{delivery_agent_id}}\""
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/{{order_id}}/generate-handover-otp",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "{{order_id}}", "generate-handover-otp"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Step 8 - Verify OTP and Complete Handover",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"{{handover_otp}}\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/operator/orders/handover",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "operator", "orders", "handover"]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "operator-service-workflows-001",
+    "name": "Operator Service Workflows",
+    "description": "Complete workflow collection for restaurant operators to manage orders, inventory, packaging, and handover to delivery agents",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "operator_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurant_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "menu_item_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "delivery_agent_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "handover_otp",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Login Operator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has userId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('userId');",
+                  "    pm.collectionVariables.set(\"operator_id\", jsonData.userId);",
+                  "});",
+                  "",
+                  "pm.test(\"User has Operator role\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.role).to.equal('Operator');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"operator.pizzapalace@example.com\",\n  \"password\": \"Operator123!\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:30001/api/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30001",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set Restaurant Context",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Set the restaurant ID for the operator's restaurant",
+                  "pm.collectionVariables.set(\"restaurant_id\", \"6738a123456789abcdef0001\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/restaurant/{{restaurant_id}}",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "restaurant",
+                "{{restaurant_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Order Management - View Orders",
+      "item": [
+        {
+          "name": "Get Pending Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Save first order ID if exists\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.collectionVariables.set(\"order_id\", jsonData[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/restaurant/{{restaurant_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "pending",
+                "{{restaurant_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Orders Ready for Pickup",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/restaurant/{{restaurant_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "ready",
+                "{{restaurant_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Order has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('customerId');",
+                  "    pm.expect(jsonData).to.have.property('restaurantId');",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "    pm.expect(jsonData).to.have.property('items');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Order Management - Accept/decline",
+      "item": [
+        {
+          "name": "Accept Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('accepted');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/accept",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "accept"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Decline Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('declined');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/decline",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "decline"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Inventory Management - View",
+      "item": [
+        {
+          "name": "View Kitchen Inventory",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Save first menu item ID if exists\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        pm.collectionVariables.set(\"menu_item_id\", jsonData[0].id);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{restaurant_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Low Stock Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"All items have low stock\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function(item) {",
+                  "        if (item.minimumQuantity && item.quantityAvailable !== null) {",
+                  "            pm.expect(item.quantityAvailable).to.be.at.most(item.minimumQuantity);",
+                  "        }",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}/low-stock",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{restaurant_id}}",
+                "low-stock"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Inventory Management - Update",
+      "item": [
+        {
+          "name": "Update Food Item Availability",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantityAvailable\": 50,\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{menu_item_id}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Food Item Timings",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availableFromTime\": \"09:00\",\n  \"availableToTime\": \"22:00\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{menu_item_id}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Item Out of Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantityAvailable\": 0,\n  \"isAvailable\": false\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{menu_item_id}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Item Back in Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantityAvailable\": 25,\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{menu_item_id}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Order Packaging",
+      "item": [
+        {
+          "name": "Package Order with Cutlery",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Success message returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('packaged');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 2,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "package"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Package Order without Cutlery",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"includeCutlery\": false,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 1,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "package"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Package Fragile Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 3,\n  \"isFragile\": true,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "package"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Handover to Delivery Agent",
+      "item": [
+        {
+          "name": "Generate Handover OTP",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Set delivery agent ID",
+                  "pm.collectionVariables.set(\"delivery_agent_id\", \"674abc123def456789012345\");"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"OTP generated successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('otp');",
+                  "    pm.expect(jsonData.otp).to.have.lengthOf(6);",
+                  "    pm.collectionVariables.set(\"handover_otp\", jsonData.otp);",
+                  "});",
+                  "",
+                  "pm.test(\"Expiry information provided\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('expiresIn');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\"{{delivery_agent_id}}\""
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/generate-handover-otp",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "generate-handover-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP and Complete Handover",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Handover successful\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData.message).to.include('handed over');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"{{handover_otp}}\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/handover",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "handover"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify with Invalid OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "    pm.expect(jsonData.error).to.include('Invalid');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"999999\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/handover",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "handover"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Complete Operator Workflow",
+      "description": "End-to-end workflow demonstrating all operator activities in sequence",
+      "item": [
+        {
+          "name": "Step 1 - View Pending Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/restaurant/{{restaurant_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "pending",
+                "{{restaurant_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 2 - Get Order Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 3 - Check Low Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}/low-stock",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{restaurant_id}}",
+                "low-stock"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 4 - Accept Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/accept",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "accept"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 5 - Update Food Item Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantityAvailable\": 45,\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
+              "host": [
+                "{{order_base_url}}"
+              ],
+              "path": [
+                "api",
+                "order",
+                "inventory",
+                "{{menu_item_id}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 6 - Package Order with Cutlery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 2,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "package"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 7 - Generate Handover OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.otp) {",
+                  "    pm.collectionVariables.set('handover_otp', jsonData.otp);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\"{{delivery_agent_id}}\""
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/{{order_id}}/generate-handover-otp",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "{{order_id}}",
+                "generate-handover-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Step 8 - Verify OTP and Complete Handover",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"{{handover_otp}}\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{order_base_url}}/api/order/handover",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "30002",
+              "path": [
+                "api",
+                "operator",
+                "orders",
+                "handover"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }
