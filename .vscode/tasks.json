@@ -54,12 +54,26 @@
             "group": "build"
         },
         {
+            "label": "build-order",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/fda/src/services/order/Order.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
             "label": "build-all",
             "dependsOn": [
                 "build-authentication",
                 "build-cart",
                 "build-catalog",
-                "build-crm"
+                "build-crm",
+                "build-order"
             ],
             "problemMatcher": "$msCompile",
             "group": {
@@ -132,6 +146,18 @@
                 "run",
                 "--project",
                 "${workspaceFolder}/fda/src/services/crm/API"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch-order",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/fda/src/services/order/API"
             ],
             "problemMatcher": "$msCompile"
         },

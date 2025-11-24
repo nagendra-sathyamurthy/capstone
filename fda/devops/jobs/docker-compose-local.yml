@@ -87,6 +87,24 @@ services:
     networks:
       - capstone-network
 
+  order:
+    build:
+      context: ../../src/services/order
+      dockerfile: Dockerfile
+    image: services-order:latest
+    container_name: capstone-order
+    ports:
+      - "30005:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - MONGO_CONNECTION_STRING=${MONGO_ORDER_CONNECTION}
+      - MONGO_DATABASE=OrderDb
+    depends_on:
+      - mongodb
+    networks:
+      - capstone-network
+
 networks:
   capstone-network:
     driver: bridge
