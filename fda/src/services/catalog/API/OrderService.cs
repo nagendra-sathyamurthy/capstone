@@ -80,14 +80,12 @@ namespace catalog.API
             if (order == null)
                 throw new Exception("Order not found");
 
-            var filter = MongoDB.Driver.Builders<Order>.Filter.Eq(o => o.Id, orderId);
-            var update = MongoDB.Driver.Builders<Order>.Update
-                .Set(o => o.DeliveryAgentId, deliveryAgentId)
-                .Set(o => o.HandoverOTP, otp)
-                .Set(o => o.HandoverOTPGeneratedAt, DateTime.UtcNow)
-                .Set(o => o.UpdatedAt, DateTime.UtcNow);
+            order.DeliveryAgentId = deliveryAgentId;
+            order.HandoverOTP = otp;
+            order.HandoverOTPGeneratedAt = DateTime.UtcNow;
+            order.UpdatedAt = DateTime.UtcNow;
             
-            _orderRepository._collection.UpdateOne(filter, update);
+            _orderRepository.Update(orderId, order);
             
             return Task.FromResult(otp);
         }
@@ -152,8 +150,18 @@ namespace catalog.API
 
             if (updates.Any())
             {
-                var update = updateBuilder.Combine(updates);
-                _menuItemRepository._collection.UpdateOne(filter, update);
+                // Update the existing menu item
+                if (request.QuantityAvailable.HasValue)
+                    item.QuantityAvailable = request.QuantityAvailable;
+                if (request.IsAvailable.HasValue)
+                    item.IsAvailable = request.IsAvailable.Value;
+                if (!string.IsNullOrEmpty(request.AvailableFromTime))
+                    item.AvailableFromTime = request.AvailableFromTime;
+                if (!string.IsNullOrEmpty(request.AvailableToTime))
+                    item.AvailableToTime = request.AvailableToTime;
+                
+                item.UpdatedAt = DateTime.UtcNow;
+                _menuItemRepository.Update(menuItemId, item);
             }
 
             return Task.CompletedTask;
