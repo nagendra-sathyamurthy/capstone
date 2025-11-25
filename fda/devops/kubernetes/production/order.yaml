@@ -1,22 +1,22 @@
-# Production - Cart Service with Dedicated MongoDB
-# Dedicated MongoDB instance for cart service
+# Production - Order Service with Dedicated MongoDB
+# Dedicated MongoDB instance for order service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-mongodb-deployment
+  name: order-mongodb-deployment
   namespace: capstone-services
   labels:
-    app: cart-mongodb
+    app: order-mongodb
     environment: production
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cart-mongodb
+      app: order-mongodb
   template:
     metadata:
       labels:
-        app: cart-mongodb
+        app: order-mongodb
         environment: production
     spec:
       containers:
@@ -28,34 +28,34 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: order-mongodb-secret
               key: username
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: order-mongodb-secret
               key: password
         - name: MONGO_INITDB_DATABASE
-          value: "cartdb"
+          value: "orderdb"
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
             memory: "1Gi"
-            cpu: "500m"
+            cpu: "300m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
         volumeMounts:
-        - name: cart-mongodb-storage
+        - name: order-mongodb-storage
           mountPath: /data/db
       volumes:
-      - name: cart-mongodb-storage
+      - name: order-mongodb-storage
         persistentVolumeClaim:
-          claimName: cart-mongodb-pvc
+          claimName: order-mongodb-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: cart-mongodb-pvc
+  name: order-mongodb-pvc
   namespace: capstone-services
   labels:
     environment: production
@@ -64,18 +64,18 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 15Gi
+      storage: 30Gi  # Larger storage for order data
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cart-mongodb-service
+  name: order-mongodb-service
   namespace: capstone-services
   labels:
     environment: production
 spec:
   selector:
-    app: cart-mongodb
+    app: order-mongodb
   ports:
   - protocol: TCP
     port: 27017
@@ -85,25 +85,25 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-deployment
+  name: order-deployment
   namespace: capstone-services
   labels:
-    app: cart
+    app: order
     environment: production
 spec:
-  replicas: 2
+  replicas: 3  # High availability for orders
   selector:
     matchLabels:
-      app: cart
+      app: order
   template:
     metadata:
       labels:
-        app: cart
+        app: order
         environment: production
     spec:
       containers:
-      - name: cart
-        image: services-cart:latest
+      - name: order
+        image: services-order:latest
         ports:
         - containerPort: 8080
         env:
@@ -112,17 +112,17 @@ spec:
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: order-mongodb-secret
               key: connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: order-mongodb-secret
               key: connection-string
         - name: DatabaseSettings__DatabaseName
-          value: "cartdb"
+          value: "orderdb"
         - name: DatabaseSettings__CollectionName
-          value: "carts"
+          value: "orders"
         resources:
           requests:
             memory: "512Mi"
@@ -146,15 +146,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cart-service
+  name: order-service
   namespace: capstone-services
   labels:
     environment: production
 spec:
   selector:
-    app: cart
+    app: order
   ports:
   - protocol: TCP
-    port: 30004
+    port: 30005
     targetPort: 8080
   type: LoadBalancer

@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authService, customerService } from '../services/api';
 import '../styles/OTPVerification.css';
 
-const OTPVerification = () => {
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [isLoading, setIsLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(30);
-  const [canResend, setCanResend] = useState(false);
+interface LocationState {
+  phone?: string;
+}
+
+const OTPVerification: React.FC = () => {
+  const [otp, setOtp] = useState<string[]>(['', '', '', '']);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [resendTimer, setResendTimer] = useState<number>(30);
+  const [canResend, setCanResend] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { phone, setLoading, login, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+  
+  // Get phone from location state (passed from Registration)
+  const phone = (location.state as LocationState)?.phone || localStorage.getItem('pendingPhone') || '';
 
   useEffect(() => {
     // If already authenticated, go to profile setup
@@ -40,7 +48,7 @@ const OTPVerification = () => {
     return () => clearInterval(timer);
   }, [phone, navigate, isAuthenticated]);
 
-  const handleOtpChange = (index, value) => {
+  const handleOtpChange = (index: number, value: string): void => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
@@ -49,19 +57,19 @@ const OTPVerification = () => {
       // Auto-focus next input
       if (value && index < 3) {
         const nextInput = document.getElementById(`otp-${index + 1}`);
-        if (nextInput) nextInput.focus();
+        if (nextInput) (nextInput as HTMLInputElement).focus();
       }
     }
   };
 
-  const handleKeyDown = (index, e) => {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent): void => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       const prevInput = document.getElementById(`otp-${index - 1}`);
-      if (prevInput) prevInput.focus();
+      if (prevInput) (prevInput as HTMLInputElement).focus();
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     const otpString = otp.join('');
@@ -71,7 +79,6 @@ const OTPVerification = () => {
     }
 
     setIsLoading(true);
-    setLoading(true);
 
     try {
       // For demo purposes, we'll simulate OTP verification
@@ -82,7 +89,7 @@ const OTPVerification = () => {
       const userId = Date.now().toString();
       
       // Call the authentication service to get a real JWT token
-      const authResponse = await authService.customerPhoneLogin(phone, userId);
+      const authResponse = await authService.customerPhoneLogin(phone, userId, 'Customer');
       
       // Use the real JWT token and user data from authentication service
       const userData = {
@@ -93,7 +100,7 @@ const OTPVerification = () => {
       };
       
       // Login - this saves to localStorage synchronously
-      login(userData);
+      login(userData, authResponse.token);
       
       toast.success('OTP verified successfully!');
       
@@ -117,19 +124,20 @@ const OTPVerification = () => {
         }
       } catch (error) {
         // If error checking addresses, assume new user
-        console.log('[OTPVerification] Error checking profile, assuming new user:', error.message);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.log('[OTPVerification] Error checking profile, assuming new user:', errorMessage);
         setTimeout(() => {
           navigate('/profile-setup', { replace: true });
         }, 500);
       }
     } catch (error) {
-      toast.error(error.message || 'Invalid OTP');
+      const errorMessage = error instanceof Error ? error.message : 'Invalid OTP';
+      toast.error(errorMessage);
       setIsLoading(false);
-      setLoading(false);
     }
   };
 
-  const handleResendOtp = async () => {
+  const handleResendOtp = async (): Promise<void> => {
     try {
       setCanResend(false);
       setResendTimer(30);

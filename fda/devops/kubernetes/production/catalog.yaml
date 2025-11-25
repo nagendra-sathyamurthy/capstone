@@ -155,6 +155,6 @@ spec:
     app: catalog
   ports:
   - protocol: TCP
-    port: 5002
+    port: 30002
     targetPort: 8080
   type: LoadBalancer

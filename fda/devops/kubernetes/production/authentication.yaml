@@ -155,6 +155,6 @@ spec:
     app: authentication
   ports:
   - protocol: TCP
-    port: 5001
+    port: 30001
     targetPort: 8080
   type: LoadBalancer

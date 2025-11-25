@@ -9,7 +9,7 @@ metadata:
   name: customer-app-config
   namespace: capstone-frontend
 data:
-  REACT_APP_GATEWAY_URL: "http://localhost:30005"
+  REACT_APP_GATEWAY_URL: "http://localhost:30007"
   REACT_APP_ENV: "development"
 ---
 apiVersion: apps/v1

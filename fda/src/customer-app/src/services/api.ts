@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
 // API Gateway URL - single entry point for all services
 const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:5000';
 
 // Helper function to convert order status enum to text
-const getStatusText = (status) => {
-  const statusMap = {
+const getStatusText = (status: number): string => {
+  const statusMap: Record<number, string> = {
     0: 'Pending',
     1: 'Accepted',
     2: 'Declined',
@@ -75,27 +76,27 @@ api.interceptors.response.use(
 // Authentication API calls
 export const authService = {
   // Send OTP to phone number
-  sendOTP: async (phoneNumber) => {
+  sendOTP: async (phoneNumber: string): Promise<any> => {
     try {
       const response = await authAPI.post('/auth/send-otp', { phoneNumber });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to send OTP');
     }
   },
 
   // Verify OTP and register/login user
-  verifyOTP: async (phoneNumber, otp) => {
+  verifyOTP: async (phoneNumber: string, otp: string): Promise<any> => {
     try {
       const response = await authAPI.post('/auth/verify-otp', { phoneNumber, otp });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Failed to verify OTP');
     }
   },
 
   // Customer phone login - get JWT token
-  customerPhoneLogin: async (phone, userId, name) => {
+  customerPhoneLogin: async (phone: string, userId: string, name: string): Promise<any> => {
     try {
       const response = await authAPI.post('/api/auth/customer/phone-login', {
         phone,
@@ -103,13 +104,13 @@ export const authService = {
         name: name || `User ${phone.slice(-4)}`
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Phone login failed');
     }
   },
 
   // Register new customer
-  registerCustomer: async (customerData) => {
+  registerCustomer: async (customerData: any): Promise<any> => {
     try {
       const response = await authAPI.post('/auth/register', customerData);
       return response.data;
@@ -132,7 +133,7 @@ export const catalogService = {
   },
 
   // Get menu items for a restaurant
-  getMenuItems: async (restaurantId) => {
+  getMenuItems: async (restaurantId: any): Promise<any> => {
     try {
       const response = await catalogAPI.get(`/menu-items/restaurant/${restaurantId}`);
       return response.data;
@@ -142,7 +143,7 @@ export const catalogService = {
   },
 
   // Search menu items
-  searchMenuItems: async (query, filters = {}) => {
+  searchMenuItems: async (query: any, filters: any = {}): Promise<any> => {
     try {
       const params = new URLSearchParams({ query, ...filters });
       const response = await catalogAPI.get(`/menu-items/search?${params}`);
@@ -156,7 +157,7 @@ export const catalogService = {
 // Cart API calls
 export const cartService = {
   // Get user's cart
-  getCart: async (userId) => {
+  getCart: async (userId: any): Promise<any> => {
     try {
       const response = await cartAPI.get(`/cart/${userId}`);
       return response.data;
@@ -166,7 +167,7 @@ export const cartService = {
   },
 
   // Add item to cart
-  addToCart: async (userId, item) => {
+  addToCart: async (userId: any, item: any): Promise<any> => {
     try {
       const response = await cartAPI.post(`/cart/${userId}/add`, item);
       return response.data;
@@ -176,7 +177,7 @@ export const cartService = {
   },
 
   // Update cart item
-  updateCartItem: async (userId, itemId, quantity) => {
+  updateCartItem: async (userId: any, itemId: any, quantity: any): Promise<any> => {
     try {
       const response = await cartAPI.put(`/cart/${userId}/update/${itemId}`, { quantity });
       return response.data;
@@ -186,7 +187,7 @@ export const cartService = {
   },
 
   // Remove item from cart
-  removeFromCart: async (userId, itemId) => {
+  removeFromCart: async (userId: any, itemId: any): Promise<any> => {
     try {
       const response = await cartAPI.delete(`/cart/${userId}/remove/${itemId}`);
       return response.data;
@@ -196,7 +197,7 @@ export const cartService = {
   },
 
   // Clear cart
-  clearCart: async (userId) => {
+  clearCart: async (userId: any): Promise<any> => {
     try {
       const response = await cartAPI.delete(`/cart/${userId}/clear`);
       return response.data;
@@ -209,7 +210,7 @@ export const cartService = {
 // Order API calls
 export const orderService = {
   // Create new order
-  createOrder: async (orderData) => {
+  createOrder: async (orderData: any): Promise<any> => {
     try {
       const response = await catalogAPI.post('/orders', orderData);
       return response.data;
@@ -248,7 +249,7 @@ export const orderService = {
             restaurant: order.restaurantName || 'Restaurant',
             restaurantId: order.restaurantId,
             items: order.items || [],
-            itemsList: (order.items || []).map(item => ({
+            itemsList: (order.items || []).map((item: any) => ({
               id: item.menuItemId,
               name: item.name,
               quantity: item.quantity,
@@ -280,7 +281,7 @@ export const orderService = {
   },
 
   // Get order details
-  getOrder: async (orderId) => {
+  getOrder: async (orderId: any): Promise<any> => {
     try {
       const response = await catalogAPI.get(`/orders/${orderId}`);
       return response.data;
@@ -290,7 +291,7 @@ export const orderService = {
   },
 
   // Track order
-  trackOrder: async (orderId) => {
+  trackOrder: async (orderId: any): Promise<any> => {
     try {
       const response = await catalogAPI.get(`/orders/${orderId}/track`);
       return response.data;
@@ -303,7 +304,7 @@ export const orderService = {
 // Payment simulation service
 export const paymentService = {
   // Generate QR code for payment
-  generatePaymentQR: async (amount, orderId) => {
+  generatePaymentQR: async (amount: any, orderId: any): Promise<any> => {
     try {
       // For demo purposes, we'll generate a mock QR code
       // In a real app, this would call a payment gateway
@@ -320,7 +321,7 @@ export const paymentService = {
   },
 
   // Simulate payment verification
-  verifyPayment: async (paymentId) => {
+  verifyPayment: async (paymentId: any): Promise<any> => {
     try {
       // Mock payment verification - in real app, this would verify with payment gateway
       return new Promise((resolve) => {
@@ -359,7 +360,7 @@ export const customerService = {
   },
 
   // Update customer profile
-  updateProfile: async (profileData) => {
+  updateProfile: async (profileData: any): Promise<any> => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -388,7 +389,7 @@ export const customerService = {
   },
 
   // Add new address to MongoDB
-  addAddress: async (address) => {
+  addAddress: async (address: any): Promise<any> => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -402,7 +403,7 @@ export const customerService = {
   },
 
   // Update address in MongoDB
-  updateAddress: async (addressId, address) => {
+  updateAddress: async (addressId: any, address: any): Promise<any> => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -416,7 +417,7 @@ export const customerService = {
   },
 
   // Delete address from MongoDB
-  deleteAddress: async (addressId) => {
+  deleteAddress: async (addressId: any): Promise<any> => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -430,7 +431,7 @@ export const customerService = {
   },
 
   // Update profile image in MongoDB
-  updateProfileImage: async (profileImage) => {
+  updateProfileImage: async (profileImage: any): Promise<any> => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -444,7 +445,7 @@ export const customerService = {
   },
 
   // Update food preferences in MongoDB
-  updateFoodPreferences: async (preferences) => {
+  updateFoodPreferences: async (preferences: any): Promise<any> => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {

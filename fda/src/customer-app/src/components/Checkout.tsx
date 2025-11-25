@@ -4,14 +4,15 @@ import { ArrowLeft, MapPin, Plus, Clock, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { customerService } from '../services/api';
 import { toast } from 'react-toastify';
+import { DeliveryAddress } from '../types';
 import '../styles/Checkout.css';
 
-const Checkout = () => {
+const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items, totalAmount, setDeliveryAddress, setOrderSummary } = useCart();
-  const [selectedAddress, setSelectedAddress] = useState(null);
-  const [showAddressForm, setShowAddressForm] = useState(false);
-  const [newAddress, setNewAddress] = useState({
+  const [selectedAddress, setSelectedAddress] = useState<DeliveryAddress | null>(null);
+  const [showAddressForm, setShowAddressForm] = useState<boolean>(false);
+  const [newAddress, setNewAddress] = useState<Partial<DeliveryAddress>>({
     type: 'home',
     line1: '',
     line2: '',
@@ -22,13 +23,13 @@ const Checkout = () => {
   });
 
   // Load addresses from MongoDB via API
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
 
   useEffect(() => {
     loadAddresses();
   }, []);
 
-  const loadAddresses = async () => {
+  const loadAddresses = async (): Promise<void> => {
     try {
       const addressData = await customerService.getAddresses();
       if (addressData && Array.isArray(addressData) && addressData.length > 0) {
@@ -45,11 +46,11 @@ const Checkout = () => {
   const gst = Math.round(totalAmount * 0.05);
   const finalTotal = totalAmount + deliveryFee + platformFee + gst;
 
-  const handleAddressSelect = (address) => {
+  const handleAddressSelect = (address: DeliveryAddress): void => {
     setSelectedAddress(address);
   };
 
-  const handleAddNewAddress = async (e) => {
+  const handleAddNewAddress = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!newAddress.line1 || !newAddress.pincode) {
       toast.error('Please fill in all required fields');
@@ -92,7 +93,7 @@ const Checkout = () => {
     }
   };
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = (): void => {
     if (!selectedAddress) {
       toast.error('Please select a delivery address');
       return;
@@ -104,7 +105,7 @@ const Checkout = () => {
     }
 
     // Extract restaurant name from first item (all items should be from same restaurant)
-    const restaurantName = items[0]?.restaurantName || 'Restaurant';
+    const restaurantName = items[0]?.restaurant || 'Restaurant';
     const restaurantId = items[0]?.restaurantId;
 
     const orderSummary = {

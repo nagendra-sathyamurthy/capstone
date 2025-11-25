@@ -17,7 +17,11 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Protected Route wrapper
-const ProtectedRoute = ({ children }) => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
   console.log('[ProtectedRoute] Auth check:', { isAuthenticated, userId: user?.id });
   
@@ -25,17 +29,21 @@ const ProtectedRoute = ({ children }) => {
     console.log('[ProtectedRoute] Not authenticated, redirecting to login');
   }
   
-  return isAuthenticated ? children : <Navigate to="/" replace />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 // Public Route wrapper (redirect to dashboard if authenticated)
-const PublicRoute = ({ children }) => {
+interface PublicRouteProps {
+  children: React.ReactNode;
+}
+
+const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   console.log('[PublicRoute] Auth check:', { isAuthenticated });
-  return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
+  return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
 };
 
-function AppRoutes() {
+const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<PublicRoute><Registration /></PublicRoute>} />
@@ -50,7 +58,7 @@ function AppRoutes() {
   );
 }
 
-function App() {
+const App: React.FC = () => {
   return (
     <AuthProvider>
       <CartProvider>

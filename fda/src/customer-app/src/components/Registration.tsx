@@ -6,11 +6,11 @@ import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/api';
 import '../styles/Registration.css';
 
-const Registration = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const Registration: React.FC = () => {
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { setPhone, setLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Pre-fill phone number for returning users
@@ -20,12 +20,12 @@ const Registration = () => {
     }
   }, []);
 
-  const validatePhoneNumber = (phone) => {
+  const validatePhoneNumber = (phone: string): boolean => {
     const phoneRegex = /^[6-9]\d{9}$/;
     return phoneRegex.test(phone);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     if (!validatePhoneNumber(phoneNumber)) {
@@ -34,21 +34,22 @@ const Registration = () => {
     }
 
     setIsLoading(true);
-    setLoading(true);
 
     try {
       // For demo purposes, we'll simulate OTP sending
       // In production, this would call the actual API
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       
-      setPhone(phoneNumber);
+      // Store phone in localStorage for OTP verification page
+      localStorage.setItem('pendingPhone', phoneNumber);
+      
       toast.success('OTP sent successfully!');
-      navigate('/verify-otp');
+      navigate('/verify-otp', { state: { phone: phoneNumber } });
     } catch (error) {
-      toast.error(error.message || 'Failed to send OTP');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
-      setLoading(false);
     }
   };
 

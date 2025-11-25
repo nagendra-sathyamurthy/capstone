@@ -5,12 +5,12 @@ import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
 import '../styles/Payment.css';
 
-const Payment = () => {
+const Payment: React.FC = () => {
   const navigate = useNavigate();
   const { orderSummary, clearCart, saveCompletedOrder } = useCart();
-  const [paymentStatus, setPaymentStatus] = useState('pending'); // pending, processing, success, failed
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
-  const [qrCode, setQrCode] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState<string>('pending'); // pending, processing, success, failed
+  const [timeLeft, setTimeLeft] = useState<number>(15 * 60); // 15 minutes in seconds
+  const [qrCode, setQrCode] = useState<string>('');
 
   useEffect(() => {
     if (!orderSummary) {
@@ -38,18 +38,18 @@ const Payment = () => {
     return () => clearInterval(timer);
   }, [orderSummary, navigate]);
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleCopyUPI = () => {
+  const handleCopyUPI = (): void => {
     navigator.clipboard.writeText('restaurant@upi');
     toast.success('UPI ID copied to clipboard!');
   };
 
-  const simulatePaymentVerification = () => {
+  const simulatePaymentVerification = (): void => {
     setPaymentStatus('processing');
     toast.info('Verifying payment...');
 
@@ -73,7 +73,7 @@ const Payment = () => {
     }, 2000);
   };
 
-  const generateQRCodeSVG = (data) => {
+  const generateQRCodeSVG = (data: string): JSX.Element => {
     // Simple QR code placeholder - in a real app, use a proper QR code library
     return (
       <div className="qr-placeholder">

@@ -1,18 +1,16 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import { User, AuthState, AuthContextType } from '../types';
 
-const AuthContext = createContext();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Check localStorage immediately on initialization (client-side only)
-const getInitialAuthState = () => {
+const getInitialAuthState = (): AuthState => {
   // Ensure we're on the client side
   if (typeof window === 'undefined') {
     console.log('[AuthContext] Server-side rendering detected, returning unauthenticated state');
     return {
       isAuthenticated: false,
       user: null,
-      phone: '',
-      otp: '',
-      loading: false,
       token: null
     };
   }
@@ -40,10 +38,10 @@ const getInitialAuthState = () => {
 
     if (token && userId) {
       // Restore session from localStorage
-      let user = {
+      let user: User = {
         id: userId,
-        customerId: userId,
-        phone: userPhone,
+        userId: userId,
+        phone: userPhone || undefined,
         name: '', 
         email: ''
       };
@@ -62,9 +60,6 @@ const getInitialAuthState = () => {
       return {
         isAuthenticated: true,
         user: user,
-        phone: userPhone || '',
-        otp: '',
-        loading: false,
         token: token
       };
     }
@@ -76,37 +71,27 @@ const getInitialAuthState = () => {
   return {
     isAuthenticated: false,
     user: null,
-    phone: '',
-    otp: '',
-    loading: false,
     token: null
   };
 };
 
-const authReducer = (state, action) => {
+type AuthAction =
+  | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
+  | { type: 'LOGOUT' };
+
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload };
-    case 'SET_PHONE':
-      return { ...state, phone: action.payload };
-    case 'SET_OTP':
-      return { ...state, otp: action.payload };
     case 'LOGIN_SUCCESS':
       return {
         ...state,
         isAuthenticated: true,
         user: action.payload.user,
-        token: action.payload.token,
-        phone: action.payload.user.phone || state.phone, // Preserve phone from user or existing state
-        loading: false
+        token: action.payload.token
       };
     case 'LOGOUT':
       return {
         isAuthenticated: false,
         user: null,
-        phone: '',
-        otp: '',
-        loading: false,
         token: null
       };
     default:
@@ -114,23 +99,27 @@ const authReducer = (state, action) => {
   }
 };
 
-export const AuthProvider = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Initialize state with a function to ensure it runs on client-side
   const [state, dispatch] = useReducer(authReducer, null, getInitialAuthState);
 
-  const login = (userData) => {
+  const login = (userData: User, token: string) => {
     console.log('[AuthContext] Login called with userData:', userData);
     
     // Save user data and token to localStorage FIRST
     const authData = {
       user: {
-        id: userData.id || userData.customerId,
-        customerId: userData.id || userData.customerId,
+        id: userData.id || userData.userId,
+        userId: userData.userId || userData.id,
         phone: userData.phone,
         name: userData.name || userData.firstName || '',
         email: userData.email || ''
       },
-      token: userData.token
+      token: token
     };
     
     console.log('[AuthContext] Saving auth data to localStorage:', authData);
@@ -138,8 +127,8 @@ export const AuthProvider = ({ children }) => {
     try {
       // Save to localStorage synchronously
       localStorage.setItem('authToken', authData.token);
-      localStorage.setItem('userId', authData.user.id);
-      localStorage.setItem('userPhone', authData.user.phone);
+      if (authData.user.id) localStorage.setItem('userId', authData.user.id);
+      if (authData.user.phone) localStorage.setItem('userPhone', authData.user.phone);
       
       // Also save complete user object for restoration
       localStorage.setItem('user', JSON.stringify(authData.user));
@@ -172,27 +161,12 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   };
 
-  const setPhone = (phone) => {
-    dispatch({ type: 'SET_PHONE', payload: phone });
-  };
-
-  const setOtp = (otp) => {
-    dispatch({ type: 'SET_OTP', payload: otp });
-  };
-
-  const setLoading = (loading) => {
-    dispatch({ type: 'SET_LOADING', payload: loading });
-  };
-
   return (
     <AuthContext.Provider
       value={{
         ...state,
         login,
-        logout,
-        setPhone,
-        setOtp,
-        setLoading
+        logout
       }}
     >
       {children}
@@ -200,7 +174,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');

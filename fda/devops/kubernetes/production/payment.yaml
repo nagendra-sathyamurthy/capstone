@@ -1,22 +1,22 @@
-# Production - Cart Service with Dedicated MongoDB
-# Dedicated MongoDB instance for cart service
+# Production - Payment Service with Dedicated MongoDB
+# Dedicated MongoDB instance for payment service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-mongodb-deployment
+  name: payment-mongodb-deployment
   namespace: capstone-services
   labels:
-    app: cart-mongodb
+    app: payment-mongodb
     environment: production
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cart-mongodb
+      app: payment-mongodb
   template:
     metadata:
       labels:
-        app: cart-mongodb
+        app: payment-mongodb
         environment: production
     spec:
       containers:
@@ -28,15 +28,15 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: payment-mongodb-secret
               key: username
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: payment-mongodb-secret
               key: password
         - name: MONGO_INITDB_DATABASE
-          value: "cartdb"
+          value: "paymentdb"
         resources:
           requests:
             memory: "512Mi"
@@ -45,17 +45,17 @@ spec:
             memory: "1Gi"
             cpu: "500m"
         volumeMounts:
-        - name: cart-mongodb-storage
+        - name: payment-mongodb-storage
           mountPath: /data/db
       volumes:
-      - name: cart-mongodb-storage
+      - name: payment-mongodb-storage
         persistentVolumeClaim:
-          claimName: cart-mongodb-pvc
+          claimName: payment-mongodb-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: cart-mongodb-pvc
+  name: payment-mongodb-pvc
   namespace: capstone-services
   labels:
     environment: production
@@ -64,18 +64,18 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 15Gi
+      storage: 20Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cart-mongodb-service
+  name: payment-mongodb-service
   namespace: capstone-services
   labels:
     environment: production
 spec:
   selector:
-    app: cart-mongodb
+    app: payment-mongodb
   ports:
   - protocol: TCP
     port: 27017
@@ -85,25 +85,25 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-deployment
+  name: payment-deployment
   namespace: capstone-services
   labels:
-    app: cart
+    app: payment
     environment: production
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: cart
+      app: payment
   template:
     metadata:
       labels:
-        app: cart
+        app: payment
         environment: production
     spec:
       containers:
-      - name: cart
-        image: services-cart:latest
+      - name: payment
+        image: services-payment:latest
         ports:
         - containerPort: 8080
         env:
@@ -112,17 +112,17 @@ spec:
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: payment-mongodb-secret
               key: connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: cart-mongodb-secret
+              name: payment-mongodb-secret
               key: connection-string
         - name: DatabaseSettings__DatabaseName
-          value: "cartdb"
+          value: "paymentdb"
         - name: DatabaseSettings__CollectionName
-          value: "carts"
+          value: "payments"
         resources:
           requests:
             memory: "512Mi"
@@ -146,15 +146,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: cart-service
+  name: payment-service
   namespace: capstone-services
   labels:
     environment: production
 spec:
   selector:
-    app: cart
+    app: payment
   ports:
   - protocol: TCP
-    port: 30004
+    port: 30006
     targetPort: 8080
   type: LoadBalancer

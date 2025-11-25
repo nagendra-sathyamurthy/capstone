@@ -4,27 +4,42 @@ import { ArrowLeft, User, MapPin, Settings, Heart, LogOut, Camera, ChevronRight,
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { customerService, orderService } from '../services/api';
+import { DeliveryAddress, Order } from '../types';
 import { toast } from 'react-toastify';
 import '../styles/Profile.css';
 
-const Profile = () => {
+interface ProfileData {
+  name: string;
+  phone: string;
+  email: string;
+  profileImage: string | null;
+}
+
+interface PreferencesData {
+  notifications: boolean;
+  emailUpdates: boolean;
+  dietaryRestrictions: string;
+  favoriteCuisines: string[];
+}
+
+const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { addToCart, clearCart } = useCart();
-  const [activeTab, setActiveTab] = useState('orders');
-  const [profile, setProfile] = useState({
+  const [activeTab, setActiveTab] = useState<string>('orders');
+  const [profile, setProfile] = useState<ProfileData>({
     name: user?.name || user?.firstName || '',
     phone: user?.phone || '',
     email: user?.email || '',
     profileImage: null
   });
-  const [orders, setOrders] = useState([]);
-  const [addresses, setAddresses] = useState([]);
-  const [editingAddress, setEditingAddress] = useState(null);
-  const [showAddressForm, setShowAddressForm] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showOrderDetails, setShowOrderDetails] = useState(false);
-  const [addressFormData, setAddressFormData] = useState({
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
+  const [editingAddress, setEditingAddress] = useState<DeliveryAddress | null>(null);
+  const [showAddressForm, setShowAddressForm] = useState<boolean>(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showOrderDetails, setShowOrderDetails] = useState<boolean>(false);
+  const [addressFormData, setAddressFormData] = useState<Partial<DeliveryAddress>>({
     type: 'home',
     line1: '',
     line2: '',
@@ -33,19 +48,19 @@ const Profile = () => {
     state: 'Karnataka',
     pincode: ''
   });
-  const [preferences, setPreferences] = useState({
+  const [preferences, setPreferences] = useState<PreferencesData>({
     notifications: true,
     emailUpdates: false,
     dietaryRestrictions: '',
     favoriteCuisines: []
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     loadProfileData();
   }, []);
 
-  const loadProfileData = async () => {
+  const loadProfileData = async (): Promise<void> => {
     setLoading(true);
     try {
       // Get current user's identifier
@@ -54,7 +69,7 @@ const Profile = () => {
       const userKey = userId || userPhone;
       
       // Load profile image from localStorage
-      let savedImage = null;
+      let savedImage: string | null = null;
       if (userKey) {
         const profileStorageKey = `profileImage_${userKey}`;
         savedImage = localStorage.getItem(profileStorageKey);
@@ -92,7 +107,7 @@ const Profile = () => {
         const orderData = await orderService.getCustomerOrders();
         if (orderData && orderData.length > 0) {
           // Transform API data to display format
-          const formattedOrders = orderData.map(order => ({
+          const formattedOrders = orderData.map((order: any) => ({
             id: order.id,
             userId: order.userId,
             date: order.date,
@@ -130,14 +145,14 @@ const Profile = () => {
     }
   };
 
-  const handleProfileImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfile(prev => ({
           ...prev,
-          profileImage: reader.result
+          profileImage: reader.result as string
         }));
         
         // Save to localStorage with user-specific key
@@ -145,9 +160,9 @@ const Profile = () => {
         const userPhone = localStorage.getItem('userPhone');
         const userKey = userId || userPhone;
         
-        if (userKey) {
+        if (userKey && reader.result) {
           const profileStorageKey = `profileImage_${userKey}`;
-          localStorage.setItem(profileStorageKey, reader.result);
+          localStorage.setItem(profileStorageKey, reader.result as string);
         }
         
         toast.success('Profile image updated!');
@@ -156,32 +171,46 @@ const Profile = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout();
     toast.success('Logged out successfully');
     navigate('/', { replace: true });
   };
 
-  const handleViewDetails = (order) => {
+  const handleViewDetails = (order: Order): void => {
     setSelectedOrder(order);
     setShowOrderDetails(true);
   };
 
-  const handleCloseOrderDetails = () => {
+  const handleCloseOrderDetails = (): void => {
     setShowOrderDetails(false);
     setSelectedOrder(null);
   };
 
-  const handleReorder = (order) => {
+  const handleReorder = (order: Order): void => {
     // Clear existing cart
     clearCart();
     
     // Add all items from the order to cart
     if (order.itemsList && Array.isArray(order.itemsList)) {
       order.itemsList.forEach(item => {
+        // Convert OrderItem to MenuItem format
+        const menuItem: any = {
+          id: item.id || item.itemId || '',
+          name: item.name,
+          description: item.description || '',
+          price: item.price,
+          image: item.image || '🍽️',
+          category: item.category || 'Food',
+          restaurant: order.restaurant,
+          restaurantId: order.restaurantId,
+          isVeg: item.isVeg !== undefined ? item.isVeg : true,
+          isAvailable: true
+        };
+        
         // Add each item the correct number of times based on quantity
         for (let i = 0; i < (item.quantity || 1); i++) {
-          addToCart(item);
+          addToCart(menuItem);
         }
       });
       toast.success(`${order.itemsList.length} items added to cart from ${order.restaurant}`);
@@ -191,7 +220,7 @@ const Profile = () => {
     }
   };
 
-  const handleClearHistory = () => {
+  const handleClearHistory = (): void => {
     if (window.confirm('Are you sure you want to clear all order history? This action cannot be undone.')) {
       // Get current user's identifier
       const userId = localStorage.getItem('userId');
@@ -208,7 +237,7 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteAddress = async (addressId) => {
+  const handleDeleteAddress = async (addressId: string): Promise<void> => {
     try {
       await customerService.deleteAddress(addressId);
       const updatedAddresses = addresses.filter(addr => addr.id !== addressId);
@@ -220,7 +249,7 @@ const Profile = () => {
     }
   };
 
-  const handleEditAddress = (address) => {
+  const handleEditAddress = (address: DeliveryAddress): void => {
     setEditingAddress(address);
     setAddressFormData({
       type: address.type,
@@ -234,7 +263,7 @@ const Profile = () => {
     setShowAddressForm(true);
   };
 
-  const handleAddNewAddress = () => {
+  const handleAddNewAddress = (): void => {
     setEditingAddress(null);
     setAddressFormData({
       type: 'home',
@@ -248,7 +277,7 @@ const Profile = () => {
     setShowAddressForm(true);
   };
 
-  const handleSaveAddress = async (e) => {
+  const handleSaveAddress = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     if (!addressFormData.line1 || !addressFormData.city || !addressFormData.state || !addressFormData.pincode) {
@@ -275,7 +304,7 @@ const Profile = () => {
 
       if (editingAddress) {
         // Update existing address in MongoDB
-        const updatedAddress = await customerService.updateAddress(editingAddress.id, addressPayload);
+        const updatedAddress = await customerService.updateAddress(editingAddress.id!, addressPayload);
         const updatedAddresses = addresses.map(addr => 
           addr.id === editingAddress.id ? updatedAddress : addr
         );
@@ -296,7 +325,7 @@ const Profile = () => {
     }
   };
 
-  const handleCancelAddressForm = () => {
+  const handleCancelAddressForm = (): void => {
     setShowAddressForm(false);
     setEditingAddress(null);
     setAddressFormData({
@@ -310,15 +339,14 @@ const Profile = () => {
     });
   };
 
-  const handlePreferenceChange = (key, value) => {
+  const handlePreferenceChange = (key: string, value: any): void => {
     setPreferences(prev => ({
       ...prev,
       [key]: value
     }));
-    toast.success('Preference updated!');
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string): string => {
     switch (status.toLowerCase()) {
       case 'delivered':
         return 'status-delivered';
@@ -370,7 +398,7 @@ const Profile = () => {
                   <span>•</span>
                   <span>{new Date(order.date).toLocaleDateString()}</span>
                 </div>
-                {order.status === 'Delivered' && (
+                {order.status === 'Delivered' && order.rating && (
                   <div className="order-rating">
                     {'⭐'.repeat(order.rating)}
                   </div>
@@ -535,7 +563,7 @@ const Profile = () => {
               <p className="address-text">{address.city}, {address.state} - {address.pincode}</p>
               <div className="address-actions">
                 <button className="btn-link" onClick={() => handleEditAddress(address)}>Edit</button>
-                <button className="btn-link delete" onClick={() => handleDeleteAddress(address.id)}>Delete</button>
+                <button className="btn-link delete" onClick={() => address.id && handleDeleteAddress(address.id)}>Delete</button>
               </div>
             </div>
           ))}

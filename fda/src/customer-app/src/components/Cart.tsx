@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
+import { MenuItem } from '../types';
 import '../styles/Cart.css';
 
-const Cart = () => {
+const Cart: React.FC = () => {
   const navigate = useNavigate();
   const { items, totalAmount, totalItems, addToCart, removeFromCart, clearCart } = useCart();
 
@@ -14,20 +15,20 @@ const Cart = () => {
   const gst = totalAmount > 0 ? Math.round(totalAmount * 0.05) : 0;
   const finalTotal = totalAmount + deliveryFee + platformFee + gst;
 
-  const handleIncrement = (item) => {
+  const handleIncrement = (item: MenuItem): void => {
     addToCart(item);
   };
 
-  const handleDecrement = (item) => {
-    removeFromCart(item);
+  const handleDecrement = (item: MenuItem): void => {
+    removeFromCart(item.id);
   };
 
-  const handleClearCart = () => {
+  const handleClearCart = (): void => {
     clearCart();
     toast.success('Cart cleared!');
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = (): void => {
     if (items.length === 0) {
       toast.error('Your cart is empty!');
       return;
@@ -93,7 +94,7 @@ const Cart = () => {
                 <div className="item-image">{item.image}</div>
                 <div className="item-details">
                   <h3>{item.name}</h3>
-                  <p className="restaurant-name">{item.restaurantName}</p>
+                  <p className="restaurant-name">{item.restaurant || 'Restaurant'}</p>
                   <span className="item-price">₹{item.price}</span>
                 </div>
               </div>

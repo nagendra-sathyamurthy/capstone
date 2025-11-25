@@ -5,32 +5,33 @@ import { Search, Filter, ShoppingCart, User, Leaf, Drumstick, Star, MapPin, Chev
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { catalogService, customerService } from '../services/api';
+import { Restaurant, MenuItem, DeliveryAddress, FilterOptions } from '../types';
 import '../styles/Dashboard.css';
 
-const Dashboard = () => {
-  const [restaurants, setRestaurants] = useState([]);
-  const [menuItems, setMenuItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [selectedFilters, setSelectedFilters] = useState({
+const Dashboard: React.FC = () => {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [selectedFilters, setSelectedFilters] = useState<FilterOptions>({
     cuisine: 'all',
     dietary: 'all', // all, veg, non-veg
     priceRange: 'all'
   });
-  const [showFilters, setShowFilters] = useState(false);
-  const [addresses, setAddresses] = useState([]);
-  const [selectedAddress, setSelectedAddress] = useState(null);
-  const [showAddressDropdown, setShowAddressDropdown] = useState(false);
-  const [addressNotificationShown, setAddressNotificationShown] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<DeliveryAddress | null>(null);
+  const [showAddressDropdown, setShowAddressDropdown] = useState<boolean>(false);
+  const [addressNotificationShown, setAddressNotificationShown] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>('');
 
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart, totalItems } = useCart();
 
   // Mock data for demonstration
-  const mockRestaurants = [
+  const mockRestaurants: Restaurant[] = [
     {
       id: '1',
       name: 'Spice Kitchen',
@@ -60,19 +61,19 @@ const Dashboard = () => {
     }
   ];
 
-  const mockMenuItems = [
+  const mockMenuItems: MenuItem[] = [
     {
       id: '1',
       name: 'Chicken Biryani',
       description: 'Aromatic basmati rice with tender chicken',
       price: 299,
       category: 'Main Course',
-      cuisine: 'Indian',
-      isVeg: false,
-      rating: 4.6,
       image: '🍛',
+      restaurant: 'Spice Kitchen',
       restaurantId: '1',
-      restaurantName: 'Spice Kitchen'
+      isVeg: false,
+      isAvailable: true,
+      rating: 4.6
     },
     {
       id: '2',
@@ -80,12 +81,12 @@ const Dashboard = () => {
       description: 'Fresh tomato sauce, mozzarella, and basil',
       price: 399,
       category: 'Pizza',
-      cuisine: 'Italian',
-      isVeg: true,
-      rating: 4.3,
       image: '🍕',
+      restaurant: 'Pizza Palace',
       restaurantId: '2',
-      restaurantName: 'Pizza Palace'
+      isVeg: true,
+      isAvailable: true,
+      rating: 4.3
     },
     {
       id: '3',
@@ -93,12 +94,12 @@ const Dashboard = () => {
       description: 'Creamy curry with cottage cheese',
       price: 249,
       category: 'Main Course',
-      cuisine: 'Indian',
-      isVeg: true,
-      rating: 4.4,
       image: '🍛',
+      restaurant: 'Spice Kitchen',
       restaurantId: '1',
-      restaurantName: 'Spice Kitchen'
+      isVeg: true,
+      isAvailable: true,
+      rating: 4.4
     },
     {
       id: '4',
@@ -106,12 +107,12 @@ const Dashboard = () => {
       description: 'Grilled chicken patty with fresh vegetables',
       price: 199,
       category: 'Burger',
-      cuisine: 'American',
-      isVeg: false,
-      rating: 4.1,
       image: '🍔',
+      restaurant: 'Burger Junction',
       restaurantId: '3',
-      restaurantName: 'Burger Junction'
+      isVeg: false,
+      isAvailable: false,
+      rating: 4.1
     },
     {
       id: '5',
@@ -119,12 +120,12 @@ const Dashboard = () => {
       description: 'Fragrant rice with mixed vegetables',
       price: 229,
       category: 'Main Course',
-      cuisine: 'Indian',
-      isVeg: true,
-      rating: 4.2,
       image: '🍛',
+      restaurant: 'Spice Kitchen',
       restaurantId: '1',
-      restaurantName: 'Spice Kitchen'
+      isVeg: true,
+      isAvailable: true,
+      rating: 4.2
     }
   ];
 
@@ -186,7 +187,9 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('[Dashboard] Error loading addresses:', error);
-      console.error('[Dashboard] Error details:', error.message);
+      if (error instanceof Error) {
+        console.error('[Dashboard] Error details:', error.message);
+      }
       // Show notification only once
       if (!addressNotificationShown) {
         toast.info('Please add your delivery address');
@@ -213,18 +216,17 @@ const Dashboard = () => {
 
   const filteredMenuItems = menuItems.filter(item => {
     // Restaurant filter
-    if (selectedRestaurant && item.restaurantName !== selectedRestaurant.name) {
+    if (selectedRestaurant && item.restaurant !== selectedRestaurant.name) {
       return false;
     }
 
     // Search filter
-    if (searchQuery && !item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !item.cuisine.toLowerCase().includes(searchQuery.toLowerCase())) {
+    if (searchQuery && !item.name.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
 
-    // Cuisine filter
-    if (selectedFilters.cuisine !== 'all' && item.cuisine !== selectedFilters.cuisine) {
+    // Cuisine filter (use category instead of cuisine since MenuItem doesn't have cuisine)
+    if (selectedFilters.cuisine !== 'all' && item.category !== selectedFilters.cuisine) {
       return false;
     }
 
@@ -247,12 +249,12 @@ const Dashboard = () => {
     return true;
   });
 
-  const handleAddToCart = (item) => {
+  const handleAddToCart = (item: MenuItem): void => {
     addToCart(item);
     toast.success(`${item.name} added to cart!`);
   };
 
-  const handleRestaurantClick = (restaurant) => {
+  const handleRestaurantClick = (restaurant: Restaurant): void => {
     if (!restaurant.isOpen) {
       toast.info(`${restaurant.name} is currently closed`);
       return;
@@ -268,12 +270,12 @@ const Dashboard = () => {
     }
   };
 
-  const handleClearRestaurantFilter = () => {
+  const handleClearRestaurantFilter = (): void => {
     setSelectedRestaurant(null);
     toast.info('Showing all restaurants');
   };
 
-  const handleProfileClick = () => {
+  const handleProfileClick = (): void => {
     navigate('/profile');
   };
 
@@ -490,7 +492,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <p className="item-description">{item.description}</p>
-                  <p className="restaurant-name">{item.restaurantName}</p>
+                  <p className="restaurant-name">{item.restaurant || 'Restaurant'}</p>
                   <div className="item-footer">
                     <div className="item-rating">
                       <Star size={14} /> {item.rating}

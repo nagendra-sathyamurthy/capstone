@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     container_name: capstone-authentication
     ports:
-      - "8081:8080"
+      - "30001:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
@@ -44,7 +44,7 @@ services:
       dockerfile: Dockerfile
     container_name: capstone-catalog
     ports:
-      - "8082:8080"
+      - "30002:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
@@ -61,7 +61,7 @@ services:
       dockerfile: Dockerfile
     container_name: capstone-crm
     ports:
-      - "8083:8080"
+      - "30003:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
@@ -78,7 +78,7 @@ services:
       dockerfile: Dockerfile
     container_name: capstone-cart
     ports:
-      - "8084:8080"
+      - "30004:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
@@ -95,7 +95,7 @@ services:
       dockerfile: Dockerfile
     container_name: capstone-order
     ports:
-      - "8085:8080"
+      - "30005:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
@@ -112,7 +112,7 @@ services:
       dockerfile: Dockerfile
     container_name: capstone-payment
     ports:
-      - "8086:8080"
+      - "30006:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017

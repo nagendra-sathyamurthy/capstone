@@ -1,11 +1,29 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import axios from 'axios';
+import { CartItem, MenuItem, DeliveryAddress, CartContextType } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const CartContext = createContext();
+interface CartState {
+  items: CartItem[];
+  totalAmount: number;
+  totalItems: number;
+  deliveryAddress: DeliveryAddress | null;
+  orderSummary: any | null;
+}
 
-const cartInitialState = {
+type CartAction =
+  | { type: 'ADD_TO_CART'; payload: MenuItem }
+  | { type: 'REMOVE_FROM_CART'; payload: { id: string } }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'CLEAR_CART' }
+  | { type: 'SET_DELIVERY_ADDRESS'; payload: DeliveryAddress }
+  | { type: 'SET_ORDER_SUMMARY'; payload: any }
+  | { type: 'LOAD_CART'; payload: CartState };
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+const cartInitialState: CartState = {
   items: [],
   totalAmount: 0,
   totalItems: 0,
@@ -13,7 +31,7 @@ const cartInitialState = {
   orderSummary: null
 };
 
-const cartReducer = (state, action) => {
+const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_TO_CART':
       const existingItem = state.items.find(item => item.id === action.payload.id);
@@ -40,6 +58,7 @@ const cartReducer = (state, action) => {
 
     case 'REMOVE_FROM_CART':
       const itemToRemove = state.items.find(item => item.id === action.payload.id);
+      if (!itemToRemove) return state;
       if (itemToRemove.quantity === 1) {
         return {
           ...state,
@@ -61,6 +80,22 @@ const cartReducer = (state, action) => {
         };
       }
 
+    case 'UPDATE_QUANTITY':
+      return {
+        ...state,
+        items: state.items.map(item =>
+          item.id === action.payload.id
+            ? { ...item, quantity: action.payload.quantity }
+            : item
+        ),
+        totalItems: state.items.reduce((sum, item) =>
+          item.id === action.payload.id ? sum - item.quantity + action.payload.quantity : sum + item.quantity, 0
+        ),
+        totalAmount: state.items.reduce((sum, item) =>
+          item.id === action.payload.id ? sum + (action.payload.quantity * item.price) : sum + (item.quantity * item.price), 0
+        )
+      };
+
     case 'CLEAR_CART':
       return cartInitialState;
 
@@ -76,35 +111,46 @@ const cartReducer = (state, action) => {
         orderSummary: action.payload
       };
 
+    case 'LOAD_CART':
+      return action.payload;
+
     default:
       return state;
   }
 };
 
-export const CartProvider = ({ children }) => {
+interface CartProviderProps {
+  children: ReactNode;
+}
+
+export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, cartInitialState);
 
-  const addToCart = (item) => {
+  const addToCart = (item: MenuItem) => {
     dispatch({ type: 'ADD_TO_CART', payload: item });
   };
 
-  const removeFromCart = (item) => {
-    dispatch({ type: 'REMOVE_FROM_CART', payload: item });
+  const removeFromCart = (itemId: string) => {
+    dispatch({ type: 'REMOVE_FROM_CART', payload: { id: itemId } });
+  };
+
+  const updateQuantity = (itemId: string, quantity: number) => {
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id: itemId, quantity } });
   };
 
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
   };
 
-  const setDeliveryAddress = (address) => {
+  const setDeliveryAddress = (address: DeliveryAddress) => {
     dispatch({ type: 'SET_DELIVERY_ADDRESS', payload: address });
   };
 
-  const setOrderSummary = (summary) => {
+  const setOrderSummary = (summary: any) => {
     dispatch({ type: 'SET_ORDER_SUMMARY', payload: summary });
   };
 
-  const saveCompletedOrder = async (orderData) => {
+  const saveCompletedOrder = async (orderData: any) => {
     try {
       // Get current user's identifier from localStorage
       const userId = localStorage.getItem('userId');
@@ -122,7 +168,7 @@ export const CartProvider = ({ children }) => {
         customerId: userKey,
         restaurantId: orderData.restaurantId || '1',
         restaurantName: orderData.restaurant || 'Unknown',
-        items: (orderData.items || []).map(item => ({
+        items: (orderData.items || []).map((item: any) => ({
           menuItemId: item.id,
           name: item.name,
           quantity: item.quantity || 1,
@@ -150,7 +196,8 @@ export const CartProvider = ({ children }) => {
         console.log('Order saved to database:', response.data);
         return response.data;
       } catch (apiError) {
-        console.error('Failed to save order to API:', apiError.message);
+        const errorMessage = apiError instanceof Error ? apiError.message : 'Unknown error';
+        console.error('Failed to save order to API:', errorMessage);
         
         // Fallback to localStorage for offline support
         const storageKey = `orderHistory_${userKey}`;
@@ -184,9 +231,14 @@ export const CartProvider = ({ children }) => {
   return (
     <CartContext.Provider
       value={{
-        ...state,
+        items: state.items,
+        totalAmount: state.totalAmount,
+        totalItems: state.totalItems,
+        deliveryAddress: state.deliveryAddress,
+        orderSummary: state.orderSummary,
         addToCart,
         removeFromCart,
+        updateQuantity,
         clearCart,
         setDeliveryAddress,
         setOrderSummary,
@@ -198,7 +250,7 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-export const useCart = () => {
+export const useCart = (): CartContextType => {
   const context = useContext(CartContext);
   if (!context) {
     throw new Error('useCart must be used within a CartProvider');

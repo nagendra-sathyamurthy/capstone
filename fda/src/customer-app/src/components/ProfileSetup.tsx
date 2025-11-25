@@ -4,22 +4,23 @@ import { toast } from 'react-toastify';
 import { User, MapPin, Camera, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { customerService } from '../services/api';
+import { ProfileSetupData, AddressFormData } from '../types';
 import '../styles/ProfileSetup.css';
 
-const ProfileSetup = () => {
+const ProfileSetup: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
   const [profileData, setProfileData] = useState({
     name: '',
-    profileImage: null,
-    profileImagePreview: null,
+    profileImage: null as string | null,
+    profileImagePreview: null as string | null,
     foodPreferences: {
-      dietary: 'all', // all, veg, non-veg
-      cuisines: []
+      dietary: 'all' as 'all' | 'veg' | 'non-veg',
+      cuisines: [] as string[]
     }
   });
-  const [addressData, setAddressData] = useState({
+  const [addressData, setAddressData] = useState<AddressFormData>({
     type: 'home',
     line1: '',
     line2: '',
@@ -28,7 +29,7 @@ const ProfileSetup = () => {
     state: 'Karnataka',
     pincode: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Check if user already has profile data - skip setup for returning users
   useEffect(() => {
@@ -44,7 +45,7 @@ const ProfileSetup = () => {
     checkExistingProfile();
   }, [navigate]);
 
-  const checkExistingProfile = async () => {
+  const checkExistingProfile = async (): Promise<void> => {
     try {
       console.log('[ProfileSetup] Checking for existing profile...');
       const addresses = await customerService.getAddresses();
@@ -59,13 +60,14 @@ const ProfileSetup = () => {
       }
     } catch (error) {
       // If error, assume new user and continue with setup
-      console.log('[ProfileSetup] Error checking profile:', error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log('[ProfileSetup] Error checking profile:', errorMessage);
       console.log('[ProfileSetup] Proceeding with setup as new user');
     }
   };
 
-  const handleProfileImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         toast.error('Image size should be less than 5MB');
@@ -76,15 +78,15 @@ const ProfileSetup = () => {
       reader.onloadend = () => {
         setProfileData(prev => ({
           ...prev,
-          profileImage: file,
-          profileImagePreview: reader.result
+          profileImage: reader.result as string,
+          profileImagePreview: reader.result as string
         }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = (): void => {
     setProfileData(prev => ({
       ...prev,
       profileImage: null,
@@ -92,7 +94,7 @@ const ProfileSetup = () => {
     }));
   };
 
-  const handleStep1Submit = (e) => {
+  const handleStep1Submit = (e: React.FormEvent): void => {
     e.preventDefault();
     
     if (!profileData.name.trim()) {
@@ -108,7 +110,7 @@ const ProfileSetup = () => {
     setStep(2);
   };
 
-  const handleStep2Submit = async (e) => {
+  const handleStep2Submit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     
     if (!addressData.line1.trim()) {
@@ -197,7 +199,7 @@ const ProfileSetup = () => {
     }
   };
 
-  const handleSkipImage = () => {
+  const handleSkipImage = (): void => {
     setStep(2);
   };
 
