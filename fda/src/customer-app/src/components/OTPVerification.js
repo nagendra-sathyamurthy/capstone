@@ -79,18 +79,15 @@ const OTPVerification = () => {
         token: `mock-token-${Date.now()}`
       };
       
-      // Login and wait a moment for state to update
+      // Login - this saves to localStorage synchronously
       login(userData);
-      
-      // Wait for state to propagate
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       toast.success('OTP verified successfully!');
       
-      // Navigate after state is updated
+      // Small delay to show the toast, then navigate
       setTimeout(() => {
-        navigate('/profile-setup');
-      }, 100);
+        navigate('/profile-setup', { replace: true });
+      }, 500);
     } catch (error) {
       toast.error(error.message || 'Invalid OTP');
       setIsLoading(false);

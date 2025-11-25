@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, authInitialState);
 
   const login = (userData) => {
-    // Save user data and token to localStorage
+    // Save user data and token to localStorage FIRST
     const authData = {
       user: {
         id: userData.id || userData.customerId,
@@ -50,11 +50,19 @@ export const AuthProvider = ({ children }) => {
       token: userData.token
     };
     
+    // Save to localStorage synchronously
     localStorage.setItem('authToken', authData.token);
     localStorage.setItem('userId', authData.user.id);
     localStorage.setItem('userPhone', authData.user.phone);
     
+    // Also save complete user object for restoration
+    localStorage.setItem('user', JSON.stringify(authData.user));
+    
+    // Dispatch state update
     dispatch({ type: 'LOGIN_SUCCESS', payload: authData });
+    
+    // Return true to indicate success
+    return true;
   };
 
   const logout = () => {
@@ -84,17 +92,30 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('authToken');
     const userId = localStorage.getItem('userId');
     const userPhone = localStorage.getItem('userPhone');
+    const userStr = localStorage.getItem('user');
 
     if (token && userId) {
       // Restore session from localStorage
+      let user = {
+        id: userId,
+        customerId: userId,
+        phone: userPhone,
+        name: '', 
+        email: ''
+      };
+      
+      // Try to restore full user object if available
+      if (userStr) {
+        try {
+          const savedUser = JSON.parse(userStr);
+          user = { ...user, ...savedUser };
+        } catch (e) {
+          console.error('Failed to parse saved user:', e);
+        }
+      }
+      
       const authData = {
-        user: {
-          id: userId,
-          customerId: userId,
-          phone: userPhone,
-          name: '', // Will be fetched from API
-          email: ''
-        },
+        user: user,
         token: token
       };
       
