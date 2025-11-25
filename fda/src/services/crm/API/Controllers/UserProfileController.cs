@@ -35,7 +35,6 @@ namespace Crm.API.Controllers
                     Role = request.Role,
                     Organization = request.Organization,
                     DateOfBirth = request.DateOfBirth,
-                    Address = request.Address,
                     DietaryPreferences = request.DietaryPreferences,
                     FavoriteRestaurants = request.FavoriteRestaurants,
                     EmployeeInfo = request.EmployeeInfo,
@@ -183,7 +182,6 @@ namespace Crm.API.Controllers
                     Role = request.Role,
                     Organization = request.Organization,
                     DateOfBirth = request.DateOfBirth,
-                    Address = request.Address,
                     DietaryPreferences = request.DietaryPreferences,
                     FavoriteRestaurants = request.FavoriteRestaurants,
                     EmployeeInfo = request.EmployeeInfo,
@@ -368,7 +366,6 @@ namespace Crm.API.Controllers
         public UserRole Role { get; set; }
         public string? Organization { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public Address? Address { get; set; }
         public List<string>? DietaryPreferences { get; set; }
         public List<string>? FavoriteRestaurants { get; set; }
         public EmployeeInfo? EmployeeInfo { get; set; }
@@ -376,7 +373,8 @@ namespace Crm.API.Controllers
         public DeliveryInfo? DeliveryInfo { get; set; }
         public TechInfo? TechInfo { get; set; }
     }
-}    public class ProfileImageRequest
+
+    public class ProfileImageRequest
     {
         public string ProfileImage { get; set; } = string.Empty;
     }

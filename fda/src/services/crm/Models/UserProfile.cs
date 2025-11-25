@@ -244,7 +244,8 @@ namespace Crm.Models
 
         public DateTime? LastSecurityTraining { get; set; }
     }
-}    /// <summary>
+
+    /// <summary>
     /// Delivery address model for customers (supports multiple addresses)
     /// </summary>
     public class DeliveryAddress

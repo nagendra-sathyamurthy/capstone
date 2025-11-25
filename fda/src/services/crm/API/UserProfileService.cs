@@ -199,5 +199,167 @@ namespace Crm.API
                 _customerRepository.Delete(customer.Id);
             }
         }
+
+        /// <summary>
+        /// Get user's delivery addresses
+        /// </summary>
+        public List<DeliveryAddress>? GetUserAddresses(string userId)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            return profile?.DeliveryAddresses;
+        }
+
+        /// <summary>
+        /// Add delivery address - creates user profile if it doesn't exist
+        /// </summary>
+        public DeliveryAddress AddAddress(string userId, DeliveryAddress address)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            
+            // If profile doesn't exist, create it
+            if (profile == null)
+            {
+                profile = new UserProfile
+                {
+                    UserId = userId,
+                    Role = UserRole.Customer,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    DeliveryAddresses = new List<DeliveryAddress>()
+                };
+                _userProfileRepository.Insert(profile);
+            }
+
+            if (profile.DeliveryAddresses == null)
+            {
+                profile.DeliveryAddresses = new List<DeliveryAddress>();
+            }
+
+            address.Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+            address.CreatedAt = DateTime.UtcNow;
+            address.UpdatedAt = DateTime.UtcNow;
+
+            profile.DeliveryAddresses.Add(address);
+            profile.UpdatedAt = DateTime.UtcNow;
+
+            _userProfileRepository.UpdateUserProfile(profile.Id!, profile);
+            return address;
+        }
+
+        /// <summary>
+        /// Update delivery address
+        /// </summary>
+        public DeliveryAddress? UpdateAddress(string userId, string addressId, DeliveryAddress updatedAddress)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            if (profile == null || profile.DeliveryAddresses == null)
+            {
+                return null;
+            }
+
+            var address = profile.DeliveryAddresses.FirstOrDefault(a => a.Id == addressId);
+            if (address == null)
+            {
+                return null;
+            }
+
+            address.Type = updatedAddress.Type;
+            address.Line1 = updatedAddress.Line1;
+            address.Line2 = updatedAddress.Line2;
+            address.Landmark = updatedAddress.Landmark;
+            address.City = updatedAddress.City;
+            address.State = updatedAddress.State;
+            address.Pincode = updatedAddress.Pincode;
+            address.Country = updatedAddress.Country;
+            address.Latitude = updatedAddress.Latitude;
+            address.Longitude = updatedAddress.Longitude;
+            address.UpdatedAt = DateTime.UtcNow;
+
+            profile.UpdatedAt = DateTime.UtcNow;
+            _userProfileRepository.UpdateUserProfile(profile.Id!, profile);
+
+            return address;
+        }
+
+        /// <summary>
+        /// Delete delivery address
+        /// </summary>
+        public bool DeleteAddress(string userId, string addressId)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            if (profile == null || profile.DeliveryAddresses == null)
+            {
+                return false;
+            }
+
+            var address = profile.DeliveryAddresses.FirstOrDefault(a => a.Id == addressId);
+            if (address == null)
+            {
+                return false;
+            }
+
+            profile.DeliveryAddresses.Remove(address);
+            profile.UpdatedAt = DateTime.UtcNow;
+            _userProfileRepository.UpdateUserProfile(profile.Id!, profile);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Update profile image
+        /// </summary>
+        public void UpdateProfileImage(string userId, string profileImage)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            
+            // If profile doesn't exist, create it
+            if (profile == null)
+            {
+                profile = new UserProfile
+                {
+                    UserId = userId,
+                    Role = UserRole.Customer,
+                    ProfileImage = profileImage,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _userProfileRepository.Insert(profile);
+                return;
+            }
+
+            profile.ProfileImage = profileImage;
+            profile.UpdatedAt = DateTime.UtcNow;
+            _userProfileRepository.UpdateUserProfile(profile.Id!, profile);
+        }
+
+        /// <summary>
+        /// Update food preferences
+        /// </summary>
+        public FoodPreferences UpdateFoodPreferences(string userId, FoodPreferences preferences)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            
+            // If profile doesn't exist, create it
+            if (profile == null)
+            {
+                profile = new UserProfile
+                {
+                    UserId = userId,
+                    Role = UserRole.Customer,
+                    FoodPreferences = preferences,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _userProfileRepository.Insert(profile);
+                return preferences;
+            }
+
+            preferences.UpdatedAt = DateTime.UtcNow;
+            profile.FoodPreferences = preferences;
+            profile.UpdatedAt = DateTime.UtcNow;
+            _userProfileRepository.UpdateUserProfile(profile.Id!, profile);
+
+            return preferences;
+        }
     }
 }
