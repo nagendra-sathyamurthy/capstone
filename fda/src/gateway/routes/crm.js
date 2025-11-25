@@ -130,4 +130,94 @@ router.delete('/favorites/:id', authMiddleware, asyncHandler(async (req, res) =>
   res.status(response.status).json(response.data);
 }));
 
+// ===== NEW UserProfile Endpoints =====
+
+// Get user profile by userId
+router.get('/api/userprofile/by-user/:userId', asyncHandler(async (req, res) => {
+  const response = await axios.get(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}`,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Get user addresses
+router.get('/api/userprofile/by-user/:userId/addresses', asyncHandler(async (req, res) => {
+  const response = await axios.get(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses`,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Add user address
+router.post('/api/userprofile/by-user/:userId/addresses', asyncHandler(async (req, res) => {
+  const response = await axios.post(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses`,
+    req.body,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Update user address
+router.put('/api/userprofile/by-user/:userId/addresses/:addressId', asyncHandler(async (req, res) => {
+  const response = await axios.put(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses/${req.params.addressId}`,
+    req.body,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Delete user address
+router.delete('/api/userprofile/by-user/:userId/addresses/:addressId', asyncHandler(async (req, res) => {
+  const response = await axios.delete(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses/${req.params.addressId}`,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Update profile image
+router.put('/api/userprofile/by-user/:userId/profile-image', asyncHandler(async (req, res) => {
+  const response = await axios.put(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/profile-image`,
+    req.body,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Update food preferences
+router.put('/api/userprofile/by-user/:userId/food-preferences', asyncHandler(async (req, res) => {
+  const response = await axios.put(
+    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/food-preferences`,
+    req.body,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
 module.exports = router;
