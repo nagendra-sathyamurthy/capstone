@@ -376,7 +376,8 @@ namespace Crm.API.Controllers
         public DeliveryInfo? DeliveryInfo { get; set; }
         public TechInfo? TechInfo { get; set; }
     }
-}    public class ProfileImageRequest
+
+    public class ProfileImageRequest
     {
         public string ProfileImage { get; set; } = string.Empty;
     }

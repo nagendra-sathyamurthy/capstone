@@ -54,22 +54,22 @@ services:
       - capstone-network
     restart: unless-stopped
 
-  # CRM Service
-  crm:
-    build:
-      context: ../../src/services/crm
-      dockerfile: Dockerfile
-    container_name: capstone-crm
-    ports:
-      - "8083:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
-    depends_on:
-      - mongodb
-    networks:
-      - capstone-network
-    restart: unless-stopped
+  # CRM Service (Disabled - compilation errors to be fixed)
+  # crm:
+  #   build:
+  #     context: ../../src/services/crm
+  #     dockerfile: Dockerfile
+  #   container_name: capstone-crm
+  #   ports:
+  #     - "8083:8080"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - capstone-network
+  #   restart: unless-stopped
 
   # Cart Service
   cart:
@@ -105,22 +105,22 @@ services:
       - capstone-network
     restart: unless-stopped
 
-  # Payment Service
-  payment:
-    build:
-      context: ../../src/services/payment
-      dockerfile: Dockerfile
-    container_name: capstone-payment
-    ports:
-      - "8086:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
-    depends_on:
-      - mongodb
-    networks:
-      - capstone-network
-    restart: unless-stopped
+  # Payment Service (Disabled - not yet implemented)
+  # payment:
+  #   build:
+  #     context: ../../src/services/payment
+  #     dockerfile: Dockerfile
+  #   container_name: capstone-payment
+  #   ports:
+  #     - "8086:8080"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - capstone-network
+  #   restart: unless-stopped
 
   # API Gateway
   gateway:
@@ -135,10 +135,10 @@ services:
       - NODE_ENV=development
       - AUTH_SERVICE_URL=http://authentication:8080
       - CATALOG_SERVICE_URL=http://catalog:8080
-      - CRM_SERVICE_URL=http://crm:8080
+      # - CRM_SERVICE_URL=http://crm:8080
       - CART_SERVICE_URL=http://cart:8080
       - ORDER_SERVICE_URL=http://order:8080
-      - PAYMENT_SERVICE_URL=http://payment:8080
+      # - PAYMENT_SERVICE_URL=http://payment:8080
       - CORS_ORIGIN=http://localhost:3000
       - RATE_LIMIT_WINDOW_MS=900000
       - RATE_LIMIT_MAX_REQUESTS=100
@@ -146,10 +146,10 @@ services:
     depends_on:
       - authentication
       - catalog
-      - crm
+      # - crm
       - cart
       - order
-      - payment
+      # - payment
     networks:
       - capstone-network
     restart: unless-stopped

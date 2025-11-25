@@ -244,7 +244,8 @@ namespace Crm.Models
 
         public DateTime? LastSecurityTraining { get; set; }
     }
-}    /// <summary>
+
+    /// <summary>
     /// Delivery address model for customers (supports multiple addresses)
     /// </summary>
     public class DeliveryAddress
@@ -299,7 +300,7 @@ namespace Crm.Models
         public string Dietary { get; set; } = "all"; // all, veg, non-veg
 
         public List<string>? Cuisines { get; set; }
-        
+
         public List<string>? Allergies { get; set; }
 
         public List<string>? DislikedIngredients { get; set; }
