@@ -22,6 +22,7 @@ const Dashboard = () => {
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
+  const [addressNotificationShown, setAddressNotificationShown] = useState(false);
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -149,9 +150,12 @@ const Dashboard = () => {
     const savedAddresses = JSON.parse(localStorage.getItem(addressStorageKey) || '[]');
     
     if (savedAddresses.length === 0) {
-      // No addresses found, redirect to profile setup
-      toast.info('Please add your delivery address');
-      navigate('/profile-setup');
+      // No addresses found, show notification only once
+      if (!addressNotificationShown) {
+        toast.info('Please add your delivery address');
+        setAddressNotificationShown(true);
+        // Don't redirect, just show the notification
+      }
       return;
     }
 
