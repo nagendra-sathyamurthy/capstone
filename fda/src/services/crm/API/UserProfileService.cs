@@ -333,6 +333,57 @@ namespace Crm.API
         }
 
         /// <summary>
+        /// Update profile basic info (name, email)
+        /// </summary>
+        public void UpdateProfileBasicInfo(string userId, string? name, string? email)
+        {
+            var profile = _userProfileRepository.GetByUserId(userId);
+            
+            // If profile doesn't exist, create it
+            if (profile == null)
+            {
+                profile = new UserProfile
+                {
+                    UserId = userId,
+                    Role = UserRole.Customer,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                
+                if (!string.IsNullOrEmpty(name))
+                {
+                    var nameParts = name.Split(' ', 2);
+                    profile.FirstName = nameParts[0];
+                    profile.LastName = nameParts.Length > 1 ? nameParts[1] : "";
+                }
+                
+                if (!string.IsNullOrEmpty(email))
+                {
+                    profile.Email = email;
+                }
+                
+                _userProfileRepository.Insert(profile);
+                return;
+            }
+
+            // Update existing profile
+            if (!string.IsNullOrEmpty(name))
+            {
+                var nameParts = name.Split(' ', 2);
+                profile.FirstName = nameParts[0];
+                profile.LastName = nameParts.Length > 1 ? nameParts[1] : "";
+            }
+            
+            if (!string.IsNullOrEmpty(email))
+            {
+                profile.Email = email;
+            }
+            
+            profile.UpdatedAt = DateTime.UtcNow;
+            _userProfileRepository.UpdateUserProfile(profile.Id!, profile);
+        }
+
+        /// <summary>
         /// Update food preferences
         /// </summary>
         public FoodPreferences UpdateFoodPreferences(string userId, FoodPreferences preferences)

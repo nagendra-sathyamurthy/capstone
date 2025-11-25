@@ -234,4 +234,17 @@ router.put('/userprofile/by-user/:userId/food-preferences', asyncHandler(async (
   res.status(response.status).json(response.data);
 }));
 
+// Update profile (name, email)
+router.put('/userprofile/by-user/:userId', asyncHandler(async (req, res) => {
+  const response = await axios.put(
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}`,
+    req.body,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
 module.exports = router;

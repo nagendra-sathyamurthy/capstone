@@ -49,11 +49,24 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear user data on unauthorized
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userPhone');
-      window.location.href = '/';
+      console.log('[API Interceptor] Received 401 for:', error.config?.url);
+      console.log('[API Interceptor] Response:', error.response?.data);
+      
+      // Only clear auth if it's from the authentication service itself
+      // Don't clear auth if other services (order, catalog, etc.) have authentication issues
+      const isAuthEndpoint = error.config?.url?.includes('/api/auth/');
+      
+      if (isAuthEndpoint) {
+        console.log('[API Interceptor] Auth service rejected token - clearing localStorage and redirecting to login');
+        // Clear user data on unauthorized from auth service
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userPhone');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+      } else {
+        console.log('[API Interceptor] Non-auth service 401 - keeping auth data, just failing this request');
+      }
     }
     return Promise.reject(error);
   }
@@ -335,7 +348,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await crmAPI.get(`/api/userprofile/by-user/${userId}`);
+      const response = await crmAPI.get(`/api/crm/userprofile/by-user/${userId}`);
       return response.data;
     } catch (error) {
       if (error.response?.status === 404) {

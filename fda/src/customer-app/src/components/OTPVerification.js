@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { authService } from '../services/api';
+import { authService, customerService } from '../services/api';
 import '../styles/OTPVerification.css';
 
 const OTPVerification = () => {
@@ -97,10 +97,31 @@ const OTPVerification = () => {
       
       toast.success('OTP verified successfully!');
       
-      // Small delay to show the toast, then navigate
-      setTimeout(() => {
-        navigate('/profile-setup', { replace: true });
-      }, 500);
+      // Check if user already has profile data
+      try {
+        console.log('[OTPVerification] Checking if user has existing profile...');
+        const addresses = await customerService.getAddresses();
+        
+        if (addresses && addresses.length > 0) {
+          // Existing user - go to dashboard
+          console.log('[OTPVerification] Existing user found, redirecting to dashboard');
+          setTimeout(() => {
+            navigate('/dashboard', { replace: true });
+          }, 500);
+        } else {
+          // New user - go to profile setup
+          console.log('[OTPVerification] New user, redirecting to profile setup');
+          setTimeout(() => {
+            navigate('/profile-setup', { replace: true });
+          }, 500);
+        }
+      } catch (error) {
+        // If error checking addresses, assume new user
+        console.log('[OTPVerification] Error checking profile, assuming new user:', error.message);
+        setTimeout(() => {
+          navigate('/profile-setup', { replace: true });
+        }, 500);
+      }
     } catch (error) {
       toast.error(error.message || 'Invalid OTP');
       setIsLoading(false);

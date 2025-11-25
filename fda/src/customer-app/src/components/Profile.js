@@ -70,11 +70,17 @@ const Profile = () => {
       try {
         const profileData = await customerService.getProfile();
         if (profileData) {
+          // Combine firstName and lastName into name
+          const fullName = [profileData.firstName, profileData.lastName]
+            .filter(Boolean)
+            .join(' ');
+          
           setProfile(prev => ({
             ...prev,
             ...profileData,
-            // Preserve the profile image loaded from localStorage
-            profileImage: savedImage || prev.profileImage
+            name: fullName || prev.name,
+            // Use profile image from API if available, otherwise use localStorage
+            profileImage: profileData.profileImage || savedImage || prev.profileImage
           }));
         }
       } catch (error) {

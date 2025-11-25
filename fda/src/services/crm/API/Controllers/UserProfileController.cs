@@ -320,6 +320,23 @@ namespace Crm.API.Controllers
         }
 
         /// <summary>
+        /// Update user profile basic info (name, email, etc.)
+        /// </summary>
+        [HttpPut("by-user/{userId}")]
+        public ActionResult UpdateProfile(string userId, [FromBody] UpdateProfileRequest request)
+        {
+            try
+            {
+                _userProfileService.UpdateProfileBasicInfo(userId, request.Name, request.Email);
+                return Ok(new { message = "Profile updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating profile.", details = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Update food preferences
         /// </summary>
         [HttpPut("by-user/{userId}/food-preferences")]
@@ -377,5 +394,11 @@ namespace Crm.API.Controllers
     public class ProfileImageRequest
     {
         public string ProfileImage { get; set; } = string.Empty;
+    }
+
+    public class UpdateProfileRequest
+    {
+        public string? Name { get; set; }
+        public string? Email { get; set; }
     }
 }

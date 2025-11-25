@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { Search, Filter, ShoppingCart, User, Leaf, Drumstick, Star, MapPin, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { catalogService } from '../services/api';
+import { catalogService, customerService } from '../services/api';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressDropdown, setShowAddressDropdown] = useState(false);
   const [addressNotificationShown, setAddressNotificationShown] = useState(false);
+  const [userName, setUserName] = useState('');
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -133,35 +134,65 @@ const Dashboard = () => {
       return;
     }
     
+    loadUserProfile();
     loadAddresses();
     fetchData();
   }, [user, navigate]);
 
-  const loadAddresses = () => {
-    const userId = localStorage.getItem('userId');
-    const userPhone = localStorage.getItem('userPhone');
-    const userKey = userId || userPhone;
+  const loadUserProfile = async () => {
+    try {
+      const profileData = await customerService.getProfile();
+      if (profileData) {
+        // Combine firstName and lastName
+        const fullName = [profileData.firstName, profileData.lastName]
+          .filter(Boolean)
+          .join(' ');
+        setUserName(fullName || user?.name || 'User');
+      }
+    } catch (error) {
+      console.log('Failed to load profile, using default name');
+      setUserName(user?.name || 'User');
+    }
+  };
 
-    if (!userKey) {
+  const loadAddresses = async () => {
+    const userId = localStorage.getItem('userId');
+
+    console.log('[Dashboard] Loading addresses for userId:', userId);
+
+    if (!userId) {
+      console.log('[Dashboard] No userId found in localStorage');
       return;
     }
 
-    const addressStorageKey = `customerAddresses_${userKey}`;
-    const savedAddresses = JSON.parse(localStorage.getItem(addressStorageKey) || '[]');
-    
-    if (savedAddresses.length === 0) {
-      // No addresses found, show notification only once
+    try {
+      // Fetch addresses from MongoDB via API
+      console.log('[Dashboard] Calling customerService.getAddresses()...');
+      const response = await customerService.getAddresses();
+      console.log('[Dashboard] Addresses response:', response);
+      
+      if (response && response.length > 0) {
+        console.log('[Dashboard] Found', response.length, 'addresses');
+        setAddresses(response);
+        // Select first address by default
+        setSelectedAddress(response[0]);
+      } else {
+        console.log('[Dashboard] No addresses found in response');
+        // No addresses found, show notification only once
+        if (!addressNotificationShown) {
+          toast.info('Please add your delivery address');
+          setAddressNotificationShown(true);
+        }
+      }
+    } catch (error) {
+      console.error('[Dashboard] Error loading addresses:', error);
+      console.error('[Dashboard] Error details:', error.message);
+      // Show notification only once
       if (!addressNotificationShown) {
         toast.info('Please add your delivery address');
         setAddressNotificationShown(true);
-        // Don't redirect, just show the notification
       }
-      return;
     }
-
-    setAddresses(savedAddresses);
-    // Select first address by default
-    setSelectedAddress(savedAddresses[0]);
   };
 
   const fetchData = async () => {
@@ -261,7 +292,7 @@ const Dashboard = () => {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="user-info">
-            <h1>Hi, {user?.name}!</h1>
+            <h1>Hi, {userName || user?.name || 'User'}!</h1>
             <p>What would you like to eat today?</p>
           </div>
           <div className="header-actions">

@@ -18,13 +18,20 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  console.log('[ProtectedRoute] Auth check:', { isAuthenticated, userId: user?.id });
+  
+  if (!isAuthenticated) {
+    console.log('[ProtectedRoute] Not authenticated, redirecting to login');
+  }
+  
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
 // Public Route wrapper (redirect to dashboard if authenticated)
 const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
+  console.log('[PublicRoute] Auth check:', { isAuthenticated });
   return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
 };
 

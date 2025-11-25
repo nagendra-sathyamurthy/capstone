@@ -46,14 +46,21 @@ const ProfileSetup = () => {
 
   const checkExistingProfile = async () => {
     try {
+      console.log('[ProfileSetup] Checking for existing profile...');
       const addresses = await customerService.getAddresses();
+      console.log('[ProfileSetup] Addresses response:', addresses);
+      
       if (addresses && addresses.length > 0) {
         // User already has addresses, redirect to dashboard
+        console.log('[ProfileSetup] Existing user found, redirecting to dashboard');
         navigate('/dashboard');
+      } else {
+        console.log('[ProfileSetup] No addresses found, proceeding with setup');
       }
     } catch (error) {
       // If error, assume new user and continue with setup
-      console.log('New user, proceeding with setup');
+      console.log('[ProfileSetup] Error checking profile:', error.message);
+      console.log('[ProfileSetup] Proceeding with setup as new user');
     }
   };
 
@@ -127,10 +134,23 @@ const ProfileSetup = () => {
     setIsLoading(true);
 
     try {
+      console.log('[ProfileSetup] Saving profile data...');
+      
       // Save profile name to localStorage (update existing user data)
       const userName = localStorage.getItem('userName');
       if (!userName || userName === '') {
         localStorage.setItem('userName', profileData.name);
+      }
+
+      // Update user profile name in MongoDB
+      try {
+        console.log('[ProfileSetup] Updating profile with name:', profileData.name);
+        await customerService.updateProfile({
+          name: profileData.name
+        });
+        console.log('[ProfileSetup] Profile name updated successfully');
+      } catch (error) {
+        console.error('[ProfileSetup] Failed to update profile name:', error);
       }
 
       // Save address to MongoDB via API
@@ -145,16 +165,22 @@ const ProfileSetup = () => {
         country: 'India'
       };
       
+      console.log('[ProfileSetup] Saving address:', newAddress);
       await customerService.addAddress(newAddress);
+      console.log('[ProfileSetup] Address saved successfully');
 
       // Save profile image to MongoDB if provided
       if (profileData.profileImagePreview) {
+        console.log('[ProfileSetup] Saving profile image...');
         await customerService.updateProfileImage(profileData.profileImagePreview);
+        console.log('[ProfileSetup] Profile image saved successfully');
       }
 
       // Save food preferences to MongoDB
       if (profileData.foodPreferences) {
+        console.log('[ProfileSetup] Saving food preferences:', profileData.foodPreferences);
         await customerService.updateFoodPreferences(profileData.foodPreferences);
+        console.log('[ProfileSetup] Food preferences saved successfully');
       }
 
       toast.success('Profile setup completed!');
