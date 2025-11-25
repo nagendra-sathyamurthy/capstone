@@ -11,13 +11,13 @@ metadata:
 data:
   PORT: "5000"
   NODE_ENV: "production"
-  AUTH_SERVICE_URL: "http://authentication-service.capstone-services.svc.cluster.local:8080"
-  CATALOG_SERVICE_URL: "http://catalog-service.capstone-services.svc.cluster.local:8080"
-  CRM_SERVICE_URL: "http://crm-service.capstone-services.svc.cluster.local:8080"
-  CART_SERVICE_URL: "http://cart-service.capstone-services.svc.cluster.local:8080"
-  ORDER_SERVICE_URL: "http://order-service.capstone-services.svc.cluster.local:8080"
-  PAYMENT_SERVICE_URL: "http://payment-service.capstone-services.svc.cluster.local:8080"
-  CORS_ORIGIN: "https://your-production-domain.com"
+  AUTH_SERVICE_URL: "https://auth.your-domain.com"
+  CATALOG_SERVICE_URL: "https://catalog.your-domain.com"
+  CRM_SERVICE_URL: "https://crm.your-domain.com"
+  CART_SERVICE_URL: "https://cart.your-domain.com"
+  ORDER_SERVICE_URL: "https://order.your-domain.com"
+  PAYMENT_SERVICE_URL: "https://payment.your-domain.com"
+  CORS_ORIGIN: "https://app.your-domain.com"
   RATE_LIMIT_WINDOW_MS: "900000"
   RATE_LIMIT_MAX_REQUESTS: "100"
   LOG_LEVEL: "info"
@@ -86,11 +86,11 @@ metadata:
   labels:
     app: gateway
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: gateway
   ports:
-  - port: 80
+  - port: 5000
     targetPort: 5000
     protocol: TCP
     name: http

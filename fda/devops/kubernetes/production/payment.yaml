@@ -155,6 +155,6 @@ spec:
     app: payment
   ports:
   - protocol: TCP
-    port: 30006
+    port: 8080
     targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP

@@ -1,0 +1,189 @@
+# Ingress Configuration for Production Services
+# Provides HTTPS access to all backend services with TLS termination
+# Requires an Ingress Controller (e.g., NGINX Ingress Controller)
+# Install: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.0/deploy/static/provider/cloud/deploy.yaml
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capstone-services-ingress
+  namespace: capstone-services
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # Change to your issuer
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - auth.your-domain.com
+    - catalog.your-domain.com
+    - crm.your-domain.com
+    - cart.your-domain.com
+    - order.your-domain.com
+    - payment.your-domain.com
+    secretName: capstone-services-tls
+  rules:
+  # Authentication Service
+  - host: auth.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: authentication-service
+            port:
+              number: 8080
+  # Catalog Service
+  - host: catalog.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-service
+            port:
+              number: 8080
+  # CRM Service
+  - host: crm.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: crm-service
+            port:
+              number: 8080
+  # Cart Service
+  - host: cart.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cart-service
+            port:
+              number: 8080
+  # Order Service
+  - host: order.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: order-service
+            port:
+              number: 8080
+  # Payment Service
+  - host: payment.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: payment-service
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capstone-gateway-ingress
+  namespace: capstone-gateway
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/websocket-services: "gateway-service"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - gateway.your-domain.com
+    - api.your-domain.com
+    secretName: capstone-gateway-tls
+  rules:
+  - host: gateway.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gateway-service
+            port:
+              number: 5000
+  - host: api.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gateway-service
+            port:
+              number: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capstone-frontend-ingress
+  namespace: capstone-frontend
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - app.your-domain.com
+    - www.your-domain.com
+    - your-domain.com
+    secretName: capstone-frontend-tls
+  rules:
+  - host: app.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: customer-app-service
+            port:
+              number: 3000
+  - host: www.your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: customer-app-service
+            port:
+              number: 3000
+  - host: your-domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: customer-app-service
+            port:
+              number: 3000
