@@ -71,7 +71,7 @@ services:
       - "8083:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - MONGO_CONNECTION_STRING=mongodb://admin:AdminPass2024@mongodb:27017/crmdb?authSource=admin
     depends_on:
       mongodb:
         condition: service_healthy
