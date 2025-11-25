@@ -312,45 +312,121 @@ export const paymentService = {
   }
 };
 
-// Customer service
+// Customer service - MongoDB storage via CRM API
 export const customerService = {
-  // Get customer profile
-  getProfile: async (customerId) => {
+  // Get customer profile (UserProfile from CRM)
+  getProfile: async () => {
     try {
-      const response = await crmAPI.get(`/customers/${customerId}`);
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await crmAPI.get(`/api/userprofile/by-user/${userId}`);
       return response.data;
     } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
       throw new Error(error.response?.data?.message || 'Failed to fetch profile');
     }
   },
 
   // Update customer profile
-  updateProfile: async (customerId, profileData) => {
+  updateProfile: async (profileData) => {
     try {
-      const response = await crmAPI.put(`/customers/${customerId}`, profileData);
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await crmAPI.put(`/api/userprofile/by-user/${userId}`, profileData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to update profile');
     }
   },
 
-  // Get customer addresses
-  getAddresses: async (customerId) => {
+  // Get customer addresses from MongoDB
+  getAddresses: async () => {
     try {
-      const response = await crmAPI.get(`/customers/${customerId}/addresses`);
-      return response.data;
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await crmAPI.get(`/api/userprofile/by-user/${userId}/addresses`);
+      return response.data || [];
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch addresses');
+      console.error('Failed to fetch addresses from API:', error);
+      return [];
     }
   },
 
-  // Add new address
-  addAddress: async (customerId, address) => {
+  // Add new address to MongoDB
+  addAddress: async (address) => {
     try {
-      const response = await crmAPI.post(`/customers/${customerId}/addresses`, address);
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await crmAPI.post(`/api/userprofile/by-user/${userId}/addresses`, address);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to add address');
+    }
+  },
+
+  // Update address in MongoDB
+  updateAddress: async (addressId, address) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await crmAPI.put(`/api/userprofile/by-user/${userId}/addresses/${addressId}`, address);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update address');
+    }
+  },
+
+  // Delete address from MongoDB
+  deleteAddress: async (addressId) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      await crmAPI.delete(`/api/userprofile/by-user/${userId}/addresses/${addressId}`);
+      return true;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to delete address');
+    }
+  },
+
+  // Update profile image in MongoDB
+  updateProfileImage: async (profileImage) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      await crmAPI.put(`/api/userprofile/by-user/${userId}/profile-image`, { profileImage });
+      return true;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update profile image');
+    }
+  },
+
+  // Update food preferences in MongoDB
+  updateFoodPreferences: async (preferences) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      const response = await crmAPI.put(`/api/userprofile/by-user/${userId}/food-preferences`, preferences);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update food preferences');
     }
   }
 };

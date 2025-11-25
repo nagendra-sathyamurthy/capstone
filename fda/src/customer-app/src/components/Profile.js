@@ -105,36 +105,17 @@ const Profile = () => {
         setOrders([]);
       }
 
-      // Load addresses
+      // Load addresses from MongoDB via API
       try {
-        // Get current user's identifier
-        const userId = localStorage.getItem('userId');
-        const userPhone = localStorage.getItem('userPhone');
-        const userKey = userId || userPhone;
-        
-        if (!userKey) {
-          console.error('No user identifier found for addresses');
-          setAddresses([]);
-          return;
-        }
-        
-        // Use user-specific key for addresses
-        const addressStorageKey = `customerAddresses_${userKey}`;
-        
-        // First try localStorage
-        const localAddresses = JSON.parse(localStorage.getItem(addressStorageKey) || '[]');
-        
-        if (localAddresses.length > 0) {
-          setAddresses(localAddresses);
+        const addressData = await customerService.getAddresses();
+        if (addressData && Array.isArray(addressData)) {
+          setAddresses(addressData);
         } else {
-          // Try API if no local addresses
-          const addressData = await customerService.getAddresses();
-          if (addressData && Array.isArray(addressData)) {
-            setAddresses(addressData);
-          }
+          setAddresses([]);
         }
       } catch (error) {
-        console.log('Addresses fetch failed');
+        console.error('Error loading addresses:', error);
+        setAddresses([]);
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -221,21 +202,16 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteAddress = (addressId) => {
-    const updatedAddresses = addresses.filter(addr => addr.id !== addressId);
-    setAddresses(updatedAddresses);
-    
-    // Get current user's identifier
-    const userId = localStorage.getItem('userId');
-    const userPhone = localStorage.getItem('userPhone');
-    const userKey = userId || userPhone;
-    
-    if (userKey) {
-      const addressStorageKey = `customerAddresses_${userKey}`;
-      localStorage.setItem(addressStorageKey, JSON.stringify(updatedAddresses));
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await customerService.deleteAddress(addressId);
+      const updatedAddresses = addresses.filter(addr => addr.id !== addressId);
+      setAddresses(updatedAddresses);
+      toast.success('Address deleted successfully');
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      toast.error('Failed to delete address');
     }
-    
-    toast.success('Address deleted successfully');
   };
 
   const handleEditAddress = (address) => {
@@ -266,7 +242,7 @@ const Profile = () => {
     setShowAddressForm(true);
   };
 
-  const handleSaveAddress = (e) => {
+  const handleSaveAddress = async (e) => {
     e.preventDefault();
     
     if (!addressFormData.line1 || !addressFormData.city || !addressFormData.state || !addressFormData.pincode) {
@@ -279,40 +255,39 @@ const Profile = () => {
       return;
     }
 
-    let updatedAddresses;
-    
-    if (editingAddress) {
-      // Update existing address
-      updatedAddresses = addresses.map(addr => 
-        addr.id === editingAddress.id 
-          ? { ...addr, ...addressFormData }
-          : addr
-      );
-      toast.success('Address updated successfully');
-    } else {
-      // Add new address
-      const newAddress = {
-        id: Date.now().toString(),
-        ...addressFormData
+    try {
+      const addressPayload = {
+        type: addressFormData.type,
+        line1: addressFormData.line1,
+        line2: addressFormData.line2 || '',
+        landmark: addressFormData.landmark || '',
+        city: addressFormData.city,
+        state: addressFormData.state,
+        pincode: addressFormData.pincode,
+        country: 'India'
       };
-      updatedAddresses = [...addresses, newAddress];
-      toast.success('Address added successfully');
-    }
 
-    setAddresses(updatedAddresses);
-    
-    // Get current user's identifier
-    const userId = localStorage.getItem('userId');
-    const userPhone = localStorage.getItem('userPhone');
-    const userKey = userId || userPhone;
-    
-    if (userKey) {
-      const addressStorageKey = `customerAddresses_${userKey}`;
-      localStorage.setItem(addressStorageKey, JSON.stringify(updatedAddresses));
+      if (editingAddress) {
+        // Update existing address in MongoDB
+        const updatedAddress = await customerService.updateAddress(editingAddress.id, addressPayload);
+        const updatedAddresses = addresses.map(addr => 
+          addr.id === editingAddress.id ? updatedAddress : addr
+        );
+        setAddresses(updatedAddresses);
+        toast.success('Address updated successfully');
+      } else {
+        // Add new address to MongoDB
+        const newAddress = await customerService.addAddress(addressPayload);
+        setAddresses([...addresses, newAddress]);
+        toast.success('Address added successfully');
+      }
+
+      setShowAddressForm(false);
+      setEditingAddress(null);
+    } catch (error) {
+      console.error('Error saving address:', error);
+      toast.error('Failed to save address');
     }
-    
-    setShowAddressForm(false);
-    setEditingAddress(null);
   };
 
   const handleCancelAddressForm = () => {

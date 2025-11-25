@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { User, MapPin, Camera, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { customerService } from '../services/api';
 import '../styles/ProfileSetup.css';
 
 const ProfileSetup = () => {
@@ -33,22 +34,28 @@ const ProfileSetup = () => {
   useEffect(() => {
     const userId = localStorage.getItem('userId');
     const userPhone = localStorage.getItem('userPhone');
-    const userKey = userId || userPhone;
 
-    if (!userKey) {
+    if (!userId && !userPhone) {
       navigate('/');
       return;
     }
 
-    // Check if user already has addresses
-    const addressStorageKey = `customerAddresses_${userKey}`;
-    const existingAddresses = localStorage.getItem(addressStorageKey);
-
-    if (existingAddresses && JSON.parse(existingAddresses).length > 0) {
-      // User already has addresses, redirect to dashboard
-      navigate('/dashboard');
-    }
+    // Check if user already has addresses in MongoDB
+    checkExistingProfile();
   }, [navigate]);
+
+  const checkExistingProfile = async () => {
+    try {
+      const addresses = await customerService.getAddresses();
+      if (addresses && addresses.length > 0) {
+        // User already has addresses, redirect to dashboard
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      // If error, assume new user and continue with setup
+      console.log('New user, proceeding with setup');
+    }
+  };
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
@@ -120,41 +127,34 @@ const ProfileSetup = () => {
     setIsLoading(true);
 
     try {
-      // Get user identifier
-      const userId = localStorage.getItem('userId');
-      const userPhone = localStorage.getItem('userPhone');
-      const userKey = userId || userPhone;
-
-      if (!userKey) {
-        toast.error('User session not found');
-        navigate('/');
-        return;
-      }
-
       // Save profile name to localStorage (update existing user data)
       const userName = localStorage.getItem('userName');
       if (!userName || userName === '') {
         localStorage.setItem('userName', profileData.name);
       }
 
-      // Save food preferences to localStorage
-      const preferencesStorageKey = `foodPreferences_${userKey}`;
-      localStorage.setItem(preferencesStorageKey, JSON.stringify(profileData.foodPreferences));
-
-      // Save address to localStorage with user-specific key
-      const addressStorageKey = `customerAddresses_${userKey}`;
+      // Save address to MongoDB via API
       const newAddress = {
-        id: Date.now().toString(),
-        ...addressData
+        type: addressData.type,
+        line1: addressData.line1,
+        line2: addressData.line2 || '',
+        landmark: addressData.landmark || '',
+        city: addressData.city,
+        state: addressData.state,
+        pincode: addressData.pincode,
+        country: 'India'
       };
       
-      // Save as first address
-      localStorage.setItem(addressStorageKey, JSON.stringify([newAddress]));
+      await customerService.addAddress(newAddress);
 
-      // Save profile image to localStorage if provided
+      // Save profile image to MongoDB if provided
       if (profileData.profileImagePreview) {
-        const profileStorageKey = `profileImage_${userKey}`;
-        localStorage.setItem(profileStorageKey, profileData.profileImagePreview);
+        await customerService.updateProfileImage(profileData.profileImagePreview);
+      }
+
+      // Save food preferences to MongoDB
+      if (profileData.foodPreferences) {
+        await customerService.updateFoodPreferences(profileData.foodPreferences);
       }
 
       toast.success('Profile setup completed!');
@@ -165,7 +165,7 @@ const ProfileSetup = () => {
       }, 1000);
     } catch (error) {
       console.error('Error saving profile:', error);
-      toast.error('Failed to save profile');
+      toast.error('Failed to save profile. Please try again.');
     } finally {
       setIsLoading(false);
     }

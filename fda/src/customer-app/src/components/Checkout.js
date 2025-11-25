@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Plus, Clock, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { customerService } from '../services/api';
 import { toast } from 'react-toastify';
 import '../styles/Checkout.css';
 
@@ -20,55 +21,24 @@ const Checkout = () => {
     pincode: ''
   });
 
-  // Load addresses from localStorage
+  // Load addresses from MongoDB via API
   const [addresses, setAddresses] = useState([]);
 
   useEffect(() => {
-    // Get current user's identifier from localStorage
-    const userId = localStorage.getItem('userId');
-    const userPhone = localStorage.getItem('userPhone');
-    const userKey = userId || userPhone;
-    
-    if (!userKey) {
-      console.error('No user identifier found');
-      return;
-    }
-    
-    const addressStorageKey = `customerAddresses_${userKey}`;
-    
-    // Load saved addresses from localStorage
-    const savedAddresses = JSON.parse(localStorage.getItem(addressStorageKey) || '[]');
-    
-    // If no saved addresses, provide default mock addresses
-    if (savedAddresses.length === 0) {
-      const defaultAddresses = [
-        {
-          id: '1',
-          type: 'home',
-          line1: '123, MG Road',
-          line2: 'Shivaji Nagar',
-          landmark: 'Near Metro Station',
-          city: 'Bangalore',
-          state: 'Karnataka',
-          pincode: '560001'
-        },
-        {
-          id: '2',
-          type: 'work',
-          line1: '456, Brigade Road',
-          line2: 'Commercial Street',
-          landmark: 'Opposite Coffee Shop',
-          city: 'Bangalore',
-          state: 'Karnataka',
-          pincode: '560025'
-        }
-      ];
-      localStorage.setItem(addressStorageKey, JSON.stringify(defaultAddresses));
-      setAddresses(defaultAddresses);
-    } else {
-      setAddresses(savedAddresses);
-    }
+    loadAddresses();
   }, []);
+
+  const loadAddresses = async () => {
+    try {
+      const addressData = await customerService.getAddresses();
+      if (addressData && Array.isArray(addressData) && addressData.length > 0) {
+        setAddresses(addressData);
+      }
+    } catch (error) {
+      console.error('Error loading addresses:', error);
+      toast.error('Failed to load addresses');
+    }
+  };
 
   const deliveryFee = 29;
   const platformFee = 5;
@@ -79,43 +49,47 @@ const Checkout = () => {
     setSelectedAddress(address);
   };
 
-  const handleAddNewAddress = (e) => {
+  const handleAddNewAddress = async (e) => {
     e.preventDefault();
     if (!newAddress.line1 || !newAddress.pincode) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    const addressToAdd = {
-      id: Date.now().toString(),
-      ...newAddress
-    };
+    try {
+      // Add address to MongoDB via API
+      const addressToAdd = {
+        type: newAddress.type,
+        line1: newAddress.line1,
+        line2: newAddress.line2,
+        landmark: newAddress.landmark,
+        city: newAddress.city,
+        state: newAddress.state,
+        pincode: newAddress.pincode,
+        country: 'India'
+      };
 
-    const updatedAddresses = [...addresses, addressToAdd];
-    setAddresses(updatedAddresses);
-    
-    // Get current user's identifier from localStorage
-    const userId = localStorage.getItem('userId');
-    const userPhone = localStorage.getItem('userPhone');
-    const userKey = userId || userPhone;
-    
-    if (userKey) {
-      const addressStorageKey = `customerAddresses_${userKey}`;
-      localStorage.setItem(addressStorageKey, JSON.stringify(updatedAddresses));
+      const savedAddress = await customerService.addAddress(addressToAdd);
+      
+      // Update local state with the saved address
+      const updatedAddresses = [...addresses, savedAddress];
+      setAddresses(updatedAddresses);
+      setSelectedAddress(savedAddress);
+      setShowAddressForm(false);
+      setNewAddress({
+        type: 'home',
+        line1: '',
+        line2: '',
+        landmark: '',
+        city: 'Bangalore',
+        state: 'Karnataka',
+        pincode: ''
+      });
+      toast.success('Address added successfully!');
+    } catch (error) {
+      console.error('Error adding address:', error);
+      toast.error('Failed to add address. Please try again.');
     }
-    
-    setSelectedAddress(addressToAdd);
-    setShowAddressForm(false);
-    setNewAddress({
-      type: 'home',
-      line1: '',
-      line2: '',
-      landmark: '',
-      city: 'Bangalore',
-      state: 'Karnataka',
-      pincode: ''
-    });
-    toast.success('Address added successfully!');
   };
 
   const handleProceedToPayment = () => {
