@@ -326,6 +326,33 @@ namespace Authentication.API.BusinessServices
             return tokenHandler.WriteToken(token);
         }
 
+        public string GenerateCustomerToken(string phone, string userId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwtSecret);
+            
+            var claims = new List<Claim>
+            {
+                new Claim("userId", userId),
+                new Claim("phone", phone),
+                new Claim("role", "Customer"),
+                new Claim(ClaimTypes.Name, phone),
+                new Claim(ClaimTypes.NameIdentifier, userId)
+            };
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(8),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
         private UserInfo MapToUserInfo(UserAccount user)
         {
             return new UserInfo

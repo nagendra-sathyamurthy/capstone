@@ -25,6 +25,7 @@ const authReducer = (state, action) => {
         isAuthenticated: true,
         user: action.payload.user,
         token: action.payload.token,
+        phone: action.payload.user.phone || state.phone, // Preserve phone from user or existing state
         loading: false
       };
     case 'LOGOUT':

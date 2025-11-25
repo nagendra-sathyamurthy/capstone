@@ -81,6 +81,20 @@ export const authService = {
     }
   },
 
+  // Customer phone login - get JWT token
+  customerPhoneLogin: async (phone, userId, name) => {
+    try {
+      const response = await authAPI.post('/api/auth/customer/phone-login', {
+        phone,
+        userId,
+        name: name || `User ${phone.slice(-4)}`
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Phone login failed');
+    }
+  },
+
   // Register new customer
   registerCustomer: async (customerData) => {
     try {

@@ -79,4 +79,14 @@ router.post('/logout', asyncHandler(async (req, res) => {
   res.status(response.status).json(response.data);
 }));
 
+// Customer phone login - generate JWT token
+router.post('/customer/phone-login', asyncHandler(async (req, res) => {
+  const response = await axios.post(
+    `${services.auth.url}/api/auth/customer/phone-login`,
+    req.body,
+    { timeout: services.auth.timeout }
+  );
+  res.status(response.status).json(response.data);
+}));
+
 module.exports = router;

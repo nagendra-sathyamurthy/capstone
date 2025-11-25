@@ -338,6 +338,36 @@ namespace Authentication.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Customer phone authentication - generates token for phone-based login
+        /// </summary>
+        [HttpPost("customer/phone-login")]
+        public IActionResult CustomerPhoneLogin([FromBody] CustomerPhoneLoginRequest request)
+        {
+            try
+            {
+                // For customer app - simplified phone-based authentication
+                // In production, verify OTP first before generating token
+                var token = _authService.GenerateCustomerToken(request.Phone, request.UserId);
+                
+                return Ok(new 
+                {
+                    token = token,
+                    user = new 
+                    {
+                        id = request.UserId,
+                        phone = request.Phone,
+                        name = request.Name ?? $"User {request.Phone.Substring(request.Phone.Length - 4)}",
+                        role = "Customer"
+                    },
+                    expiresAt = DateTime.UtcNow.AddHours(8)
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Phone login failed", error = ex.Message });
+            }
+        }
 
     }
 
@@ -352,6 +382,13 @@ namespace Authentication.Api.Controllers
     {
         public required string Email { get; set; }
         public required string Otp { get; set; }
+    }
+
+    public class CustomerPhoneLoginRequest
+    {
+        public required string Phone { get; set; }
+        public required string UserId { get; set; }
+        public string? Name { get; set; }
     }
 
     public class UpdatePasswordRequest

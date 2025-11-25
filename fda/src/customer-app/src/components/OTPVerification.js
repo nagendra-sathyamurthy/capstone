@@ -12,11 +12,18 @@ const OTPVerification = () => {
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
-  const { phone, setLoading, login } = useAuth();
+  const { phone, setLoading, login, isAuthenticated } = useAuth();
 
   useEffect(() => {
+    // If already authenticated, go to profile setup
+    if (isAuthenticated) {
+      navigate('/profile-setup', { replace: true });
+      return;
+    }
+    
+    // If not authenticated and no phone, go to registration
     if (!phone) {
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
 
@@ -31,7 +38,7 @@ const OTPVerification = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [phone, navigate]);
+  }, [phone, navigate, isAuthenticated]);
 
   const handleOtpChange = (index, value) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -71,12 +78,18 @@ const OTPVerification = () => {
       // In production, this would call the actual API
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
       
-      // Mock successful verification
+      // Generate userId from timestamp
+      const userId = Date.now().toString();
+      
+      // Call the authentication service to get a real JWT token
+      const authResponse = await authService.customerPhoneLogin(phone, userId);
+      
+      // Use the real JWT token and user data from authentication service
       const userData = {
-        id: Date.now().toString(),
-        phone: phone,
-        name: `User ${phone.slice(-4)}`,
-        token: `mock-token-${Date.now()}`
+        id: authResponse.user.id,
+        phone: authResponse.user.phone,
+        name: authResponse.user.name,
+        token: authResponse.token
       };
       
       // Login - this saves to localStorage synchronously
