@@ -338,7 +338,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await crmAPI.put(`/api/userprofile/by-user/${userId}`, profileData);
+      const response = await crmAPI.put(`/api/crm/userprofile/by-user/${userId}`, profileData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to update profile');
@@ -352,7 +352,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await crmAPI.get(`/api/userprofile/by-user/${userId}/addresses`);
+      const response = await crmAPI.get(`/api/crm/userprofile/by-user/${userId}/addresses`);
       return response.data || [];
     } catch (error) {
       console.error('Failed to fetch addresses from API:', error);
@@ -367,7 +367,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await crmAPI.post(`/api/userprofile/by-user/${userId}/addresses`, address);
+      const response = await crmAPI.post(`/api/crm/userprofile/by-user/${userId}/addresses`, address);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to add address');
@@ -381,7 +381,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await crmAPI.put(`/api/userprofile/by-user/${userId}/addresses/${addressId}`, address);
+      const response = await crmAPI.put(`/api/crm/userprofile/by-user/${userId}/addresses/${addressId}`, address);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to update address');
@@ -395,7 +395,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      await crmAPI.delete(`/api/userprofile/by-user/${userId}/addresses/${addressId}`);
+      await crmAPI.delete(`/api/crm/userprofile/by-user/${userId}/addresses/${addressId}`);
       return true;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to delete address');
@@ -409,7 +409,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      await crmAPI.put(`/api/userprofile/by-user/${userId}/profile-image`, { profileImage });
+      await crmAPI.put(`/api/crm/userprofile/by-user/${userId}/profile-image`, { profileImage });
       return true;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to update profile image');
@@ -423,7 +423,7 @@ export const customerService = {
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      const response = await crmAPI.put(`/api/userprofile/by-user/${userId}/food-preferences`, preferences);
+      const response = await crmAPI.put(`/api/crm/userprofile/by-user/${userId}/food-preferences`, preferences);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to update food preferences');

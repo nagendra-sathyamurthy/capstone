@@ -144,10 +144,24 @@ router.get('/api/userprofile/by-user/:userId', asyncHandler(async (req, res) => 
   res.status(response.status).json(response.data);
 }));
 
-// Get user addresses
-router.get('/api/userprofile/by-user/:userId/addresses', asyncHandler(async (req, res) => {
+// ===== NEW UserProfile Endpoints =====
+
+// Get user profile by userId
+router.get('/userprofile/by-user/:userId', asyncHandler(async (req, res) => {
   const response = await axios.get(
-    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses`,
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}`,
+    {
+      headers: { Authorization: req.headers.authorization },
+      timeout: services.crm.timeout
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+// Get user addresses
+router.get('/userprofile/by-user/:userId/addresses', asyncHandler(async (req, res) => {
+  const response = await axios.get(
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}/addresses`,
     {
       headers: { Authorization: req.headers.authorization },
       timeout: services.crm.timeout
@@ -157,9 +171,9 @@ router.get('/api/userprofile/by-user/:userId/addresses', asyncHandler(async (req
 }));
 
 // Add user address
-router.post('/api/userprofile/by-user/:userId/addresses', asyncHandler(async (req, res) => {
+router.post('/userprofile/by-user/:userId/addresses', asyncHandler(async (req, res) => {
   const response = await axios.post(
-    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses`,
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}/addresses`,
     req.body,
     {
       headers: { Authorization: req.headers.authorization },
@@ -170,9 +184,9 @@ router.post('/api/userprofile/by-user/:userId/addresses', asyncHandler(async (re
 }));
 
 // Update user address
-router.put('/api/userprofile/by-user/:userId/addresses/:addressId', asyncHandler(async (req, res) => {
+router.put('/userprofile/by-user/:userId/addresses/:addressId', asyncHandler(async (req, res) => {
   const response = await axios.put(
-    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses/${req.params.addressId}`,
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}/addresses/${req.params.addressId}`,
     req.body,
     {
       headers: { Authorization: req.headers.authorization },
@@ -183,9 +197,9 @@ router.put('/api/userprofile/by-user/:userId/addresses/:addressId', asyncHandler
 }));
 
 // Delete user address
-router.delete('/api/userprofile/by-user/:userId/addresses/:addressId', asyncHandler(async (req, res) => {
+router.delete('/userprofile/by-user/:userId/addresses/:addressId', asyncHandler(async (req, res) => {
   const response = await axios.delete(
-    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/addresses/${req.params.addressId}`,
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}/addresses/${req.params.addressId}`,
     {
       headers: { Authorization: req.headers.authorization },
       timeout: services.crm.timeout
@@ -195,9 +209,9 @@ router.delete('/api/userprofile/by-user/:userId/addresses/:addressId', asyncHand
 }));
 
 // Update profile image
-router.put('/api/userprofile/by-user/:userId/profile-image', asyncHandler(async (req, res) => {
+router.put('/userprofile/by-user/:userId/profile-image', asyncHandler(async (req, res) => {
   const response = await axios.put(
-    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/profile-image`,
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}/profile-image`,
     req.body,
     {
       headers: { Authorization: req.headers.authorization },
@@ -208,9 +222,9 @@ router.put('/api/userprofile/by-user/:userId/profile-image', asyncHandler(async 
 }));
 
 // Update food preferences
-router.put('/api/userprofile/by-user/:userId/food-preferences', asyncHandler(async (req, res) => {
+router.put('/userprofile/by-user/:userId/food-preferences', asyncHandler(async (req, res) => {
   const response = await axios.put(
-    `${services.crm.url}/api/userprofile/by-user/${req.params.userId}/food-preferences`,
+    `${services.crm.url}/api/UserProfile/by-user/${req.params.userId}/food-preferences`,
     req.body,
     {
       headers: { Authorization: req.headers.authorization },
