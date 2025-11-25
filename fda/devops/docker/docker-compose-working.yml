@@ -1,0 +1,171 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: capstone-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: AdminPass2024
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - capstone-network
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Authentication Service
+  authentication:
+    build:
+      context: ../../src/services/authentication
+      dockerfile: Dockerfile
+    container_name: capstone-authentication
+    ports:
+      - "8081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - JwtSettings__SecretKey=YourSuperSecretKeyForJWTTokenGeneration123456
+      - JwtSettings__Issuer=CapstoneAuthService
+      - JwtSettings__Audience=CapstoneApp
+      - JwtSettings__ExpirationMinutes=60
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+  # Catalog Service
+  catalog:
+    build:
+      context: ../../src/services/catalog
+      dockerfile: Dockerfile
+    container_name: capstone-catalog
+    ports:
+      - "8082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+  # CRM Service
+  crm:
+    build:
+      context: ../../src/services/crm
+      dockerfile: Dockerfile
+    container_name: capstone-crm
+    ports:
+      - "8083:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+  # Cart Service
+  cart:
+    build:
+      context: ../../src/services/cart
+      dockerfile: Dockerfile
+    container_name: capstone-cart
+    ports:
+      - "8084:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+  # Order Service
+  order:
+    build:
+      context: ../../src/services/order
+      dockerfile: Dockerfile
+    container_name: capstone-order
+    ports:
+      - "8085:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+  # API Gateway
+  gateway:
+    build:
+      context: ../../src/gateway
+      dockerfile: Dockerfile
+    container_name: capstone-gateway
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - AUTH_SERVICE_URL=http://authentication:8080
+      - CATALOG_SERVICE_URL=http://catalog:8080
+      - CRM_SERVICE_URL=http://crm:8080
+      - CART_SERVICE_URL=http://cart:8080
+      - ORDER_SERVICE_URL=http://order:8080
+      - CORS_ORIGIN=http://localhost:3000
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+      - LOG_LEVEL=info
+    depends_on:
+      - authentication
+      - catalog
+      - crm
+      - cart
+      - order
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+  # Customer Web App
+  customer-app:
+    build:
+      context: ../../src/customer-app
+      dockerfile: Dockerfile
+    container_name: capstone-customer-app
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_GATEWAY_URL=http://localhost:5000
+      - REACT_APP_ENV=development
+    depends_on:
+      - gateway
+    networks:
+      - capstone-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  capstone-network:
+    driver: bridge
