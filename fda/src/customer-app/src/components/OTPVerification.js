@@ -1,0 +1,175 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/api';
+import '../styles/OTPVerification.css';
+
+const OTPVerification = () => {
+  const [otp, setOtp] = useState(['', '', '', '']);
+  const [isLoading, setIsLoading] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+  const navigate = useNavigate();
+  const { phone, setLoading, login } = useAuth();
+
+  useEffect(() => {
+    if (!phone) {
+      navigate('/');
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setResendTimer((prev) => {
+        if (prev <= 1) {
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [phone, navigate]);
+
+  const handleOtpChange = (index, value) => {
+    if (value.length <= 1 && /^\d*$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      // Auto-focus next input
+      if (value && index < 3) {
+        const nextInput = document.getElementById(`otp-${index + 1}`);
+        if (nextInput) nextInput.focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const otpString = otp.join('');
+    if (otpString.length !== 4) {
+      toast.error('Please enter complete OTP');
+      return;
+    }
+
+    setIsLoading(true);
+    setLoading(true);
+
+    try {
+      // For demo purposes, we'll simulate OTP verification
+      // In production, this would call the actual API
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      
+      // Mock successful verification
+      const userData = {
+        id: Date.now().toString(),
+        phone: phone,
+        name: `User ${phone.slice(-4)}`,
+        token: `mock-token-${Date.now()}`
+      };
+      
+      login(userData);
+      toast.success('OTP verified successfully!');
+      navigate('/profile-setup');
+    } catch (error) {
+      toast.error(error.message || 'Invalid OTP');
+    } finally {
+      setIsLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      setCanResend(false);
+      setResendTimer(30);
+      
+      // Simulate resending OTP
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('OTP resent successfully!');
+    } catch (error) {
+      toast.error('Failed to resend OTP');
+    }
+  };
+
+  return (
+    <div className="otp-container">
+      <div className="otp-card">
+        <button
+          className="back-button"
+          onClick={() => navigate('/')}
+          type="button"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        
+        <div className="otp-header">
+          <h2>Verify OTP</h2>
+          <p>We've sent a 4-digit code to</p>
+          <p className="phone-display">+91 {phone}</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="otp-form">
+          <div className="otp-inputs">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                id={`otp-${index}`}
+                type="text"
+                value={digit}
+                onChange={(e) => handleOtpChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                className="otp-input"
+                maxLength={1}
+                inputMode="numeric"
+              />
+            ))}
+          </div>
+          
+          <button
+            type="submit"
+            className={`verify-button ${isLoading ? 'loading' : ''}`}
+            disabled={isLoading || otp.join('').length !== 4}
+          >
+            {isLoading ? (
+              <span className="loading-spinner"></span>
+            ) : (
+              <>
+                Verify & Continue <ArrowRight size={20} />
+              </>
+            )}
+          </button>
+        </form>
+        
+        <div className="resend-section">
+          {canResend ? (
+            <button
+              className="resend-button"
+              onClick={handleResendOtp}
+              type="button"
+            >
+              Resend OTP
+            </button>
+          ) : (
+            <p className="resend-timer">
+              Resend OTP in {resendTimer}s
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default OTPVerification;

@@ -1,0 +1,413 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { User, MapPin, Camera, ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import '../styles/ProfileSetup.css';
+
+const ProfileSetup = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [step, setStep] = useState(1);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    profileImage: null,
+    profileImagePreview: null,
+    foodPreferences: {
+      dietary: 'all', // all, veg, non-veg
+      cuisines: []
+    }
+  });
+  const [addressData, setAddressData] = useState({
+    type: 'home',
+    line1: '',
+    line2: '',
+    landmark: '',
+    city: 'Bangalore',
+    state: 'Karnataka',
+    pincode: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Check if user already has profile data - skip setup for returning users
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const userPhone = localStorage.getItem('userPhone');
+    const userKey = userId || userPhone;
+
+    if (!userKey) {
+      navigate('/');
+      return;
+    }
+
+    // Check if user already has addresses
+    const addressStorageKey = `customerAddresses_${userKey}`;
+    const existingAddresses = localStorage.getItem(addressStorageKey);
+
+    if (existingAddresses && JSON.parse(existingAddresses).length > 0) {
+      // User already has addresses, redirect to dashboard
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileData(prev => ({
+          ...prev,
+          profileImage: file,
+          profileImagePreview: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setProfileData(prev => ({
+      ...prev,
+      profileImage: null,
+      profileImagePreview: null
+    }));
+  };
+
+  const handleStep1Submit = (e) => {
+    e.preventDefault();
+    
+    if (!profileData.name.trim()) {
+      toast.error('Please enter your name');
+      return;
+    }
+
+    if (profileData.name.trim().length < 2) {
+      toast.error('Name must be at least 2 characters');
+      return;
+    }
+
+    setStep(2);
+  };
+
+  const handleStep2Submit = async (e) => {
+    e.preventDefault();
+    
+    if (!addressData.line1.trim()) {
+      toast.error('Please enter address line 1');
+      return;
+    }
+
+    if (!addressData.city.trim()) {
+      toast.error('Please enter city');
+      return;
+    }
+
+    if (!addressData.state.trim()) {
+      toast.error('Please enter state');
+      return;
+    }
+
+    if (addressData.pincode.length !== 6) {
+      toast.error('Please enter valid 6-digit pincode');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Get user identifier
+      const userId = localStorage.getItem('userId');
+      const userPhone = localStorage.getItem('userPhone');
+      const userKey = userId || userPhone;
+
+      if (!userKey) {
+        toast.error('User session not found');
+        navigate('/');
+        return;
+      }
+
+      // Save profile name to localStorage (update existing user data)
+      const userName = localStorage.getItem('userName');
+      if (!userName || userName === '') {
+        localStorage.setItem('userName', profileData.name);
+      }
+
+      // Save food preferences to localStorage
+      const preferencesStorageKey = `foodPreferences_${userKey}`;
+      localStorage.setItem(preferencesStorageKey, JSON.stringify(profileData.foodPreferences));
+
+      // Save address to localStorage with user-specific key
+      const addressStorageKey = `customerAddresses_${userKey}`;
+      const newAddress = {
+        id: Date.now().toString(),
+        ...addressData
+      };
+      
+      // Save as first address
+      localStorage.setItem(addressStorageKey, JSON.stringify([newAddress]));
+
+      // Save profile image to localStorage if provided
+      if (profileData.profileImagePreview) {
+        const profileStorageKey = `profileImage_${userKey}`;
+        localStorage.setItem(profileStorageKey, profileData.profileImagePreview);
+      }
+
+      toast.success('Profile setup completed!');
+      
+      // Wait a bit before navigating
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error('Failed to save profile');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSkipImage = () => {
+    setStep(2);
+  };
+
+  return (
+    <div className="profile-setup-container">
+      <div className="profile-setup-card">
+        <div className="setup-progress">
+          <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>
+            <div className="step-circle">1</div>
+            <span>Profile</span>
+          </div>
+          <div className={`progress-line ${step >= 2 ? 'active' : ''}`}></div>
+          <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>
+            <div className="step-circle">2</div>
+            <span>Address</span>
+          </div>
+        </div>
+
+        {step === 1 && (
+          <form onSubmit={handleStep1Submit} className="setup-form">
+            <div className="setup-header">
+              <h2>Let's set up your profile</h2>
+              <p>Tell us a bit about yourself</p>
+            </div>
+
+            <div className="profile-image-section">
+              <div className="image-upload-container">
+                {profileData.profileImagePreview ? (
+                  <div className="image-preview">
+                    <img src={profileData.profileImagePreview} alt="Profile" />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={handleRemoveImage}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <label className="image-upload-label">
+                    <Camera size={40} />
+                    <span>Upload Photo</span>
+                    <span className="optional-text">(Optional)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfileImageChange}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>
+                <User size={18} />
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={profileData.name}
+                onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter your full name"
+                required
+                maxLength={50}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                🍽️ Food Preference (Optional)
+              </label>
+              <div className="preference-buttons">
+                <button
+                  type="button"
+                  className={`preference-btn ${profileData.foodPreferences.dietary === 'all' ? 'active' : ''}`}
+                  onClick={() => setProfileData(prev => ({
+                    ...prev,
+                    foodPreferences: { ...prev.foodPreferences, dietary: 'all' }
+                  }))}
+                >
+                  All
+                </button>
+                <button
+                  type="button"
+                  className={`preference-btn ${profileData.foodPreferences.dietary === 'veg' ? 'active' : ''}`}
+                  onClick={() => setProfileData(prev => ({
+                    ...prev,
+                    foodPreferences: { ...prev.foodPreferences, dietary: 'veg' }
+                  }))}
+                >
+                  🥬 Vegetarian
+                </button>
+                <button
+                  type="button"
+                  className={`preference-btn ${profileData.foodPreferences.dietary === 'non-veg' ? 'active' : ''}`}
+                  onClick={() => setProfileData(prev => ({
+                    ...prev,
+                    foodPreferences: { ...prev.foodPreferences, dietary: 'non-veg' }
+                  }))}
+                >
+                  🍗 Non-Veg
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="continue-btn">
+              Continue <ArrowRight size={20} />
+            </button>
+          </form>
+        )}
+
+        {step === 2 && (
+          <form onSubmit={handleStep2Submit} className="setup-form">
+            <div className="setup-header">
+              <h2>Add your delivery address</h2>
+              <p>We'll deliver your orders here</p>
+            </div>
+
+            <div className="address-type-selector">
+              <button
+                type="button"
+                className={`type-btn ${addressData.type === 'home' ? 'active' : ''}`}
+                onClick={() => setAddressData(prev => ({ ...prev, type: 'home' }))}
+              >
+                🏠 Home
+              </button>
+              <button
+                type="button"
+                className={`type-btn ${addressData.type === 'work' ? 'active' : ''}`}
+                onClick={() => setAddressData(prev => ({ ...prev, type: 'work' }))}
+              >
+                🏢 Work
+              </button>
+              <button
+                type="button"
+                className={`type-btn ${addressData.type === 'other' ? 'active' : ''}`}
+                onClick={() => setAddressData(prev => ({ ...prev, type: 'other' }))}
+              >
+                📍 Other
+              </button>
+            </div>
+
+            <div className="form-group">
+              <label>
+                <MapPin size={18} />
+                Address Line 1 *
+              </label>
+              <input
+                type="text"
+                value={addressData.line1}
+                onChange={(e) => setAddressData(prev => ({ ...prev, line1: e.target.value }))}
+                placeholder="House/Flat/Block No."
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Address Line 2</label>
+              <input
+                type="text"
+                value={addressData.line2}
+                onChange={(e) => setAddressData(prev => ({ ...prev, line2: e.target.value }))}
+                placeholder="Area, Street, Sector"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Landmark</label>
+              <input
+                type="text"
+                value={addressData.landmark}
+                onChange={(e) => setAddressData(prev => ({ ...prev, landmark: e.target.value }))}
+                placeholder="Any nearby landmark"
+              />
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>City *</label>
+                <input
+                  type="text"
+                  value={addressData.city}
+                  onChange={(e) => setAddressData(prev => ({ ...prev, city: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>State *</label>
+                <input
+                  type="text"
+                  value={addressData.state}
+                  onChange={(e) => setAddressData(prev => ({ ...prev, state: e.target.value }))}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Pincode *</label>
+              <input
+                type="text"
+                value={addressData.pincode}
+                onChange={(e) => setAddressData(prev => ({ 
+                  ...prev, 
+                  pincode: e.target.value.replace(/\D/g, '').slice(0, 6) 
+                }))}
+                placeholder="560001"
+                maxLength={6}
+                required
+              />
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="back-btn"
+                onClick={() => setStep(1)}
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                className="continue-btn"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Saving...' : 'Complete Setup'}
+                {!isLoading && <ArrowRight size={20} />}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProfileSetup;

@@ -48,9 +48,15 @@ namespace Crm.Models
 
         public DateTime? DateOfBirth { get; set; }
 
-        public Address? Address { get; set; }
+        // Multiple addresses for customers (home, work, other)
+        public List<DeliveryAddress>? DeliveryAddresses { get; set; }
+
+        // Profile image stored as Base64 string
+        [MaxLength(10485760)] // 10MB limit for Base64 string
+        public string? ProfileImage { get; set; }
 
         // Customer-specific fields
+        public FoodPreferences? FoodPreferences { get; set; }
         public List<string>? DietaryPreferences { get; set; }
         public List<string>? FavoriteRestaurants { get; set; }
 
@@ -237,5 +243,67 @@ namespace Crm.Models
         public List<string>? CurrentProjects { get; set; }
 
         public DateTime? LastSecurityTraining { get; set; }
+    }
+}    /// <summary>
+    /// Delivery address model for customers (supports multiple addresses)
+    /// </summary>
+    public class DeliveryAddress
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
+        public string? Id { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string Type { get; set; } = "home"; // home, work, other
+
+        [Required]
+        [MaxLength(200)]
+        public string Line1 { get; set; } = string.Empty;
+
+        [MaxLength(200)]
+        public string? Line2 { get; set; }
+
+        [MaxLength(100)]
+        public string? Landmark { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string City { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(100)]
+        public string State { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(10)]
+        public string Pincode { get; set; } = string.Empty;
+
+        [MaxLength(100)]
+        public string? Country { get; set; } = "India";
+
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Food preferences model for customers
+    /// </summary>
+    public class FoodPreferences
+    {
+        [Required]
+        [MaxLength(20)]
+        public string Dietary { get; set; } = "all"; // all, veg, non-veg
+
+        public List<string>? Cuisines { get; set; }
+        
+        public List<string>? Allergies { get; set; }
+
+        public List<string>? DislikedIngredients { get; set; }
+
+        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

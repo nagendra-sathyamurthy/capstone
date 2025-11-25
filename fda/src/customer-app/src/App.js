@@ -1,0 +1,71 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
+
+// Components
+import Registration from './components/Registration';
+import OTPVerification from './components/OTPVerification';
+import ProfileSetup from './components/ProfileSetup';
+import Dashboard from './components/Dashboard';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
+import Payment from './components/Payment';
+import Profile from './components/Profile';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Protected Route wrapper
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/" replace />;
+};
+
+// Public Route wrapper (redirect to dashboard if authenticated)
+const PublicRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? children : <Navigate to="/dashboard" replace />;
+};
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<PublicRoute><Registration /></PublicRoute>} />
+      <Route path="/verify-otp" element={<PublicRoute><OTPVerification /></PublicRoute>} />
+      <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+      <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+      <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <div className="App">
+            <AppRoutes />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+          </div>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
+  );
+}
+
+export default App;

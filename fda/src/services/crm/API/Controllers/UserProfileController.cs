@@ -227,6 +227,116 @@ namespace Crm.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the user profile.", details = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Get user's delivery addresses
+        /// </summary>
+        [HttpGet("by-user/{userId}/addresses")]
+        public ActionResult<List<DeliveryAddress>> GetUserAddresses(string userId)
+        {
+            try
+            {
+                var addresses = _userProfileService.GetUserAddresses(userId);
+                return Ok(addresses ?? new List<DeliveryAddress>());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving addresses.", details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Add delivery address
+        /// </summary>
+        [HttpPost("by-user/{userId}/addresses")]
+        public ActionResult<DeliveryAddress> AddAddress(string userId, [FromBody] DeliveryAddress address)
+        {
+            try
+            {
+                var addedAddress = _userProfileService.AddAddress(userId, address);
+                return Ok(addedAddress);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while adding address.", details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Update delivery address
+        /// </summary>
+        [HttpPut("by-user/{userId}/addresses/{addressId}")]
+        public ActionResult<DeliveryAddress> UpdateAddress(string userId, string addressId, [FromBody] DeliveryAddress address)
+        {
+            try
+            {
+                var updatedAddress = _userProfileService.UpdateAddress(userId, addressId, address);
+                if (updatedAddress == null)
+                {
+                    return NotFound(new { message = "Address not found." });
+                }
+                return Ok(updatedAddress);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating address.", details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete delivery address
+        /// </summary>
+        [HttpDelete("by-user/{userId}/addresses/{addressId}")]
+        public IActionResult DeleteAddress(string userId, string addressId)
+        {
+            try
+            {
+                var deleted = _userProfileService.DeleteAddress(userId, addressId);
+                if (!deleted)
+                {
+                    return NotFound(new { message = "Address not found." });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting address.", details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Update profile image
+        /// </summary>
+        [HttpPut("by-user/{userId}/profile-image")]
+        public ActionResult UpdateProfileImage(string userId, [FromBody] ProfileImageRequest request)
+        {
+            try
+            {
+                _userProfileService.UpdateProfileImage(userId, request.ProfileImage);
+                return Ok(new { message = "Profile image updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating profile image.", details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Update food preferences
+        /// </summary>
+        [HttpPut("by-user/{userId}/food-preferences")]
+        public ActionResult<FoodPreferences> UpdateFoodPreferences(string userId, [FromBody] FoodPreferences preferences)
+        {
+            try
+            {
+                var updated = _userProfileService.UpdateFoodPreferences(userId, preferences);
+                return Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating food preferences.", details = ex.Message });
+            }
+        }
     }
 
     // Request DTOs
@@ -265,5 +375,9 @@ namespace Crm.API.Controllers
         public BusinessInfo? BusinessInfo { get; set; }
         public DeliveryInfo? DeliveryInfo { get; set; }
         public TechInfo? TechInfo { get; set; }
+    }
+}    public class ProfileImageRequest
+    {
+        public string ProfileImage { get; set; } = string.Empty;
     }
 }
