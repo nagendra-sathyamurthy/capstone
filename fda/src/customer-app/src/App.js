@@ -32,7 +32,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<PublicRoute><Registration /></PublicRoute>} />
-      <Route path="/verify-otp" element={<PublicRoute><OTPVerification /></PublicRoute>} />
+      <Route path="/verify-otp" element={<OTPVerification />} />
       <Route path="/profile-setup" element={<ProtectedRoute><ProfileSetup /></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
