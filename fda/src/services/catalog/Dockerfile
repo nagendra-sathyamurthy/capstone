@@ -1,7 +1,9 @@
 # Use the official .NET SDK image for build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY . .
+COPY Directory.Build.props .
+COPY catalog/ ./catalog/
+WORKDIR /src/catalog
 RUN dotnet restore Catalog.sln
 RUN dotnet publish API/Catalog.API.csproj -c Release -o /app/publish
 

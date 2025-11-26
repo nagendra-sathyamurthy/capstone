@@ -13,6 +13,10 @@ RUN npm install --production=false
 # Copy source code
 COPY . .
 
+# Set build-time environment variables
+ARG REACT_APP_GATEWAY_URL=http://localhost:5000
+ENV REACT_APP_GATEWAY_URL=$REACT_APP_GATEWAY_URL
+
 # Build the React app
 RUN npm run build
 

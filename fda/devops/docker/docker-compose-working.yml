@@ -24,8 +24,8 @@ services:
   # Authentication Service
   authentication:
     build:
-      context: ../../src/services/authentication
-      dockerfile: Dockerfile
+      context: ../../src/services
+      dockerfile: authentication/Dockerfile
     container_name: capstone-authentication
     ports:
       - "8081:8080"
@@ -46,8 +46,8 @@ services:
   # Catalog Service
   catalog:
     build:
-      context: ../../src/services/catalog
-      dockerfile: Dockerfile
+      context: ../../src/services
+      dockerfile: catalog/Dockerfile
     container_name: capstone-catalog
     ports:
       - "8082:8080"
@@ -64,8 +64,8 @@ services:
   # CRM Service
   crm:
     build:
-      context: ../../src/services/crm
-      dockerfile: Dockerfile
+      context: ../../src/services
+      dockerfile: crm/Dockerfile
     container_name: capstone-crm
     ports:
       - "8083:8080"
@@ -82,8 +82,8 @@ services:
   # Cart Service
   cart:
     build:
-      context: ../../src/services/cart
-      dockerfile: Dockerfile
+      context: ../../src/services
+      dockerfile: cart/Dockerfile
     container_name: capstone-cart
     ports:
       - "8084:8080"
@@ -100,8 +100,8 @@ services:
   # Order Service
   order:
     build:
-      context: ../../src/services/order
-      dockerfile: Dockerfile
+      context: ../../src/services
+      dockerfile: order/Dockerfile
     container_name: capstone-order
     ports:
       - "8085:8080"
@@ -150,6 +150,8 @@ services:
     build:
       context: ../../src/customer-app
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_GATEWAY_URL=http://localhost:5000
     container_name: capstone-customer-app
     ports:
       - "3000:3000"

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, CheckCircle, AlertCircle, Copy } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -73,7 +73,7 @@ const Payment: React.FC = () => {
     }, 2000);
   };
 
-  const generateQRCodeSVG = (data: string): JSX.Element => {
+  const generateQRCodeSVG = (data: string): ReactElement => {
     // Simple QR code placeholder - in a real app, use a proper QR code library
     return (
       <div className="qr-placeholder">

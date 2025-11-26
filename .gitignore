@@ -110,6 +110,7 @@ docker-compose.override.yml
 
 # IDE
 .idea/
+.vscode/settings.json
 *.swp
 *.swo
 *~
@@ -146,3 +147,7 @@ yarn-error.log*
 # MongoDB data
 data/
 .fake
+
+# Test results
+test-results/
+**/test-results/
