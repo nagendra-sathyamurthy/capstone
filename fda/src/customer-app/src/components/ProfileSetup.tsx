@@ -138,13 +138,7 @@ const ProfileSetup: React.FC = () => {
     try {
       console.log('[ProfileSetup] Saving profile data...');
       
-      // Save profile name to localStorage (update existing user data)
-      const userName = localStorage.getItem('userName');
-      if (!userName || userName === '') {
-        localStorage.setItem('userName', profileData.name);
-      }
-
-      // Update user profile name in MongoDB
+      // Update user profile name in MongoDB (don't save to localStorage)
       try {
         console.log('[ProfileSetup] Updating profile with name:', profileData.name);
         await customerService.updateProfile({
