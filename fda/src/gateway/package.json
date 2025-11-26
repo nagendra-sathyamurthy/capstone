@@ -13,7 +13,7 @@
     "express",
     "microservices"
   ],
-  "author": "",
+  "author": "Capstone Project Team",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
