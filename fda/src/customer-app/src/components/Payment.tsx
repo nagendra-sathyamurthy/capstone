@@ -73,7 +73,7 @@ const Payment: React.FC = () => {
     }, 2000);
   };
 
-  const generateQRCodeSVG = (data: string): JSX.Element => {
+  const generateQRCodeSVG = (data: string) => {
     // Simple QR code placeholder - in a real app, use a proper QR code library
     return (
       <div className="qr-placeholder">
