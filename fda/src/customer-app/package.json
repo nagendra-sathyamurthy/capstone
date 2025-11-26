@@ -1,6 +1,8 @@
 {
   "name": "customer-app",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Customer-facing application for Food Delivery Platform",
+  "author": "Capstone Project Team",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
