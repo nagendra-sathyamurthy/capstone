@@ -150,6 +150,8 @@ services:
     build:
       context: ../../src/customer-app
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_GATEWAY_URL=http://localhost:5000
     container_name: capstone-customer-app
     ports:
       - "3000:3000"
