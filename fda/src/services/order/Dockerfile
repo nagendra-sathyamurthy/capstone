@@ -1,10 +1,9 @@
 # Use the official .NET SDK image for build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-
-# Copy Order service
-COPY . .
-
+COPY Directory.Build.props .
+COPY order/ ./order/
+WORKDIR /src/order
 RUN dotnet restore Order.sln
 RUN dotnet publish API/Order.API.csproj -c Release -o /app/publish
 
