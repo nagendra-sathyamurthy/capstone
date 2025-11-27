@@ -320,14 +320,21 @@ namespace Crm.API.Controllers
         }
 
         /// <summary>
-        /// Update user profile basic info (name, email, etc.)
+        /// Update user profile basic info (name, email, phone, date of birth, dietary preferences)
         /// </summary>
         [HttpPut("by-user/{userId}")]
         public ActionResult UpdateProfile(string userId, [FromBody] UpdateProfileRequest request)
         {
             try
             {
-                _userProfileService.UpdateProfileBasicInfo(userId, request.Name, request.Email);
+                _userProfileService.UpdateProfileBasicInfo(
+                    userId, 
+                    request.Name, 
+                    request.Email, 
+                    request.Phone, 
+                    request.DateOfBirth, 
+                    request.DietaryPreferences
+                );
                 return Ok(new { message = "Profile updated successfully" });
             }
             catch (Exception ex)
@@ -400,5 +407,8 @@ namespace Crm.API.Controllers
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
+        public string? Phone { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public List<string>? DietaryPreferences { get; set; }
     }
 }

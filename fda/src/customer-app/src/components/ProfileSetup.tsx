@@ -13,6 +13,9 @@ const ProfileSetup: React.FC = () => {
   const [step, setStep] = useState<number>(1);
   const [profileData, setProfileData] = useState({
     name: '',
+    email: '',
+    phone: localStorage.getItem('userPhone') || '',
+    dateOfBirth: '',
     profileImage: null as string | null,
     profileImagePreview: null as string | null,
     foodPreferences: {
@@ -107,6 +110,18 @@ const ProfileSetup: React.FC = () => {
       return;
     }
 
+    if (!profileData.email.trim()) {
+      toast.error('Please enter your email');
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(profileData.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
     setStep(2);
   };
 
@@ -138,15 +153,19 @@ const ProfileSetup: React.FC = () => {
     try {
       console.log('[ProfileSetup] Saving profile data...');
       
-      // Update user profile name in MongoDB (don't save to localStorage)
+      // Update user profile with all information in MongoDB
       try {
-        console.log('[ProfileSetup] Updating profile with name:', profileData.name);
+        console.log('[ProfileSetup] Updating profile with all info');
         await customerService.updateProfile({
-          name: profileData.name
+          name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          dateOfBirth: profileData.dateOfBirth || undefined,
+          dietaryPreferences: [profileData.foodPreferences.dietary]
         });
-        console.log('[ProfileSetup] Profile name updated successfully');
+        console.log('[ProfileSetup] Profile updated successfully');
       } catch (error) {
-        console.error('[ProfileSetup] Failed to update profile name:', error);
+        console.error('[ProfileSetup] Failed to update profile:', error);
       }
 
       // Save address to MongoDB via API
@@ -265,7 +284,46 @@ const ProfileSetup: React.FC = () => {
 
             <div className="form-group">
               <label>
-                🍽️ Food Preference (Optional)
+                📧 Email *
+              </label>
+              <input
+                type="email"
+                value={profileData.email}
+                onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="Enter your email address"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                📱 Phone
+              </label>
+              <input
+                type="tel"
+                value={profileData.phone}
+                readOnly
+                disabled
+                placeholder="Phone number"
+                className="readonly-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                � Date of Birth (Optional)
+              </label>
+              <input
+                type="date"
+                value={profileData.dateOfBirth}
+                onChange={(e) => setProfileData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                max={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>
+                🍽️ Dietary Preference (Optional)
               </label>
               <div className="preference-buttons">
                 <button
