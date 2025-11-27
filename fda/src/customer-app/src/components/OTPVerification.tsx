@@ -102,8 +102,9 @@ const OTPVerification: React.FC = () => {
       // In production, this would call the actual API
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
       
-      // Generate userId from timestamp
-      const userId = Date.now().toString();
+      // Use phone number as userId for consistent identification across sessions
+      // This ensures returning users can find their existing profile in MongoDB
+      const userId = phone;
       
       // Call the authentication service to get a real JWT token
       const authResponse = await authService.customerPhoneLogin(phone, userId, 'Customer');
