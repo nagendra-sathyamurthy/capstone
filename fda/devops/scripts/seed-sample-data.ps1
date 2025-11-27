@@ -310,7 +310,7 @@ $failCount = 0
 
 foreach ($item in $menuItems) {
     Write-Host "  Adding: $($item.Name)..." -NoNewline
-    $result = Invoke-ApiCall -Method POST -Endpoint "/api/menu" -Body $item
+    $result = Invoke-ApiCall -Method POST -Endpoint "/api/catalog/menu" -Body $item
     
     if ($result) {
         Write-Host " ✓" -ForegroundColor Green

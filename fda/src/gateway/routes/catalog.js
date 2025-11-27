@@ -5,6 +5,45 @@ const services = require('../config/services');
 const { asyncHandler } = require('../middleware/errorHandler');
 const authMiddleware = require('../middleware/authMiddleware');
 
+// Menu endpoints - forward to catalog service /api/menu
+router.get('/menu', authMiddleware, asyncHandler(async (req, res) => {
+  const token = req.headers.authorization;
+  const response = await axios.get(
+    `${services.catalog.url}/api/menu`,
+    { 
+      params: req.query,
+      timeout: services.catalog.timeout,
+      headers: { Authorization: token }
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+router.post('/menu', authMiddleware, asyncHandler(async (req, res) => {
+  const token = req.headers.authorization;
+  const response = await axios.post(
+    `${services.catalog.url}/api/menu`,
+    req.body,
+    { 
+      timeout: services.catalog.timeout,
+      headers: { Authorization: token }
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
+router.get('/menu/:id', authMiddleware, asyncHandler(async (req, res) => {
+  const token = req.headers.authorization;
+  const response = await axios.get(
+    `${services.catalog.url}/api/menu/${req.params.id}`,
+    { 
+      timeout: services.catalog.timeout,
+      headers: { Authorization: token }
+    }
+  );
+  res.status(response.status).json(response.data);
+}));
+
 // Get all restaurants
 router.get('/restaurants', asyncHandler(async (req, res) => {
   const response = await axios.get(
