@@ -3,8 +3,58 @@
 
 param(
     [string]$GatewayUrl = "http://localhost:5000",
-    [string]$AuthToken = ""
+    [string]$AuthToken = "",
+    [string]$Phone = "+919876543210"
 )
+
+# Function to get customer JWT token via phone login
+function Get-CustomerJwtToken {
+    param(
+        [string]$GatewayUrl,
+        [string]$Phone
+    )
+    
+    try {
+        Write-Host "📱 Logging in with phone: $Phone" -ForegroundColor Yellow
+        
+        $loginBody = @{
+            phone = $Phone
+            userId = $Phone
+            name = "Sample Data Seeder"
+        } | ConvertTo-Json
+        
+        $response = Invoke-RestMethod -Uri "$GatewayUrl/api/auth/customer/phone-login" `
+            -Method POST `
+            -Body $loginBody `
+            -ContentType "application/json" `
+            -ErrorAction Stop
+        
+        if ($response.token) {
+            Write-Host "✓ Successfully obtained auth token" -ForegroundColor Green
+            return $response.token
+        } else {
+            Write-Host "✗ Failed to get auth token from response" -ForegroundColor Red
+            return $null
+        }
+    }
+    catch {
+        Write-Host "✗ Error getting auth token: $($_.Exception.Message)" -ForegroundColor Red
+        return $null
+    }
+}
+
+# Get or generate auth token
+if ([string]::IsNullOrEmpty($AuthToken)) {
+    Write-Host "📝 No auth token provided. Getting customer auth token..." -ForegroundColor Yellow
+    $AuthToken = Get-CustomerJwtToken -GatewayUrl $GatewayUrl -Phone $Phone
+    
+    if ([string]::IsNullOrEmpty($AuthToken)) {
+        Write-Host "❌ Failed to obtain auth token. Cannot proceed with seeding." -ForegroundColor Red
+        exit 1
+    }
+    
+    Write-Host ""
+}
 
 $ErrorActionPreference = "Stop"
 
@@ -12,13 +62,6 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "Food Delivery App - Sample Data Seeder" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
-
-# Authentication token - update this with a valid token
-if ([string]::IsNullOrEmpty($AuthToken)) {
-    Write-Host "⚠️  No auth token provided. Some endpoints may fail." -ForegroundColor Yellow
-    Write-Host "   To provide a token, use: .\seed-sample-data.ps1 -AuthToken 'your-token-here'" -ForegroundColor Yellow
-    Write-Host ""
-}
 
 $headers = @{
     "Content-Type" = "Application/json"
