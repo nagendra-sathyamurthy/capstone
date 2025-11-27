@@ -127,24 +127,24 @@ const Dashboard: React.FC = () => {
         setMenuItems(transformedMenuItems);
         
         // Extract unique restaurants from menu items
-        const uniqueRestaurants = Array.from(
-          new Map(
-            menuResponse
-              .filter((item: any) => item.restaurantName)
-              .map((item: any) => [
-                item.restaurantId,
-                {
-                  id: item.restaurantId,
-                  name: item.restaurantName,
-                  cuisine: item.cuisine || 'Multi-Cuisine',
-                  rating: 4.0 + Math.random(),
-                  deliveryTime: '25-35 min',
-                  image: getRestaurantEmoji(item.cuisine),
-                  isOpen: true
-                }
-              ])
-          ).values()
+        const restaurantsMap = new Map(
+          menuResponse
+            .filter((item: any) => item.restaurantName)
+            .map((item: any) => [
+              item.restaurantId,
+              {
+                id: item.restaurantId,
+                name: item.restaurantName,
+                cuisine: item.cuisine || 'Multi-Cuisine',
+                rating: 4.0 + Math.random(),
+                deliveryTime: '25-35 min',
+                image: getRestaurantEmoji(item.cuisine),
+                isOpen: true
+              }
+            ])
         );
+        
+        const uniqueRestaurants = Array.from(restaurantsMap.values()) as Restaurant[];
         
         setRestaurants(uniqueRestaurants);
         console.log('[Dashboard] Loaded', transformedMenuItems.length, 'menu items and', uniqueRestaurants.length, 'restaurants');
