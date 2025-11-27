@@ -23,9 +23,26 @@ const OTPVerification: React.FC = () => {
   const phone = (location.state as LocationState)?.phone || localStorage.getItem('pendingPhone') || '';
 
   useEffect(() => {
-    // If already authenticated, go to profile setup
+    // If already authenticated, check if user has profile
     if (isAuthenticated) {
-      navigate('/profile-setup', { replace: true });
+      const checkProfile = async () => {
+        try {
+          console.log('[OTPVerification] User already authenticated, checking profile...');
+          const addresses = await customerService.getAddresses();
+          
+          if (addresses && addresses.length > 0) {
+            console.log('[OTPVerification] Existing user found, redirecting to dashboard');
+            navigate('/dashboard', { replace: true });
+          } else {
+            console.log('[OTPVerification] No addresses found, redirecting to profile setup');
+            navigate('/profile-setup', { replace: true });
+          }
+        } catch (error) {
+          console.log('[OTPVerification] Error checking profile:', error);
+          navigate('/profile-setup', { replace: true });
+        }
+      };
+      checkProfile();
       return;
     }
     
