@@ -23,9 +23,26 @@ const OTPVerification: React.FC = () => {
   const phone = (location.state as LocationState)?.phone || localStorage.getItem('pendingPhone') || '';
 
   useEffect(() => {
-    // If already authenticated, go to profile setup
+    // If already authenticated, check if user has profile
     if (isAuthenticated) {
-      navigate('/profile-setup', { replace: true });
+      const checkProfile = async () => {
+        try {
+          console.log('[OTPVerification] User already authenticated, checking profile...');
+          const addresses = await customerService.getAddresses();
+          
+          if (addresses && addresses.length > 0) {
+            console.log('[OTPVerification] Existing user found, redirecting to dashboard');
+            navigate('/dashboard', { replace: true });
+          } else {
+            console.log('[OTPVerification] No addresses found, redirecting to profile setup');
+            navigate('/profile-setup', { replace: true });
+          }
+        } catch (error) {
+          console.log('[OTPVerification] Error checking profile:', error);
+          navigate('/profile-setup', { replace: true });
+        }
+      };
+      checkProfile();
       return;
     }
     
@@ -85,8 +102,9 @@ const OTPVerification: React.FC = () => {
       // In production, this would call the actual API
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
       
-      // Generate userId from timestamp
-      const userId = Date.now().toString();
+      // Use phone number as userId for consistent identification across sessions
+      // This ensures returning users can find their existing profile in MongoDB
+      const userId = phone;
       
       // Call the authentication service to get a real JWT token
       const authResponse = await authService.customerPhoneLogin(phone, userId, 'Customer');
