@@ -69,5 +69,5 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30002
+    nodePort: 30082  # Catalog - aligned with docker-compose port 8082
   type: NodePort

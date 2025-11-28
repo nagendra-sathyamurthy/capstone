@@ -69,5 +69,5 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30001
+    nodePort: 30081  # Authentication - aligned with docker-compose port 8081
   type: NodePort

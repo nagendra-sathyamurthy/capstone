@@ -9,7 +9,7 @@ metadata:
   name: customer-app-config
   namespace: capstone-frontend
 data:
-  REACT_APP_GATEWAY_URL: "http://localhost:30007"
+  REACT_APP_GATEWAY_URL: "http://localhost:30500"  # Updated to match new gateway NodePort
   REACT_APP_ENV: "development"
 ---
 apiVersion: apps/v1
@@ -77,6 +77,6 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-    nodePort: 30080
+    nodePort: 30300  # Customer App - aligned with docker-compose port 3000
     protocol: TCP
     name: http

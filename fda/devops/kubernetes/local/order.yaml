@@ -69,5 +69,5 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30005
+    nodePort: 30085  # Order - aligned with docker-compose port 8085
   type: NodePort

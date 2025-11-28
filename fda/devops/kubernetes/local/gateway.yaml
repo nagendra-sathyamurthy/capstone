@@ -87,6 +87,6 @@ spec:
   ports:
   - port: 5000
     targetPort: 5000
-    nodePort: 30007
+    nodePort: 30500  # Gateway - aligned with docker-compose port 5000
     protocol: TCP
     name: http
