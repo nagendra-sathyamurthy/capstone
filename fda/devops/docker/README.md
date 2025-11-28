@@ -4,49 +4,99 @@ This directory contains Docker Compose configurations for deploying the Capstone
 
 ## Files
 
-- **docker-compose.yml** - Complete production-ready stack with all services
-- **docker-compose.dev.yml** - Simplified development setup (MongoDB + Gateway only)
+- **docker-compose-working.yml** - Production-ready stack with Docker secrets
+- **.env.example** - Environment variables template (copy to .env)
+- **secrets/** - Directory for sensitive configuration files
+- **setup-docker-secrets.ps1** - Script to generate secret files
 
 ## Prerequisites
 
 - Docker Desktop installed and running
 - Docker Compose v2.0 or later
 - At least 8GB RAM allocated to Docker
-- Ports 3000, 5000, 8081-8086, 27017 available
+- Ports 3000, 5000, 8081-8085, 27017 available
+- PowerShell (for Windows) to run setup scripts
 
 ## Quick Start
 
-### Full Stack Deployment
+### 1. Setup Secrets
 
-Deploy all services including frontend, backend, gateway, and database:
+First, create the required secret files:
+
+```powershell
+# Run the setup script
+.\setup-docker-secrets.ps1
+
+# Or create secrets manually (see secrets/README.md)
+```
+
+### 2. Configure Environment (Optional)
+
+```powershell
+# Copy environment template
+Copy-Item .env.example .env
+
+# Edit .env file to customize ports, URLs, etc.
+```
+
+### 3. Start Services
 
 ```bash
 # Navigate to docker directory
-cd devops/docker
+cd fda/devops/docker
 
 # Start all services
-docker-compose up -d
+docker compose -f docker-compose-working.yml up -d
 
 # View logs
-docker-compose logs -f
+docker compose -f docker-compose-working.yml logs -f
 
 # Stop all services
-docker-compose down
-
-# Stop and remove volumes (data will be lost)
-docker-compose down -v
+docker compose -f docker-compose-working.yml down
 ```
 
-### Development Mode
+## Security with Docker Secrets
 
-For development, use the simplified setup that only runs MongoDB and Gateway:
+This deployment uses Docker secrets to protect sensitive information:
 
-```bash
-# Start development services
-docker-compose -f docker-compose.dev.yml up -d
+### ⚠️ Important Security Notes
 
-# Run backend services via Kubernetes
-# Run frontend via: cd src/customer-app && npm start
+- **NEVER** commit files in `secrets/` directory
+- Secrets are stored in `/run/secrets/` inside containers
+- Services read from secret files or environment variables
+- `.gitignore` is configured to exclude secret files
+
+### Secret Files Used
+
+| Secret File | Purpose | Used By |
+|-------------|---------|---------|
+| `mongo_root_username.txt` | MongoDB root username | MongoDB |
+| `mongo_root_password.txt` | MongoDB root password | MongoDB |
+| `mongo_connection_string.txt` | MongoDB connection for services | Authentication, Catalog, Cart, Order |
+| `mongo_connection_string_crm.txt` | MongoDB connection with CRM database | CRM |
+| `jwt_secret_key.txt` | JWT signing key | Authentication |
+
+### How Services Read Secrets
+
+Services automatically:
+1. Check `/run/secrets/<secret_name>` (Docker secrets)
+2. Fall back to environment variables (local development)
+3. Use default values if neither exists
+
+Example from Program.cs:
+```csharp
+static string GetSecret(IConfiguration config, string secretName, string? defaultValue = null)
+{
+    var secretPath = $"/run/secrets/{secretName}";
+    if (File.Exists(secretPath))
+        return File.ReadAllText(secretPath).Trim();
+    
+    var envValue = config[secretName];
+    if (!string.IsNullOrEmpty(envValue))
+        return envValue;
+    
+    return defaultValue ?? throw new InvalidOperationException($"Secret not found: {secretName}");
+}
 ```
 
 ## Service Ports

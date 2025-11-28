@@ -10,6 +10,27 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Helper function to read secrets from Docker secrets or environment variables
+static string GetSecret(IConfiguration configuration, string secretName, string? defaultValue = null)
+{
+    // Try to read from Docker secret file first
+    var secretPath = $"/run/secrets/{secretName}";
+    if (File.Exists(secretPath))
+    {
+        return File.ReadAllText(secretPath).Trim();
+    }
+    
+    // Fallback to environment variable (for local development)
+    var envValue = configuration[secretName.Replace("_", "__").ToUpper()];
+    if (!string.IsNullOrEmpty(envValue))
+    {
+        return envValue;
+    }
+    
+    // Use default if provided
+    return defaultValue ?? throw new InvalidOperationException($"Secret '{secretName}' not found");
+}
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -46,8 +67,8 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// JWT Authentication
-var jwtSecret = "GJ0VFqmRVBR0iE2ojyzh28HlayZgRcUI"; // In production, use configuration
+// JWT Authentication - Read secret from file or environment
+var jwtSecret = GetSecret(builder.Configuration, "jwt_secret_key", "GJ0VFqmRVBR0iE2ojyzh28HlayZgRcUI");
 var key = Encoding.ASCII.GetBytes(jwtSecret);
 
 builder.Services.AddAuthentication(options =>
@@ -83,12 +104,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-// MongoDB setup
+// MongoDB setup - Read connection string from secret or environment
 builder.Services.AddSingleton<IMongoDatabase>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
-    var connectionString = configuration["MONGO_CONNECTION_STRING"] ?? 
-                          "mongodb://localhost:27017";
+    var connectionString = GetSecret(configuration, "mongo_connection_string", "mongodb://localhost:27017");
     var mongoClient = new MongoClient(connectionString);
     
     // Extract database name from connection string, default to "authenticationdb"

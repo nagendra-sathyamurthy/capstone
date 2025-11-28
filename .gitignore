@@ -108,6 +108,13 @@ docker-compose.override.yml
 .env
 !.env.example
 
+# Docker secrets - NEVER commit these files
+**/secrets/
+**/secrets/*.txt
+**/secrets/*.key
+**/secrets/*.pem
+!**/secrets/.gitkeep
+
 # IDE
 .idea/
 .vscode/settings.json

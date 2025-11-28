@@ -3,17 +3,42 @@ using catalog.API;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Helper function to read secrets from Docker secrets or environment variables
+static string GetSecret(IConfiguration configuration, string secretName, string? defaultValue = null)
+{
+    var secretPath = $"/run/secrets/{secretName}";
+    if (File.Exists(secretPath))
+    {
+        return File.ReadAllText(secretPath).Trim();
+    }
+    
+    var envValue = configuration[secretName.Replace("_", "__").ToUpper()];
+    if (!string.IsNullOrEmpty(envValue))
+    {
+        return envValue;
+    }
+    
+    envValue = configuration[secretName];
+    if (!string.IsNullOrEmpty(envValue))
+    {
+        return envValue;
+    }
+    
+    return defaultValue ?? throw new InvalidOperationException($"Secret '{secretName}' not found");
+}
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" });
 });
 
-// Register MongoDB client
+// Register MongoDB client - Read connection string from secret
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
-    var connectionString = configuration["MONGO_CONNECTION_STRING"] ?? "mongodb://localhost:27017";
+    var connectionString = GetSecret(configuration, "mongo_connection_string", "mongodb://localhost:27017");
     return new MongoClient(connectionString);
 });
 
