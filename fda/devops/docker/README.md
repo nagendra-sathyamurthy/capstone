@@ -30,16 +30,27 @@ First, create the required secret files:
 # Or create secrets manually (see secrets/README.md)
 ```
 
-### 2. Configure Environment (Optional)
+### 2. Deploy with Script (Recommended)
+
+Use the deployment script for automated deployment:
 
 ```powershell
-# Copy environment template
-Copy-Item .env.example .env
+# Full deployment with secret generation
+.\deploy.ps1
 
-# Edit .env file to customize ports, URLs, etc.
+# Production deployment with existing secrets
+.\deploy.ps1 -Environment production -SkipSecrets
+
+# Deploy specific services without rebuilding
+.\deploy.ps1 -Services "catalog,gateway" -SkipBuild
+
+# Clean deployment (removes existing data)
+.\deploy.ps1 -Clean
 ```
 
-### 3. Start Services
+### 3. Manual Deployment (Alternative)
+
+Or deploy manually:
 
 ```bash
 # Navigate to docker directory
@@ -50,9 +61,21 @@ docker compose -f docker-compose-working.yml up -d
 
 # View logs
 docker compose -f docker-compose-working.yml logs -f
+```
 
-# Stop all services
-docker compose -f docker-compose-working.yml down
+### 4. Stopping Services
+
+```powershell
+# Using cleanup script (recommended)
+.\cleanup.ps1 -Stop                    # Stop services
+.\cleanup.ps1 -Down                    # Remove containers
+.\cleanup.ps1 -Clean                   # Remove data (WARNING!)
+.\cleanup.ps1 -Prune                   # Complete cleanup
+
+# Manual
+docker compose -f docker-compose-working.yml stop        # Stop services
+docker compose -f docker-compose-working.yml down        # Remove containers
+docker compose -f docker-compose-working.yml down -v     # Remove containers and data
 ```
 
 ## Security with Docker Secrets
