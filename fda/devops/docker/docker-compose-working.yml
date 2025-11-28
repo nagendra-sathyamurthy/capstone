@@ -31,7 +31,7 @@ services:
       - "8081:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - MONGO_CONNECTION_STRING=mongodb://admin:AdminPass2024@mongodb:27017
       - JwtSettings__SecretKey=YourSuperSecretKeyForJWTTokenGeneration123456
       - JwtSettings__Issuer=CapstoneAuthService
       - JwtSettings__Audience=CapstoneApp
@@ -89,7 +89,7 @@ services:
       - "8084:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - MONGO_CONNECTION_STRING=mongodb://admin:AdminPass2024@mongodb:27017
     depends_on:
       mongodb:
         condition: service_healthy
@@ -107,7 +107,7 @@ services:
       - "8085:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - MONGO_CONNECTION_STRING=mongodb://admin:AdminPass2024@mongodb:27017
     depends_on:
       mongodb:
         condition: service_healthy
