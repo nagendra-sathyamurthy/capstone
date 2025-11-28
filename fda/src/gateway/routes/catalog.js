@@ -6,14 +6,13 @@ const { asyncHandler } = require('../middleware/errorHandler');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // Menu endpoints - forward to catalog service /api/menu
-router.get('/menu', authMiddleware, asyncHandler(async (req, res) => {
-  const token = req.headers.authorization;
+// GET /menu - Allow without auth for browsing
+router.get('/menu', asyncHandler(async (req, res) => {
   const response = await axios.get(
     `${services.catalog.url}/api/menu`,
     { 
       params: req.query,
-      timeout: services.catalog.timeout,
-      headers: { Authorization: token }
+      timeout: services.catalog.timeout
     }
   );
   res.status(response.status).json(response.data);

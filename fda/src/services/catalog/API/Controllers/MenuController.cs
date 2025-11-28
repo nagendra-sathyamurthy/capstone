@@ -31,6 +31,7 @@ namespace catalog.API.Controllers
         /// Get all available menu items
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]  // Allow browsing menu without authentication
         public async Task<ActionResult<List<MenuItem>>> GetAvailableMenuItems()
         {
             var items = await _menuService.GetAvailableMenuItemsAsync();
