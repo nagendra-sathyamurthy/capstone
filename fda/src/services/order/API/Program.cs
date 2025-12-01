@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using Order.API;
 using Microsoft.OpenApi.Models;
+using Shared.Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -20,6 +21,19 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     var configuration = sp.GetRequiredService<IConfiguration>();
     var connectionString = configuration["MONGO_CONNECTION_STRING"] ?? "mongodb://localhost:27017";
     return new MongoClient(connectionString);
+});
+
+// Register RabbitMQ Message Publisher
+builder.Services.AddSingleton<IMessagePublisher>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var rabbitMQHost = configuration["RABBITMQ_HOST"] ?? "localhost";
+    var rabbitMQPort = int.Parse(configuration["RABBITMQ_PORT"] ?? "5672");
+    var rabbitMQUser = configuration["RABBITMQ_USER"] ?? "guest";
+    var rabbitMQPassword = configuration["RABBITMQ_PASSWORD"] ?? "guest";
+    var exchangeName = configuration["RABBITMQ_EXCHANGE"] ?? "food-delivery-exchange";
+    
+    return new RabbitMQPublisher(rabbitMQHost, exchangeName, rabbitMQPort, rabbitMQUser, rabbitMQPassword);
 });
 
 // Register services

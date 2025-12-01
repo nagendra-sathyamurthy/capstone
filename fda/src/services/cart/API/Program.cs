@@ -1,4 +1,5 @@
 using Cart.API;
+using Cart.API.BackgroundServices;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +24,9 @@ builder.Services.AddScoped<IMongoDatabase>(sp =>
 
 // Register CartService
 builder.Services.AddScoped<CartService>();
+
+// Register Background Service for RabbitMQ message consumption
+builder.Services.AddHostedService<CartMessageConsumerService>();
 
 // JWT Authentication configuration
 var jwtKey = "GJ0VFqmRVBR0iE2ojyzh28HlayZgRcUI";

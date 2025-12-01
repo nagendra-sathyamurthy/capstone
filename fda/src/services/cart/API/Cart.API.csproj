@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Models\Cart.Models.csproj" />
     <ProjectReference Include="..\DataAccess\Cart.DataAccess.csproj" />
+    <ProjectReference Include="..\..\Shared.Messaging\Shared.Messaging.csproj" />
   </ItemGroup>
 </Project>

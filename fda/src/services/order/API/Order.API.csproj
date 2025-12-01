@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Models\Order.Models.csproj" />
     <ProjectReference Include="..\DataAccess\Order.DataAccess.csproj" />
+    <ProjectReference Include="..\..\Shared.Messaging\Shared.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

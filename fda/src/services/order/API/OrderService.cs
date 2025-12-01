@@ -1,27 +1,53 @@
 using Order.Models;
 using Order.DataAccess;
 using MongoDB.Driver;
+using Shared.Messaging;
+using Shared.Messaging.Events;
 
 namespace Order.API
 {
     public class OrderService
     {
         private readonly OrderRepository _orderRepository;
+        private readonly IMessagePublisher _messagePublisher;
 
-        public OrderService(IMongoClient mongoClient, IConfiguration configuration)
+        public OrderService(IMongoClient mongoClient, IConfiguration configuration, IMessagePublisher messagePublisher)
         {
             var databaseName = configuration["MONGO_DATABASE"] ?? "OrderDb";
             var database = mongoClient.GetDatabase(databaseName);
             _orderRepository = new OrderRepository(database);
+            _messagePublisher = messagePublisher;
         }
 
         // Order Management
-        public Task<string> CreateOrderAsync(Models.Order order)
+        public async Task<string> CreateOrderAsync(Models.Order order)
         {
             order.CreatedAt = DateTime.UtcNow;
             order.UpdatedAt = DateTime.UtcNow;
             _orderRepository.Insert(order);
-            return Task.FromResult(order.Id ?? string.Empty);
+            
+            // Publish OrderCreatedEvent
+            var orderCreatedEvent = new OrderCreatedEvent
+            {
+                OrderId = order.Id ?? string.Empty,
+                CustomerId = order.CustomerId,
+                RestaurantId = order.RestaurantId,
+                RestaurantName = order.RestaurantName ?? string.Empty,
+                TotalAmount = order.TotalAmount,
+                Items = order.Items.Select(i => new OrderItemDto
+                {
+                    MenuItemId = i.MenuItemId,
+                    Name = i.Name,
+                    Quantity = i.Quantity,
+                    Price = i.Price,
+                    SpecialInstructions = i.SpecialInstructions
+                }).ToList()
+            };
+            
+            await _messagePublisher.PublishAsync(orderCreatedEvent);
+            Console.WriteLine($"Published OrderCreatedEvent for order: {order.Id}");
+            
+            return order.Id ?? string.Empty;
         }
 
         public Task<List<Models.Order>> GetOrdersByRestaurantAsync(string restaurantId)
@@ -50,22 +76,104 @@ namespace Order.API
             return Task.FromResult(order);
         }
 
-        public Task AcceptOrderAsync(string orderId)
+        public async Task AcceptOrderAsync(string orderId)
         {
+            var order = _orderRepository.GetById(orderId);
+            if (order == null)
+                throw new Exception("Order not found");
+                
             _orderRepository.UpdateOrderStatus(orderId, OrderStatus.Accepted);
-            return Task.CompletedTask;
+            
+            // Publish OrderAcceptedEvent
+            var orderAcceptedEvent = new OrderAcceptedEvent
+            {
+                OrderId = orderId,
+                CustomerId = order.CustomerId,
+                RestaurantId = order.RestaurantId,
+                AcceptedBy = "Restaurant Staff", // TODO: Get from claims
+                EstimatedPreparationTime = DateTime.UtcNow.AddMinutes(30)
+            };
+            
+            await _messagePublisher.PublishAsync(orderAcceptedEvent);
+            Console.WriteLine($"Published OrderAcceptedEvent for order: {orderId}");
         }
 
-        public Task DeclineOrderAsync(string orderId)
+        public async Task DeclineOrderAsync(string orderId)
         {
+            var order = _orderRepository.GetById(orderId);
+            if (order == null)
+                throw new Exception("Order not found");
+                
             _orderRepository.UpdateOrderStatus(orderId, OrderStatus.Declined);
-            return Task.CompletedTask;
+            
+            // Publish OrderDeclinedEvent
+            var orderDeclinedEvent = new OrderDeclinedEvent
+            {
+                OrderId = orderId,
+                CustomerId = order.CustomerId,
+                RestaurantId = order.RestaurantId,
+                DeclinedBy = "Restaurant Staff", // TODO: Get from claims
+                Reason = "Restaurant is busy"
+            };
+            
+            await _messagePublisher.PublishAsync(orderDeclinedEvent);
+            Console.WriteLine($"Published OrderDeclinedEvent for order: {orderId}");
         }
 
-        public Task UpdateOrderStatusAsync(string orderId, OrderStatus status)
+        public async Task UpdateOrderStatusAsync(string orderId, OrderStatus status)
         {
+            var order = _orderRepository.GetById(orderId);
+            if (order == null)
+                throw new Exception("Order not found");
+                
+            var oldStatus = order.Status;
             _orderRepository.UpdateOrderStatus(orderId, status);
-            return Task.CompletedTask;
+            
+            // Publish OrderStatusChangedEvent
+            var statusChangedEvent = new OrderStatusChangedEvent
+            {
+                OrderId = orderId,
+                CustomerId = order.CustomerId,
+                RestaurantId = order.RestaurantId,
+                OldStatus = oldStatus.ToString(),
+                NewStatus = status.ToString(),
+                UpdatedBy = "System"
+            };
+            
+            await _messagePublisher.PublishAsync(statusChangedEvent);
+            Console.WriteLine($"Published OrderStatusChangedEvent for order: {orderId} - {oldStatus} -> {status}");
+            
+            // If status is ReadyForPickup, publish specific event
+            if (status == OrderStatus.ReadyForPickup)
+            {
+                var readyEvent = new OrderReadyForPickupEvent
+                {
+                    OrderId = orderId,
+                    CustomerId = order.CustomerId,
+                    RestaurantId = order.RestaurantId,
+                    RestaurantName = order.RestaurantName ?? string.Empty,
+                    PackagedBy = order.Packaging?.PackagedBy
+                };
+                
+                await _messagePublisher.PublishAsync(readyEvent);
+                Console.WriteLine($"Published OrderReadyForPickupEvent for order: {orderId}");
+            }
+            
+            // If status is Delivered, publish specific event
+            if (status == OrderStatus.Delivered)
+            {
+                var deliveredEvent = new OrderDeliveredEvent
+                {
+                    OrderId = orderId,
+                    CustomerId = order.CustomerId,
+                    RestaurantId = order.RestaurantId,
+                    DeliveryAgentId = order.DeliveryAgentId,
+                    DeliveryTime = DateTime.UtcNow
+                };
+                
+                await _messagePublisher.PublishAsync(deliveredEvent);
+                Console.WriteLine($"Published OrderDeliveredEvent for order: {orderId}");
+            }
         }
 
         // Packaging Management

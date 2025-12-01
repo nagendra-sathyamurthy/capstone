@@ -46,5 +46,15 @@ namespace Cart.API
             await _cartRepository.UpdateAsync(cartId, cart);
             return cart;
         }
+
+        public async Task ClearCartByUserIdAsync(string userId)
+        {
+            var cart = await _cartRepository.GetByUserIdAsync(userId);
+            if (cart != null)
+            {
+                cart.Items.Clear();
+                await _cartRepository.UpdateAsync(cart.Id, cart);
+            }
+        }
     }
 }
