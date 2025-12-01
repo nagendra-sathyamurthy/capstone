@@ -2,28 +2,73 @@
 # This script seeds the system with sample restaurants, menu items, and user profiles via API calls
 
 param(
-    [string]$GatewayUrl = "http://localhost:5000",
-    [string]$AuthToken = "",
-    [string]$Phone = "+919876543210"
+    [string]$GatewayUrl = "http://localhost:5000"
 )
 
-# Function to get customer JWT token via phone login
-function Get-CustomerJwtToken {
+# Generate unique credentials for temporary admin user
+$TempAdminEmail = "seed-admin-$(Get-Date -Format 'yyyyMMddHHmmss')@temp.local"
+$TempAdminPassword = "TempSeed$(Get-Random -Minimum 1000 -Maximum 9999)!"
+$TempAdminUserId = $null
+
+# Function to create temporary admin user
+function New-TemporaryAdminUser {
     param(
         [string]$GatewayUrl,
-        [string]$Phone
+        [string]$Email,
+        [string]$Password
     )
     
     try {
-        Write-Host "📱 Logging in with phone: $Phone" -ForegroundColor Yellow
+        Write-Host "👤 Creating temporary admin user: $Email" -ForegroundColor Yellow
         
-        $loginBody = @{
-            phone = $Phone
-            userId = $Phone
-            name = "Sample Data Seeder"
+        $registerBody = @{
+            email = $Email
+            password = $Password
+            role = 2  # Operator role (admin permissions)
+            organization = "SeedingScript"
         } | ConvertTo-Json
         
-        $response = Invoke-RestMethod -Uri "$GatewayUrl/api/auth/customer/phone-login" `
+        $response = Invoke-RestMethod -Uri "$GatewayUrl/api/auth/register" `
+            -Method POST `
+            -Body $registerBody `
+            -ContentType "application/json" `
+            -ErrorAction Stop
+        
+        if ($response.id) {
+            Write-Host "✓ Successfully created temporary admin user" -ForegroundColor Green
+            return $response.id
+        } else {
+            Write-Host "✗ Failed to create admin user" -ForegroundColor Red
+            return $null
+        }
+    }
+    catch {
+        Write-Host "✗ Error creating admin user: $($_.Exception.Message)" -ForegroundColor Red
+        if ($_.ErrorDetails.Message) {
+            Write-Host "   Details: $($_.ErrorDetails.Message)" -ForegroundColor Red
+        }
+        return $null
+    }
+}
+
+# Function to get JWT token for admin user
+function Get-AdminAuthToken {
+    param(
+        [string]$GatewayUrl,
+        [string]$Email,
+        [string]$Password
+    )
+    
+    try {
+        Write-Host "� Logging in as admin user..." -ForegroundColor Yellow
+        
+        $loginBody = @{
+            email = $Email
+            password = $Password
+            loginMethod = 0  # EmailPassword
+        } | ConvertTo-Json
+        
+        $response = Invoke-RestMethod -Uri "$GatewayUrl/api/auth/login" `
             -Method POST `
             -Body $loginBody `
             -ContentType "application/json" `
@@ -39,22 +84,71 @@ function Get-CustomerJwtToken {
     }
     catch {
         Write-Host "✗ Error getting auth token: $($_.Exception.Message)" -ForegroundColor Red
+        if ($_.ErrorDetails.Message) {
+            Write-Host "   Details: $($_.ErrorDetails.Message)" -ForegroundColor Red
+        }
         return $null
     }
 }
 
-# Get or generate auth token
-if ([string]::IsNullOrEmpty($AuthToken)) {
-    Write-Host "📝 No auth token provided. Getting customer auth token..." -ForegroundColor Yellow
-    $AuthToken = Get-CustomerJwtToken -GatewayUrl $GatewayUrl -Phone $Phone
+# Function to delete temporary admin user
+function Remove-TemporaryAdminUser {
+    param(
+        [string]$GatewayUrl,
+        [string]$UserId,
+        [string]$AuthToken
+    )
     
-    if ([string]::IsNullOrEmpty($AuthToken)) {
-        Write-Host "❌ Failed to obtain auth token. Cannot proceed with seeding." -ForegroundColor Red
-        exit 1
+    try {
+        Write-Host "�️  Deleting temporary admin user..." -ForegroundColor Yellow
+        
+        $headers = @{
+            "Authorization" = "Bearer $AuthToken"
+        }
+        
+        Invoke-RestMethod -Uri "$GatewayUrl/api/auth/users/$UserId" `
+            -Method DELETE `
+            -Headers $headers `
+            -ErrorAction Stop | Out-Null
+        
+        Write-Host "✓ Successfully deleted temporary admin user" -ForegroundColor Green
+        return $true
     }
-    
-    Write-Host ""
+    catch {
+        Write-Host "⚠️  Warning: Could not delete temporary admin user" -ForegroundColor Yellow
+        Write-Host "   $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "   Manual cleanup may be required for user: $UserId" -ForegroundColor Yellow
+        return $false
+    }
 }
+
+# Create temporary admin user
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Setting up temporary admin account..." -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+
+$TempAdminUserId = New-TemporaryAdminUser -GatewayUrl $GatewayUrl -Email $TempAdminEmail -Password $TempAdminPassword
+
+if ([string]::IsNullOrEmpty($TempAdminUserId)) {
+    Write-Host "❌ Failed to create temporary admin user. Cannot proceed with seeding." -ForegroundColor Red
+    exit 1
+}
+
+# Get auth token for admin user
+$AuthToken = Get-AdminAuthToken -GatewayUrl $GatewayUrl -Email $TempAdminEmail -Password $TempAdminPassword
+
+if ([string]::IsNullOrEmpty($AuthToken)) {
+    Write-Host "❌ Failed to obtain auth token. Cannot proceed with seeding." -ForegroundColor Red
+    # Try to cleanup
+    if (![string]::IsNullOrEmpty($TempAdminUserId)) {
+        Remove-TemporaryAdminUser -GatewayUrl $GatewayUrl -UserId $TempAdminUserId -AuthToken ""
+    }
+    exit 1
+}
+
+Write-Host ""
 
 $ErrorActionPreference = "Stop"
 
@@ -369,7 +463,18 @@ Write-Host "  Summary: $successCount succeeded, $failCount failed" -ForegroundCo
 Write-Host ""
 
 # ============================================
-# STEP 2: Summary
+# STEP 2: Cleanup
+# ============================================
+Write-Host "🧹 Step 2: Cleaning up..." -ForegroundColor Yellow
+Write-Host ""
+
+# Delete temporary admin user
+Remove-TemporaryAdminUser -GatewayUrl $GatewayUrl -UserId $TempAdminUserId -AuthToken $AuthToken | Out-Null
+
+Write-Host ""
+
+# ============================================
+# STEP 3: Summary
 # ============================================
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "✅ Data Seeding Complete!" -ForegroundColor Green

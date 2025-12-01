@@ -10,53 +10,37 @@ Previously, sample data was hardcoded in the application code. This has been ref
 - ✅ Easier data management and updates
 - ✅ Ability to reset/refresh test data
 - ✅ Production-ready code without test data
+- ✅ Automatic temporary admin user creation for seeding
 
 ## Prerequisites
 
-1. **Running Services**: Ensure all services are running (via Docker or locally)
+1. **Running Services**: Ensure all services are running (via Kubernetes or locally)
    - Gateway (default: http://localhost:5000)
    - Catalog Service
    - CRM Service  
    - Authentication Service
    - MongoDB
 
-2. **Authentication Token**: Some endpoints require authentication. You'll need a valid JWT token.
-
-## Getting an Authentication Token
-
-### Option 1: Via Customer App
-1. Open the customer app (http://localhost:3000)
-2. Register/Login with your phone number
-3. Open browser DevTools (F12)
-4. Go to Application → Local Storage
-5. Copy the value of `authToken`
-
-### Option 2: Via API Call
-```powershell
-# Send OTP
-$response = Invoke-RestMethod -Uri "http://localhost:5000/auth/send-otp" -Method POST -Body (@{phoneNumber="+919876543210"} | ConvertTo-Json) -ContentType "application/json"
-
-# Verify OTP (use the OTP you received)
-$loginResponse = Invoke-RestMethod -Uri "http://localhost:5000/auth/verify-otp" -Method POST -Body (@{phoneNumber="+919876543210"; otp="1234"} | ConvertTo-Json) -ContentType "application/json"
-
-# Get auth token
-$authToken = $loginResponse.token
-```
+2. **No Authentication Required**: The script automatically creates a temporary admin user, uses it for seeding, and deletes it afterwards.
 
 ## Usage
 
 ### Seed Sample Menu Items
 
 ```powershell
-# Basic usage (some endpoints may fail without auth token)
+# Basic usage with default gateway URL (http://localhost:5000)
 .\seed-sample-data.ps1
 
-# With authentication token
-.\seed-sample-data.ps1 -AuthToken "your-jwt-token-here"
-
 # Custom gateway URL
-.\seed-sample-data.ps1 -GatewayUrl "http://localhost:5000" -AuthToken "your-token"
+.\seed-sample-data.ps1 -GatewayUrl "http://localhost:5000"
 ```
+
+The script will:
+1. Create a temporary admin user with Operator role
+2. Authenticate and get a JWT token
+3. Seed all menu items via authenticated API calls
+4. Delete the temporary admin user
+5. Display a summary of the seeding operation
 
 ### What Gets Seeded
 

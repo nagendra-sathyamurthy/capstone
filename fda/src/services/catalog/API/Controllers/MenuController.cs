@@ -55,7 +55,6 @@ namespace catalog.API.Controllers
         /// Create a new menu item
         /// </summary>
         [HttpPost]
-        [AllowAnonymous]  // Allow anonymous access for seeding
         public async Task<ActionResult<MenuItem>> CreateMenuItem([FromBody] MenuItem menuItem)
         {
             if (!ModelState.IsValid)
