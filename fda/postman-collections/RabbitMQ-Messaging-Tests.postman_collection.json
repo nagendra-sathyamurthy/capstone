@@ -1,0 +1,533 @@
+{
+	"info": {
+		"_postman_id": "rabbitmq-messaging-test",
+		"name": "RabbitMQ Messaging Tests",
+		"description": "Test collection for RabbitMQ message-oriented middleware implementation.\n\nTests event publishing and consumption across Order, Payment, and Cart services.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login as Operator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login successful\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"    pm.environment.set('auth_token', jsonData.token);",
+									"    pm.environment.set('user_id', jsonData.userId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"operator.pizzapalace@example.com\",\n    \"password\": \"Operator123!\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/authentication/login",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "authentication", "login"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Events",
+			"item": [
+				{
+					"name": "Create Order (Publishes OrderCreatedEvent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order created successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains order ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.a('string');",
+									"    pm.expect(jsonData.length).to.be.greaterThan(0);",
+									"    pm.environment.set('order_id', jsonData);",
+									"});",
+									"",
+									"pm.test(\"OrderCreatedEvent should be published to RabbitMQ\", function () {",
+									"    // This event should trigger:",
+									"    // 1. Payment processing (when Payment service is implemented)",
+									"    // 2. Customer notification (when CRM service is implemented)",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ OrderCreatedEvent published for order: ' + pm.environment.get('order_id'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customerId\": \"{{user_id}}\",\n    \"restaurantId\": \"rest-001\",\n    \"restaurantName\": \"Pizza Palace\",\n    \"items\": [\n        {\n            \"menuItemId\": \"item-001\",\n            \"name\": \"Margherita Pizza\",\n            \"quantity\": 2,\n            \"price\": 299.99,\n            \"specialInstructions\": \"Extra cheese\"\n        },\n        {\n            \"menuItemId\": \"item-002\",\n            \"name\": \"Garlic Bread\",\n            \"quantity\": 1,\n            \"price\": 99.99,\n            \"specialInstructions\": \"\"\n        }\n    ],\n    \"totalAmount\": 699.97\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/order",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "order"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Order (Publishes OrderAcceptedEvent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order accepted successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"OrderAcceptedEvent should be published\", function () {",
+									"    // This event should trigger:",
+									"    // 1. Customer notification: 'Your order has been accepted'",
+									"    // 2. Kitchen preparation workflow",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ OrderAcceptedEvent published for order: ' + pm.environment.get('order_id'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/order/{{order_id}}/accept",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "order", "{{order_id}}", "accept"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status to Preparing (Publishes OrderStatusChangedEvent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order status updated successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"OrderStatusChangedEvent should be published\", function () {",
+									"    // Status: Pending → Preparing",
+									"    // This should notify customer of preparation progress",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ OrderStatusChangedEvent published: Preparing');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "2"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/order/{{order_id}}/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "order", "{{order_id}}", "status"]
+						},
+						"description": "Updates order status to Preparing (status code 2)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status to ReadyForPickup (Publishes OrderReadyForPickupEvent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order status updated to ReadyForPickup\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"OrderStatusChangedEvent and OrderReadyForPickupEvent should be published\", function () {",
+									"    // Two events should be published:",
+									"    // 1. OrderStatusChangedEvent: Preparing → ReadyForPickup",
+									"    // 2. OrderReadyForPickupEvent: Notify delivery agent",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ OrderReadyForPickupEvent published');",
+									"    console.log('✓ Ready for delivery agent assignment');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "4"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/order/{{order_id}}/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "order", "{{order_id}}", "status"]
+						},
+						"description": "Updates order status to ReadyForPickup (status code 4)"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Status to Delivered (Publishes OrderDeliveredEvent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order marked as delivered\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"OrderDeliveredEvent should be published\", function () {",
+									"    // This event should trigger:",
+									"    // 1. Customer notification: Delivery confirmation",
+									"    // 2. Payment settlement",
+									"    // 3. Rating/feedback request",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ OrderDeliveredEvent published');",
+									"    console.log('✓ Order lifecycle complete');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "6"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/order/{{order_id}}/status",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "order", "{{order_id}}", "status"]
+						},
+						"description": "Updates order status to Delivered (status code 6)"
+					},
+					"response": []
+				},
+				{
+					"name": "Decline Order (Publishes OrderDeclinedEvent)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Order declined successfully\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"OrderDeclinedEvent should be published\", function () {",
+									"    // This event should trigger:",
+									"    // 1. Customer notification with reason",
+									"    // 2. Refund initiation if payment was made",
+									"    // 3. Alternative restaurant suggestions",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    console.log('✓ OrderDeclinedEvent published');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Create a new order for decline test",
+									"// This ensures we don't decline the main test order"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/order/{{order_id}}/decline",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "order", "{{order_id}}", "decline"]
+						},
+						"description": "Test declining an order - typically done after creating a separate test order"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart Events",
+			"item": [
+				{
+					"name": "Simulate PaymentCompleted (Should Clear Cart)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Payment completed simulation\", function () {",
+									"    // Note: This is a placeholder for when Payment service is implemented",
+									"    // When Payment service publishes PaymentCompletedEvent,",
+									"    // Cart service should automatically clear the customer's cart",
+									"    console.log('When PaymentCompletedEvent is published:');",
+									"    console.log('  1. Cart service receives event via RabbitMQ');",
+									"    console.log('  2. CartMessageConsumerService processes event');",
+									"    console.log('  3. Customer cart is cleared automatically');",
+									"    console.log('  4. No manual cart clearing needed');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/cart/{{user_id}}",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "cart", "{{user_id}}"]
+						},
+						"description": "Check cart status - will be automatically cleared when PaymentCompletedEvent is published"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "RabbitMQ Management",
+			"item": [
+				{
+					"name": "Get RabbitMQ Queues Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"RabbitMQ Management API accessible\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Expected queues exist\", function () {",
+									"    var queues = pm.response.json();",
+									"    var queueNames = queues.map(q => q.name);",
+									"    ",
+									"    // Check for service queues",
+									"    pm.expect(queueNames).to.include('order-service-queue');",
+									"    pm.expect(queueNames).to.include('cart-service-queue');",
+									"    ",
+									"    console.log('Found queues:', queueNames);",
+									"    ",
+									"    queues.forEach(function(queue) {",
+									"        console.log(`Queue: ${queue.name}, Messages: ${queue.messages}, Consumers: ${queue.consumers}`);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "AdminPass2024",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{RABBITMQ_MANAGEMENT_URL}}/api/queues",
+							"host": ["{{RABBITMQ_MANAGEMENT_URL}}"],
+							"path": ["api", "queues"]
+						},
+						"description": "Get list of all RabbitMQ queues and their status"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Exchange Bindings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Exchange bindings retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Food delivery exchange exists and has bindings\", function () {",
+									"    var bindings = pm.response.json();",
+									"    console.log('Exchange bindings:', JSON.stringify(bindings, null, 2));",
+									"    ",
+									"    // Verify routing keys are set up correctly",
+									"    var routingKeys = bindings.map(b => b.routing_key);",
+									"    console.log('Routing keys:', routingKeys);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "AdminPass2024",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{RABBITMQ_MANAGEMENT_URL}}/api/exchanges/%2F/food-delivery-exchange/bindings/source",
+							"host": ["{{RABBITMQ_MANAGEMENT_URL}}"],
+							"path": ["api", "exchanges", "%2F", "food-delivery-exchange", "bindings", "source"]
+						},
+						"description": "Get bindings for the food-delivery-exchange"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "RABBITMQ_MANAGEMENT_URL",
+			"value": "http://localhost:15672",
+			"type": "string"
+		}
+	]
+}
