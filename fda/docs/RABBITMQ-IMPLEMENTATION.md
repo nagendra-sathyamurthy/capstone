@@ -9,31 +9,34 @@ This document describes the implementation of RabbitMQ-based asynchronous messag
 ### Message Flow
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     RabbitMQ Message Broker                     │
-│                  (Exchange: food-delivery-exchange)             │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
-│  │Order Queue   │  │Payment Queue │  │Cart Queue    │         │
-│  │              │  │              │  │              │         │
-│  └──────────────┘  └──────────────┘  └──────────────┘         │
-└─────────────────────────────────────────────────────────────────┘
-         ▲                  ▲                  ▲
-         │                  │                  │
-    Publish Events     Publish Events    Subscribe Events
-         │                  │                  │
-┌────────┴────────┐  ┌──────┴──────┐  ┌───────┴─────┐
-│  Order Service  │  │   Payment   │  │    Cart     │
-│                 │  │   Service   │  │   Service   │
-│  - Publishes:   │  │             │  │             │
-│    • OrderCreated│  │  - Publishes:│  │ - Subscribes:│
-│    • OrderAccepted│ │    • PaymentCompleted│  │    • PaymentCompleted│
-│    • OrderDeclined│ │    • PaymentFailed│   │  - Clears cart│
-│    • OrderStatusChanged│  │         │  │   after payment│
-│    • OrderReady │  │             │  │             │
-│    • OrderDelivered│  │           │  │             │
-└─────────────────┘  └─────────────┘  └─────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│                      RabbitMQ Message Broker                          │
+│                  (Exchange: food-delivery-exchange)                   │
+└───────────────────────────────────────────────────────────────────────┘
+                                    │
+                    ┌───────────────┼───────────────┐
+                    │               │               │
+            ┌───────▼──────┐ ┌─────▼──────┐ ┌─────▼──────┐
+            │ Order Queue  │ │Payment Queue│ │ Cart Queue │
+            └───────┬──────┘ └─────┬──────┘ └─────┬──────┘
+                    │               │               │
+                    │               │               │
+        ┌───────────┴──────┐ ┌─────┴──────┐ ┌─────┴──────────┐
+        │   Order Service  │ │  Payment   │ │  Cart Service  │
+        │                  │ │  Service   │ │                │
+        │  - Publishes:    │ │            │ │ - Subscribes:  │
+        │    • OrderCreated│ │ - Publishes│ │   • PaymentCompleted │
+        │    • OrderAccepted│ │   • PaymentCompleted │ │   - Clears cart │
+        │    • OrderDeclined│ │   • PaymentFailed │ │     after payment │
+        │    • OrderStatusChanged │ │  │ │                │
+        │    • OrderReady  │ │            │ │                │
+        │    • OrderDelivered │ │         │ │                │
+        └──────────────────┘ └────────────┘ └────────────────┘
+                │                    │               ▲
+                │                    │               │
+                └─── Publish ───────►│               │
+                     Events          └─── Publish ───┘
+                                          Events
 ```
 
 ## Shared.Messaging Library
