@@ -22,7 +22,7 @@ This branch implements comprehensive RabbitMQ message-oriented middleware for th
 - Configured all services with RabbitMQ environment variables
 
 **Key Files:**
-- `fda/src/services/shared/Messaging/` - Complete messaging library
+- `fda/src/services/shared/messaging/` - Complete messaging library
 - `fda/src/services/order/API/OrderService.cs` - Event publishing
 - `fda/src/services/cart/API/BackgroundServices/CartMessageConsumerService.cs` - Event consumption
 - `fda/devops/docker/docker-compose-working.yml` - RabbitMQ container config
@@ -34,7 +34,7 @@ This branch implements comprehensive RabbitMQ message-oriented middleware for th
 **Status:** COMPLETED
 
 **Changes:**
-- Moved library from `fda/src/services/Messaging/` to `fda/src/services/shared/Messaging/`
+- Moved library from `fda/src/services/Messaging/` to `fda/src/services/shared/messaging/`
 - Updated Order.API.csproj project reference path
 - Updated Cart.API.csproj project reference path
 - Verified builds work correctly (both services build successfully)
