@@ -64,5 +64,4 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 30084  # Cart - aligned with docker-compose port 8084
-  type: NodePort
+  type: ClusterIP

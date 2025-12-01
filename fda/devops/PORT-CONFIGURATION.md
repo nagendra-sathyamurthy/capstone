@@ -1,174 +1,309 @@
 # Port Configuration Reference
 
-This document outlines the standardized port configuration across Docker Compose and Kubernetes deployments.
+## Overview
+
+This document explains the port configuration strategy across Docker Compose and Kubernetes deployments. Both platforms now use **identical ports** for services to provide a consistent developer experience.
 
 ## Port Mapping Strategy
 
-To maintain consistency between Docker Compose and Kubernetes (NodePort) deployments, we use the following port mapping strategy:
+### Same Ports Everywhere
+All services use the same ports across Docker Compose and Kubernetes:
 
-- **Docker Compose**: Uses standard ports directly (e.g., 5000, 8081, 8082)
-- **Kubernetes NodePort**: Uses 30XXX range that maps to the Docker Compose ports
-  - Formula: `NodePort = 30000 + (Last 3 digits of Docker port)`
-  - Example: Docker port 8081 → NodePort 30081
+| Service | Port | Access URL |
+|---------|------|------------|
+| Customer App | 3000 | http://localhost:3000 |
+| API Gateway | 5000 | http://localhost:5000 |
+| Authentication | 8081 | http://localhost:8081 |
+| Catalog | 8082 | http://localhost:8082 |
+| CRM | 8083 | http://localhost:8083 |
+| Cart | 8084 | http://localhost:8084 |
+| Order | 8085 | http://localhost:8085 |
+| Payment | 8086 | http://localhost:8086 |
+| MongoDB | 27017 | mongodb://localhost:27017 |
 
-## Standardized Port Configuration
+## Platform-Specific Implementation
 
-| Service | Container Port | Docker Compose Host Port | Kubernetes NodePort | Access URL (Docker) | Access URL (Kubernetes) |
-|---------|---------------|-------------------------|---------------------|--------------------|-----------------------|
-| **MongoDB** | 27017 | 27017 | 32017 | mongodb://localhost:27017 | mongodb://localhost:32017 |
-| **Authentication** | 8080 | 8081 | 30081 | http://localhost:8081 | http://localhost:30081 |
-| **Catalog** | 8080 | 8082 | 30082 | http://localhost:8082 | http://localhost:30082 |
-| **CRM** | 8080 | 8083 | 30083 | http://localhost:8083 | http://localhost:30083 |
-| **Cart** | 8080 | 8084 | 30084 | http://localhost:8084 | http://localhost:30084 |
-| **Order** | 8080 | 8085 | 30085 | http://localhost:8085 | http://localhost:30085 |
-| **Payment** | 8080 | 8086 | 30086 | http://localhost:8086 | http://localhost:30086 |
-| **Gateway** | 5000 | 5000 | 30500 | http://localhost:5000 | http://localhost:30500 |
-| **Customer App** | 3000 | 3000 | 30300 | http://localhost:3000 | http://localhost:30300 |
+### Docker Compose
+- **Method**: Direct host port binding
+- **Configuration**: `docker-compose.yml` ports section
+- **Example**: `ports: ["8081:8080"]` maps container port 8080 to host port 8081
+- **Automatic**: Ports exposed when containers start
+
+### Kubernetes
+- **Method**: ClusterIP services + kubectl port-forward
+- **Configuration**: Services use `type: ClusterIP` (internal only)
+- **Port Forwarding**: Run `.\port-forward.ps1` to expose services
+- **Example**: `kubectl port-forward service/authentication-service 8081:8080`
+
+## Why ClusterIP Instead of NodePort?
+
+### Kubernetes NodePort Limitation
+NodePorts must be in the range **30000-32767** (platform constraint). This means we **cannot** use standard ports like 3000, 5000, or 8081 directly as NodePorts.
+
+### Solution: ClusterIP + Port Forwarding
+Using ClusterIP services with port forwarding provides:
+
+✅ **Same ports** as Docker Compose  
+✅ **Consistent** developer experience  
+✅ **No confusion** about different port numbers  
+✅ **Production-like** configuration (ClusterIP is standard)  
+✅ **Simple** one-command setup
+
+### Alternatives Considered
+
+| Approach | Pros | Cons | Chosen? |
+|----------|------|------|---------|
+| **NodePort (30000+)** | No extra tools needed | Different ports than Docker, hard to remember | ❌ No |
+| **LoadBalancer** | Production-like | Requires MetalLB/cloud provider, complex setup | ❌ No |
+| **Ingress** | Production-ready, hostname routing | Requires Ingress controller, DNS/hosts setup | ❌ No |
+| **ClusterIP + port-forward** | Same ports, simple, production-like | Requires port-forward script | ✅ Yes |
+
+## Port Forwarding Setup
+
+### Automated (Recommended)
+
+#### Start All Services
+```powershell
+# Forward all services to match Docker Compose ports
+.\fda\devops\kubernetes\port-forward.ps1
+```
+
+The script will:
+- Forward all 9 services to their Docker Compose ports
+- Run in background with job monitoring
+- Auto-restart failed port-forwards
+- Display service URLs
+
+#### Stop All Services
+```powershell
+# Stop all port-forward processes
+.\fda\devops\kubernetes\port-forward.ps1 -Stop
+```
+
+### Manual Port Forwarding
+
+For individual services or troubleshooting:
+
+```powershell
+# Frontend
+kubectl port-forward -n capstone-frontend svc/customer-app-service 3000:3000
+
+# Gateway
+kubectl port-forward -n capstone-gateway svc/gateway-service 5000:5000
+
+# Microservices
+kubectl port-forward -n capstone-services svc/authentication-service 8081:8080
+kubectl port-forward -n capstone-services svc/catalog-service 8082:8080
+kubectl port-forward -n capstone-services svc/crm-service 8083:8080
+kubectl port-forward -n capstone-services svc/cart-service 8084:8080
+kubectl port-forward -n capstone-services svc/order-service 8085:8080
+kubectl port-forward -n capstone-services svc/payment-service 8086:8080
+
+# Database
+kubectl port-forward -n capstone-services svc/mongodb-service 27017:27017
+```
+
+## Service Access URLs
+
+After starting port forwarding (or Docker Compose), all services are available at:
+
+### Frontend
+- **Customer App**: http://localhost:3000
+
+### API Gateway
+- **Gateway**: http://localhost:5000
+- **Swagger UI**: http://localhost:5000/swagger
+
+### Microservices (Direct Access)
+- **Authentication**: http://localhost:8081/swagger
+- **Catalog**: http://localhost:8082/swagger
+- **CRM**: http://localhost:8083/swagger
+- **Cart**: http://localhost:8084/swagger
+- **Order**: http://localhost:8085/swagger
+- **Payment**: http://localhost:8086/swagger
+
+### Database
+- **MongoDB**: mongodb://localhost:27017
+
+**Note:** In production, you would typically access microservices through the Gateway, not directly.
 
 ## Internal Service Communication
 
-### Docker Compose (Container-to-Container)
-Services communicate using container names on port 8080 (for .NET services) or 5000 (for Gateway):
+Services communicate internally using Kubernetes DNS:
+
 ```
-http://authentication:8080
-http://catalog:8080
-http://crm:8080
-http://cart:8080
-http://order:8080
-http://payment:8080
-http://gateway:5000
+http://<service-name>.<namespace>.svc.cluster.local:<port>
 ```
 
-### Kubernetes (Pod-to-Pod)
-Services communicate using Kubernetes DNS on port 8080 (for .NET services) or 5000 (for Gateway):
-```
-http://authentication-service.capstone-services.svc.cluster.local:8080
-http://catalog-service.capstone-services.svc.cluster.local:8080
-http://crm-service.capstone-services.svc.cluster.local:8080
-http://cart-service.capstone-services.svc.cluster.local:8080
-http://order-service.capstone-services.svc.cluster.local:8080
-http://payment-service.capstone-services.svc.cluster.local:8080
-http://gateway-service.capstone-gateway.svc.cluster.local:5000
-```
+Examples:
+- `http://authentication-service.capstone-services.svc.cluster.local:8080`
+- `http://catalog-service.capstone-services.svc.cluster.local:8080`
+- `mongodb://mongodb-service.capstone-services.svc.cluster.local:27017`
 
 ## Gateway Configuration
 
-The Gateway routes to backend services using internal URLs:
+The API Gateway is configured to route requests to backend services:
 
 ### Docker Compose
-```bash
-AUTH_SERVICE_URL=http://authentication:8080
-CATALOG_SERVICE_URL=http://catalog:8080
-CRM_SERVICE_URL=http://crm:8080
-CART_SERVICE_URL=http://cart:8080
-ORDER_SERVICE_URL=http://order:8080
-PAYMENT_SERVICE_URL=http://payment:8080
+```yaml
+AUTHENTICATION_URL: http://authentication:8080
+CATALOG_URL: http://catalog:8080
+CRM_URL: http://crm:8080
+CART_URL: http://cart:8080
+ORDER_URL: http://order:8080
+PAYMENT_URL: http://payment:8080
 ```
 
 ### Kubernetes
-```bash
-AUTH_SERVICE_URL=http://authentication-service.capstone-services.svc.cluster.local:8080
-CATALOG_SERVICE_URL=http://catalog-service.capstone-services.svc.cluster.local:8080
-CRM_SERVICE_URL=http://crm-service.capstone-services.svc.cluster.local:8080
-CART_SERVICE_URL=http://cart-service.capstone-services.svc.cluster.local:8080
-ORDER_SERVICE_URL=http://order-service.capstone-services.svc.cluster.local:8080
-PAYMENT_SERVICE_URL=http://payment-service.capstone-services.svc.cluster.local:8080
+```yaml
+AUTHENTICATION_URL: http://authentication-service.capstone-services:8080
+CATALOG_URL: http://catalog-service.capstone-services:8080
+CRM_URL: http://crm-service.capstone-services:8080
+CART_URL: http://cart-service.capstone-services:8080
+ORDER_URL: http://order-service.capstone-services:8080
+PAYMENT_URL: http://payment-service.capstone-services:8080
 ```
 
 ## Frontend Configuration
 
 ### Docker Compose
-Customer app connects to gateway at:
-```bash
-REACT_APP_GATEWAY_URL=http://localhost:5000
+```yaml
+REACT_APP_GATEWAY_URL: http://localhost:5000
 ```
 
 ### Kubernetes
-Customer app connects to gateway NodePort at:
-```bash
-REACT_APP_GATEWAY_URL=http://localhost:30500
-```
-
-## Port Conflict Resolution
-
-If you encounter port conflicts:
-
-### Docker Compose
-Edit `docker-compose-working.yml` and update the host port (left side of mapping):
+When using port-forward:
 ```yaml
-ports:
-  - "8081:8080"  # Change 8081 to available port
+REACT_APP_GATEWAY_URL: http://localhost:5000
 ```
 
-### Kubernetes
-Edit the respective `*.yaml` file in `fda/devops/kubernetes/local/` and update the nodePort:
-```yaml
-ports:
-  - port: 8080
-    targetPort: 8080
-    nodePort: 30081  # Change to available port (30000-32767 range)
-```
+**Note:** Same URL because port-forward exposes Gateway on port 5000
+
+## Troubleshooting
+
+### Port Conflicts
+
+If you get "port already in use" errors:
+
+1. **Check what's using the port:**
+   ```powershell
+   netstat -ano | findstr :<port>
+   ```
+
+2. **Stop the conflicting service:**
+   - Docker Compose: `docker-compose down`
+   - Kubernetes port-forward: `.\port-forward.ps1 -Stop`
+   - Other process: Use Task Manager or `Stop-Process -Id <PID>`
+
+3. **Stop both Docker and Kubernetes:**
+   ```powershell
+   # Stop Docker Compose
+   cd fda/devops/docker
+   docker-compose -f docker-compose-working.yml down
+   
+   # Stop Kubernetes port-forwarding
+   cd ../kubernetes
+   .\port-forward.ps1 -Stop
+   ```
+
+### Port Forwarding Not Working
+
+1. **Check if Kubernetes cluster is running:**
+   ```powershell
+   kubectl cluster-info
+   kubectl get nodes
+   ```
+
+2. **Check if services are running:**
+   ```powershell
+   kubectl get svc -A
+   kubectl get pods -A
+   ```
+
+3. **Check service endpoints:**
+   ```powershell
+   kubectl get endpoints -n capstone-services
+   ```
+
+4. **Restart port-forward script:**
+   ```powershell
+   .\port-forward.ps1 -Stop
+   Start-Sleep -Seconds 2
+   .\port-forward.ps1
+   ```
+
+### Service Not Accessible
+
+1. **Verify port-forward is running:**
+   ```powershell
+   Get-Process kubectl | Where-Object { $_.CommandLine -like "*port-forward*" }
+   ```
+
+2. **Check service logs:**
+   ```powershell
+   kubectl logs -n capstone-services deployment/authentication-deployment
+   ```
+
+3. **Test internal connectivity:**
+   ```powershell
+   kubectl run test-pod --rm -it --image=curlimages/curl -- sh
+   # Inside pod:
+   curl http://authentication-service.capstone-services:8080/health
+   ```
 
 ## Firewall Configuration
 
-Ensure these ports are open in your firewall:
+If you have firewall rules, ensure these ports are allowed:
 
-### For Docker Compose:
-- 3000 (Customer App)
-- 5000 (Gateway)
-- 8081-8086 (Backend Services)
-- 27017 (MongoDB)
+**Docker Compose:**
+- Ports 3000, 5000, 8081-8086, 27017 (localhost only)
 
-### For Kubernetes:
-- 30300 (Customer App)
-- 30500 (Gateway)
-- 30081-30086 (Backend Services)
-- 32017 (MongoDB)
+**Kubernetes:**
+- Port-forward uses localhost connections (no special firewall rules needed)
+- If using NodePort, allow 30000-32767 range
 
-## Testing Port Accessibility
+## Testing Commands
 
 ### Docker Compose
 ```powershell
-# Test Gateway
+# Test all services are accessible
 curl http://localhost:5000/health
-
-# Test Backend Services
-curl http://localhost:8081/swagger  # Authentication
-curl http://localhost:8082/swagger  # Catalog
-curl http://localhost:8083/swagger  # CRM
-
-# Test Customer App
-curl http://localhost:3000
+curl http://localhost:8081/health
+curl http://localhost:8082/health
+curl http://localhost:8083/health
+curl http://localhost:8084/health
+curl http://localhost:8085/health
+curl http://localhost:8086/health
 ```
 
-### Kubernetes
+### Kubernetes (with port-forward)
 ```powershell
-# Test Gateway
-curl http://localhost:30500/health
-
-# Test Backend Services
-curl http://localhost:30081/swagger  # Authentication
-curl http://localhost:30082/swagger  # Catalog
-curl http://localhost:30083/swagger  # CRM
-
-# Test Customer App
-curl http://localhost:30300
+# Same tests - same ports!
+curl http://localhost:5000/health
+curl http://localhost:8081/health
+curl http://localhost:8082/health
+curl http://localhost:8083/health
+curl http://localhost:8084/health
+curl http://localhost:8085/health
+curl http://localhost:8086/health
 ```
 
-## Notes
+## Best Practices
 
-1. **Container Ports** (8080, 5000, 3000) remain consistent across all deployments
-2. **Host Ports** vary between Docker Compose (direct mapping) and Kubernetes (NodePort range)
-3. **Internal Communication** always uses container ports, not host ports
-4. **MongoDB Port** uses special mapping: 27017 (Docker) → 32017 (Kubernetes) to avoid conflicts
+1. **Don't run both simultaneously**: Stop Docker Compose before starting Kubernetes port-forward (or vice versa) to avoid port conflicts
 
-## Updating Ports
+2. **Use the port-forward script**: Don't manually forward ports unless troubleshooting
 
-When changing ports:
+3. **Keep ports consistent**: If adding new services, use the same port number in both Docker Compose and Kubernetes
 
-1. Update `docker-compose-working.yml` for Docker Compose deployment
-2. Update `fda/devops/kubernetes/local/*.yaml` for Kubernetes deployment
-3. Update this documentation
-4. Update deployment scripts if they reference specific ports
-5. Update environment variables in `.env.example`
-6. Notify team members of port changes
+4. **Document port changes**: Update this file and DEPLOYMENT-REFERENCE.md when adding services
+
+5. **Test both platforms**: Ensure services work identically on both Docker Compose and Kubernetes
+
+## Summary
+
+- ✅ **Same ports** across Docker Compose and Kubernetes
+- ✅ **Simple setup**: One script starts all port-forwards
+- ✅ **Production-like**: ClusterIP is the standard Kubernetes service type
+- ✅ **Developer-friendly**: No mental mapping between different port numbers
+- ✅ **Flexible**: Can easily switch between Docker and Kubernetes

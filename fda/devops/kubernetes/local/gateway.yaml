@@ -81,12 +81,11 @@ metadata:
   labels:
     app: gateway
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: gateway
   ports:
   - port: 5000
     targetPort: 5000
-    nodePort: 30500  # Gateway - aligned with docker-compose port 5000
     protocol: TCP
     name: http

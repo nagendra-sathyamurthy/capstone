@@ -71,12 +71,11 @@ metadata:
   labels:
     app: customer-app
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: customer-app
   ports:
   - port: 3000
     targetPort: 3000
-    nodePort: 30300  # Customer App - aligned with docker-compose port 3000
     protocol: TCP
     name: http
