@@ -47,6 +47,25 @@ spec:
           value: "orderdb"
         - name: DatabaseSettings__CollectionName
           value: "orders"
+        - name: RABBITMQ_HOST
+          value: "rabbitmq-service"
+        - name: RABBITMQ_PORT
+          value: "5672"
+        - name: RABBITMQ_USER
+          valueFrom:
+            configMapKeyRef:
+              name: rabbitmq-config
+              key: RABBITMQ_DEFAULT_USER
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: rabbitmq-config
+              key: RABBITMQ_DEFAULT_PASS
+        - name: RABBITMQ_EXCHANGE
+          valueFrom:
+            configMapKeyRef:
+              name: rabbitmq-config
+              key: RABBITMQ_EXCHANGE
         resources:
           requests:
             memory: "128Mi"  # Reduced for local dev

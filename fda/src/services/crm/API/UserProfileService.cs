@@ -333,9 +333,9 @@ namespace Crm.API
         }
 
         /// <summary>
-        /// Update profile basic info (name, email)
+        /// Update profile basic info (name, email, phone, date of birth, dietary preferences)
         /// </summary>
-        public void UpdateProfileBasicInfo(string userId, string? name, string? email)
+        public void UpdateProfileBasicInfo(string userId, string? name, string? email, string? phone = null, DateTime? dateOfBirth = null, List<string>? dietaryPreferences = null)
         {
             var profile = _userProfileRepository.GetByUserId(userId);
             
@@ -362,6 +362,21 @@ namespace Crm.API
                     profile.Email = email;
                 }
                 
+                if (!string.IsNullOrEmpty(phone))
+                {
+                    profile.PhoneNumber = phone;
+                }
+                
+                if (dateOfBirth.HasValue)
+                {
+                    profile.DateOfBirth = dateOfBirth.Value;
+                }
+                
+                if (dietaryPreferences != null && dietaryPreferences.Count > 0)
+                {
+                    profile.DietaryPreferences = dietaryPreferences;
+                }
+                
                 _userProfileRepository.Insert(profile);
                 return;
             }
@@ -377,6 +392,21 @@ namespace Crm.API
             if (!string.IsNullOrEmpty(email))
             {
                 profile.Email = email;
+            }
+            
+            if (!string.IsNullOrEmpty(phone))
+            {
+                profile.PhoneNumber = phone;
+            }
+            
+            if (dateOfBirth.HasValue)
+            {
+                profile.DateOfBirth = dateOfBirth.Value;
+            }
+            
+            if (dietaryPreferences != null && dietaryPreferences.Count > 0)
+            {
+                profile.DietaryPreferences = dietaryPreferences;
             }
             
             profile.UpdatedAt = DateTime.UtcNow;

@@ -42,6 +42,30 @@ spec:
           value: "cartdb"
         - name: DatabaseSettings__CollectionName
           value: "carts"
+        - name: RABBITMQ_HOST
+          value: "rabbitmq-service"
+        - name: RABBITMQ_PORT
+          value: "5672"
+        - name: RABBITMQ_USER
+          valueFrom:
+            configMapKeyRef:
+              name: rabbitmq-config
+              key: RABBITMQ_DEFAULT_USER
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: rabbitmq-config
+              key: RABBITMQ_DEFAULT_PASS
+        - name: RABBITMQ_EXCHANGE
+          valueFrom:
+            configMapKeyRef:
+              name: rabbitmq-config
+              key: RABBITMQ_EXCHANGE
+        - name: MONGO_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: cart-connection-string
         resources:
           requests:
             memory: "128Mi"  # Reduced for local dev

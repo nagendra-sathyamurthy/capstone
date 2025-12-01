@@ -21,6 +21,27 @@ services:
       timeout: 5s
       retries: 5
 
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: capstone-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=AdminPass2024
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - capstone-network
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Authentication Service
   authentication:
     build:
@@ -89,9 +110,16 @@ services:
       - "8084:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - MONGO_CONNECTION_STRING=mongodb://admin:AdminPass2024@mongodb:27017
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=AdminPass2024
+      - RABBITMQ_EXCHANGE=food-delivery-exchange
     depends_on:
       mongodb:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - capstone-network
@@ -107,9 +135,16 @@ services:
       - "8085:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MongoDB=mongodb://admin:AdminPass2024@mongodb:27017
+      - MONGO_CONNECTION_STRING=mongodb://admin:AdminPass2024@mongodb:27017
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=AdminPass2024
+      - RABBITMQ_EXCHANGE=food-delivery-exchange
     depends_on:
       mongodb:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - capstone-network
@@ -166,6 +201,8 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
+  rabbitmq_data:
     driver: local
 
 networks:
