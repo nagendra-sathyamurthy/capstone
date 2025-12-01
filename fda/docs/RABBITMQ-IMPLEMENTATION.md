@@ -39,7 +39,7 @@ This document describes the implementation of RabbitMQ-based asynchronous messag
                 Events
 ```
 
-## Shared.Messaging Library
+## Messaging Library
 
 ### Purpose
 Centralized messaging infrastructure shared across all microservices.

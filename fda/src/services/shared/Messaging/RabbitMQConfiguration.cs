@@ -1,4 +1,4 @@
-namespace Shared.Messaging;
+namespace Messaging;
 
 /// <summary>
 /// Configuration for RabbitMQ connection

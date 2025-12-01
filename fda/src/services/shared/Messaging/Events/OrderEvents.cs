@@ -1,4 +1,4 @@
-namespace Shared.Messaging.Events;
+namespace Messaging.Events;
 
 /// <summary>
 /// Event raised when an order is accepted by the restaurant

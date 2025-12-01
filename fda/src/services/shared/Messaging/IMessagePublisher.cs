@@ -1,4 +1,4 @@
-namespace Shared.Messaging;
+namespace Messaging;
 
 public interface IMessagePublisher
 {

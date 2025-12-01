@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using Order.API;
 using Microsoft.OpenApi.Models;
-using Shared.Messaging;
+using Messaging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();

@@ -3,7 +3,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 
-namespace Shared.Messaging;
+namespace Messaging;
 
 public class RabbitMQConsumer : IMessageConsumer, IDisposable
 {

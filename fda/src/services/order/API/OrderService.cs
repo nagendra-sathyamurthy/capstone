@@ -1,8 +1,8 @@
 using Order.Models;
 using Order.DataAccess;
 using MongoDB.Driver;
-using Shared.Messaging;
-using Shared.Messaging.Events;
+using Messaging;
+using Messaging.Events;
 
 namespace Order.API
 {

@@ -2,7 +2,7 @@ using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
-namespace Shared.Messaging;
+namespace Messaging;
 
 public class RabbitMQPublisher : IMessagePublisher, IDisposable
 {

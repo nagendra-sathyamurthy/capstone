@@ -1,4 +1,4 @@
-namespace Shared.Messaging.Events;
+namespace Messaging.Events;
 
 /// <summary>
 /// Base interface for all events in the system

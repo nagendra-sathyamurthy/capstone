@@ -1,5 +1,5 @@
-using Shared.Messaging;
-using Shared.Messaging.Events;
+using Messaging;
+using Messaging.Events;
 
 namespace Cart.API.BackgroundServices;
 
