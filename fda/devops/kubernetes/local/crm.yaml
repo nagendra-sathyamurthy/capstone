@@ -38,10 +38,10 @@ spec:
             secretKeyRef:
               name: mongodb-secret
               key: crm-connection-string
-        # Database-specific settings
-        - name: DatabaseSettings__DatabaseName
+        # Database-specific settings (NOTE: .NET maps DATABASE_SETTINGS__DATABASE_NAME to DatabaseSettings:DatabaseName)
+        - name: DATABASE_SETTINGS__DATABASE_NAME
           value: "crmdb"
-        - name: DatabaseSettings__CollectionName
+        - name: DATABASE_SETTINGS__COLLECTION_NAME
           value: "customers"
 ---
 apiVersion: v1
