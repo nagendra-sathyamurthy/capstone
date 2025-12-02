@@ -31,21 +31,13 @@ spec:
             name: common-service-config
         # Service-specific environment variables
         env:
+        # MongoDB connection string (GetSecret looks for MONGO_CONNECTION_STRING)
         - name: MONGO_CONNECTION_STRING
           valueFrom:
             secretKeyRef:
               name: mongodb-secret
               key: catalog-connection-string
-        - name: ConnectionStrings__DefaultConnection
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: catalog-connection-string
-        - name: DatabaseSettings__ConnectionString
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: catalog-connection-string
+        # Database-specific settings
         - name: DatabaseSettings__DatabaseName
           value: "catalogdb"
         - name: DatabaseSettings__CollectionName

@@ -31,21 +31,14 @@ spec:
             name: common-service-config
         # Service-specific environment variables
         env:
-        - name: MONGO_CONNECTION_STRING
+        # MongoDB connection string (GetSecret looks for MONGO_CONNECTION_STRING)
+        # Note: CRM service looks for "mongo_connection_string_crm" but GetSecret will find MONGO_CONNECTION_STRING_CRM
+        - name: MONGO_CONNECTION_STRING_CRM
           valueFrom:
             secretKeyRef:
               name: mongodb-secret
               key: crm-connection-string
-        - name: ConnectionStrings__DefaultConnection
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: crm-connection-string
-        - name: DatabaseSettings__ConnectionString
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: crm-connection-string
+        # Database-specific settings
         - name: DatabaseSettings__DatabaseName
           value: "crmdb"
         - name: DatabaseSettings__CollectionName
