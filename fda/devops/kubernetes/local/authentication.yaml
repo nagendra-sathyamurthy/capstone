@@ -25,23 +25,26 @@ spec:
         imagePullPolicy: Never  # Use local image
         ports:
         - containerPort: 8080
+        # Load common environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: common-service-config
+        # Service-specific environment variables
         env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Development"
         - name: MONGO_CONNECTION_STRING
           valueFrom:
             secretKeyRef:
-              name: mongodb-secret  # Uses shared MongoDB secret
+              name: mongodb-secret
               key: auth-connection-string
         - name: ConnectionStrings__DefaultConnection
           valueFrom:
             secretKeyRef:
-              name: mongodb-secret  # Uses shared MongoDB secret
+              name: mongodb-secret
               key: auth-connection-string
         - name: DatabaseSettings__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: mongodb-secret  # Uses shared MongoDB secret
+              name: mongodb-secret
               key: auth-connection-string
         - name: DatabaseSettings__DatabaseName
           value: "authenticationdb"

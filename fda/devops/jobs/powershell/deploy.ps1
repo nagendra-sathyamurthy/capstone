@@ -31,6 +31,7 @@ Write-Host ""
 
 Write-Host "Step 1: Deploying Infrastructure (MongoDB, Namespace)..." -ForegroundColor Yellow
 kubectl apply -f ../../kubernetes/local/namespace.yaml
+kubectl apply -f ../../kubernetes/local/common-config.yaml
 kubectl apply -f ../../kubernetes/local/mongodb-secret.yaml
 kubectl apply -f ../../kubernetes/local/mongodb-config.yaml
 kubectl apply -f ../../kubernetes/local/mongodb.yaml

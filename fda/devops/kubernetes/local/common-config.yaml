@@ -1,0 +1,49 @@
+# Common Configuration for All Services
+# This ConfigMap contains non-sensitive environment variables shared across services
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-service-config
+  namespace: capstone-services
+  labels:
+    environment: local
+data:
+  # ASP.NET Core Configuration
+  ASPNETCORE_ENVIRONMENT: "Development"
+  ASPNETCORE_URLS: "http://+:8080"
+  
+  # Logging Configuration
+  Logging__LogLevel__Default: "Information"
+  Logging__LogLevel__Microsoft: "Warning"
+  Logging__LogLevel__Microsoft.Hosting.Lifetime: "Information"
+  
+  # Common Service URLs (for inter-service communication)
+  AUTHENTICATION_SERVICE_URL: "http://authentication-service:8080"
+  CATALOG_SERVICE_URL: "http://catalog-service:8080"
+  CRM_SERVICE_URL: "http://crm-service:8080"
+  CART_SERVICE_URL: "http://cart-service:8080"
+  ORDER_SERVICE_URL: "http://order-service:8080"
+  GATEWAY_SERVICE_URL: "http://gateway-service:5000"
+  
+  # MongoDB Common Configuration
+  DatabaseSettings__MaxConnectionPoolSize: "100"
+  DatabaseSettings__MinConnectionPoolSize: "10"
+  DatabaseSettings__ServerSelectionTimeout: "30000"
+  DatabaseSettings__ConnectTimeout: "30000"
+  
+  # CORS Configuration (for services that need it)
+  CORS_ORIGIN: "http://localhost:3000"
+  CORS_ALLOW_CREDENTIALS: "true"
+  
+  # Rate Limiting (default values)
+  RATE_LIMIT_WINDOW_MS: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  
+  # JWT Configuration (non-secret defaults)
+  JWT_ISSUER: "CapstoneAuthService"
+  JWT_AUDIENCE: "CapstoneServices"
+  JWT_EXPIRY_MINUTES: "480"
+  
+  # General Configuration
+  ENVIRONMENT: "local"
+  TIMEZONE: "UTC"
