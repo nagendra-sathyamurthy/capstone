@@ -37,14 +37,14 @@ kubectl get pods -n capstone-services --no-headers | ForEach-Object {
 }
 
 # Create test results directory
-$testResultsDir = "..\..\test-results"
+$testResultsDir = "..\..\..\test-results"
 New-Item -ItemType Directory -Force -Path $testResultsDir | Out-Null
 Write-Host ""
 Write-Host "Test results will be saved to: $testResultsDir" -ForegroundColor Cyan
 Write-Host ""
 
 # Define test collections
-$collectionsPath = "..\..\postman-collections"
+$collectionsPath = "..\..\..\postman-collections"
 $testCollections = @(
     @{
         Name = "User Registration"

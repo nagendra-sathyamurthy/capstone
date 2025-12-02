@@ -34,9 +34,9 @@ function New-TemporaryAdminUser {
             -ContentType "application/json" `
             -ErrorAction Stop
         
-        if ($response.id) {
+        if ($response.user.id) {
             Write-Host "✓ Successfully created temporary admin user" -ForegroundColor Green
-            return $response.id
+            return $response.user.id
         } else {
             Write-Host "✗ Failed to create admin user" -ForegroundColor Red
             return $null

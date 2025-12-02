@@ -20,8 +20,17 @@ static string GetSecret(IConfiguration configuration, string secretName, string?
         return File.ReadAllText(secretPath).Trim();
     }
     
-    // Fallback to environment variable (for local development)
-    var envValue = configuration[secretName.Replace("_", "__").ToUpper()];
+    // Try direct environment variable (MONGO_CONNECTION_STRING)
+    var envVarName = secretName.ToUpper();
+    var envValue = configuration[envVarName];
+    if (!string.IsNullOrEmpty(envValue))
+    {
+        return envValue;
+    }
+    
+    // Try with double underscores for .NET configuration format (ConnectionStrings__DefaultConnection)
+    var configKey = secretName.Replace("_", "__");
+    envValue = configuration[configKey];
     if (!string.IsNullOrEmpty(envValue))
     {
         return envValue;

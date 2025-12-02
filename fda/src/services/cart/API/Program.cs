@@ -9,24 +9,37 @@ var builder = WebApplication.CreateBuilder(args);
 // Helper function to read secrets from Docker secrets or environment variables
 static string GetSecret(IConfiguration configuration, string secretName, string? defaultValue = null)
 {
+    // Try to read from Docker secret file first
     var secretPath = $"/run/secrets/{secretName}";
     if (File.Exists(secretPath))
     {
         return File.ReadAllText(secretPath).Trim();
     }
     
-    var envValue = configuration[secretName.Replace("_", "__").ToUpper()];
+    // Try direct environment variable (MONGO_CONNECTION_STRING)
+    var envVarName = secretName.ToUpper();
+    var envValue = configuration[envVarName];
     if (!string.IsNullOrEmpty(envValue))
     {
         return envValue;
     }
     
+    // Try with double underscores for .NET configuration format (ConnectionStrings__DefaultConnection)
+    var configKey = secretName.Replace("_", "__");
+    envValue = configuration[configKey];
+    if (!string.IsNullOrEmpty(envValue))
+    {
+        return envValue;
+    }
+    
+    // Try as-is (original secretName)
     envValue = configuration[secretName];
     if (!string.IsNullOrEmpty(envValue))
     {
         return envValue;
     }
     
+    // Use default if provided
     return defaultValue ?? throw new InvalidOperationException($"Secret '{secretName}' not found");
 }
 

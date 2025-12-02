@@ -18,13 +18,19 @@ router.get('/menu', asyncHandler(async (req, res) => {
   res.status(response.status).json(response.data);
 }));
 
-// POST /menu - Allow without auth for seeding
+// POST /menu - Forward auth header if present
 router.post('/menu', asyncHandler(async (req, res) => {
+  const headers = {};
+  if (req.headers.authorization) {
+    headers.Authorization = req.headers.authorization;
+  }
+  
   const response = await axios.post(
     `${services.catalog.url}/api/menu`,
     req.body,
     { 
-      timeout: services.catalog.timeout
+      timeout: services.catalog.timeout,
+      headers: headers
     }
   );
   res.status(response.status).json(response.data);
