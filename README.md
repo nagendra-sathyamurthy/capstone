@@ -1,461 +1,1120 @@
 # Food Delivery Application (FDA) - Capstone Project
 
-A comprehensive microservices-based food delivery platform built with .NET 8, Node.js, React, and MongoDB.
+A comprehensive microservices-based food delivery platform built with .NET 8.0, MongoDB, React, and Kubernetes.
 
-## 📋 Table of Contents
+## 🎯 Quick Start
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Technologies](#technologies)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [Deployment](#deployment)
-- [API Documentation](#api-documentation)
-- [Project Structure](#project-structure)
-- [Development Workflow](#development-workflow)
-- [Testing](#testing)
-- [Contributing](#contributing)
+### Prerequisites
+- Docker Desktop with Kubernetes enabled
+- .NET 8.0 SDK
+- Node.js 18+
+- kubectl command-line tool
+- PowerShell (Windows) or Bash (Linux/macOS)
+- 8GB+ RAM
 
-## 🎯 Overview
+### Deploy in 5 Steps
 
-The Food Delivery Application is a full-stack microservices platform that enables:
-- **Customers** to browse restaurants, order food, and track deliveries
-- **Restaurant Owners** to manage menus, track orders, and manage staff
-- **Operators** to process and fulfill orders
-- **Kitchen Workers** to prepare orders
-- **Delivery Agents** to deliver orders
-- **IT Admins** to manage the entire platform
+**Windows (PowerShell):**
+```powershell
+# Navigate to scripts directory
+cd devops/jobs/powershell
 
-## 🏗 Architecture
+# 1. Verify Kubernetes setup
+.\verify.ps1
 
-The application follows a microservices architecture with the following services:
+# 2. Build Docker images
+.\build.ps1
 
-### Backend Services (.NET 8)
-- **Authentication Service** (Port 8081) - User authentication and JWT token management
-- **CRM Service** (Port 8083) - Customer relationship management and user profiles
-- **Catalog Service** (Port 8082) - Restaurant and menu catalog management
-- **Cart Service** (Port 8084) - Shopping cart management
-- **Order Service** (Port 8085) - Order processing and management
+# 3. Apply secrets
+.\secrets.ps1
 
-### Gateway & Frontend
-- **Gateway Service** (Port 5000) - Node.js/Express API Gateway with routing and proxy
-- **Customer App** (Port 3000) - React 18 + TypeScript customer-facing application
+# 4. Deploy to Kubernetes
+.\deploy.ps1
 
-### Database
-- **MongoDB** (Port 27017) - NoSQL database for all services
+# 5. Seed sample data
+.\seed.ps1
+```
 
-## 🛠 Technologies
-
-### Backend
-- .NET 8.0
-- ASP.NET Core Web API
-- MongoDB Driver
-- JWT Authentication
-- Swagger/OpenAPI
-
-### Frontend
-- React 18
-- TypeScript
-- Axios
-- React Router
-- Material-UI / Custom Components
-
-### Gateway
-- Node.js 20
-- Express.js
-- HTTP Proxy Middleware
-
-### DevOps
-- Docker & Docker Compose
-- Kubernetes (Local & Production)
-- PowerShell Scripts
-- GitHub Actions (Planned)
-
-## 📦 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-### Required
-- **.NET 8 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
-- **Node.js 20+** - [Download](https://nodejs.org/)
-- **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop)
-- **Git** - [Download](https://git-scm.com/)
-
-### Optional
-- **MongoDB Compass** - For database management
-- **Postman** - For API testing
-- **Visual Studio Code** - Recommended IDE
-- **Kubernetes (kubectl)** - For Kubernetes deployments
-
-## 📥 Installation
-
-### 1. Clone the Repository
-
+**Linux/macOS (Bash):**
 ```bash
-git clone https://github.com/nagendra-sathyamurthy/capstone.git
-cd capstone
-```
+# Navigate to scripts directory
+cd devops/jobs/bash
 
-### 2. Install Backend Dependencies
+# Make scripts executable (first time only)
+chmod +x *.sh
 
-```bash
-# Restore all .NET projects
-dotnet restore fda/src/services/capstone.sln
-```
+# 1. Verify Kubernetes setup
+./verify.sh
 
-### 3. Install Frontend Dependencies
+# 2. Build Docker images
+./build.sh
 
-```bash
-# Install Gateway dependencies
-cd fda/src/gateway
-npm install
+# 3. Apply secrets
+./secrets.sh
 
-# Install Customer App dependencies
-cd ../customer-app
-npm install
+# 4. Deploy to Kubernetes
+./deploy.sh
 
-cd ../../..
-```
-
-## ⚙️ Configuration
-
-### Environment Variables
-
-#### Customer App
-Edit `fda/src/customer-app/.env.production`:
-```env
-REACT_APP_GATEWAY_URL=http://localhost:5000
-```
-
-#### Services
-Each service uses `appsettings.json` and `appsettings.Development.json`:
-- MongoDB connection strings
-- JWT secret keys
-- CORS settings
-- Service ports
-
-### MongoDB Configuration
-
-MongoDB connection strings are configured in each service's `appsettings.json`:
-```json
-{
-  "MongoDbSettings": {
-    "ConnectionString": "mongodb://mongodb:27017",
-    "DatabaseName": "ServiceNameDb"
-  }
-}
-```
-
-## 🚀 Running the Application
-
-### Option 1: Using Docker Compose (Recommended)
-
-```bash
-# Build and start all services
-cd fda/devops/docker
-docker-compose -f docker-compose-working.yml up --build
-
-# Or run in detached mode
-docker-compose -f docker-compose-working.yml up -d --build
+# 5. Seed sample data
+./seed.sh
 ```
 
 **Access the application:**
-- Customer App: http://localhost:3000
-- Gateway API: http://localhost:5000
-- Authentication API: http://localhost:8081/swagger
-- Catalog API: http://localhost:8082/swagger
-- CRM API: http://localhost:8083/swagger
-- Cart API: http://localhost:8084/swagger
-- Order API: http://localhost:8085/swagger
+- Customer App: http://localhost:30080
+- API Gateway: http://localhost:30005
 
-**Stop the services:**
-```bash
-docker-compose -f docker-compose-working.yml down
-```
-
-### Option 2: Using VS Code Tasks
-
-The project includes VS Code tasks for building and running services:
-
-```bash
-# Build all services
-Ctrl+Shift+P -> Tasks: Run Task -> build-all
-
-# Run individual services in watch mode
-Ctrl+Shift+P -> Tasks: Run Task -> watch-authentication
-Ctrl+Shift+P -> Tasks: Run Task -> watch-catalog
-Ctrl+Shift+P -> Tasks: Run Task -> watch-crm
-Ctrl+Shift+P -> Tasks: Run Task -> watch-cart
-```
-
-### Option 3: Manual Run
-
-**Start MongoDB:**
-```bash
-docker run -d -p 27017:27017 --name mongodb mongo:latest
-```
-
-**Start Backend Services:**
-```bash
-# Authentication Service
-cd fda/src/services/authentication/API
-dotnet run
-
-# Repeat for other services (CRM, Catalog, Cart, Order)
-```
-
-**Start Gateway:**
-```bash
-cd fda/src/gateway
-npm start
-```
-
-**Start Customer App:**
-```bash
-cd fda/src/customer-app
-npm start
-```
-
-## 🌐 Deployment
-
-### Local Kubernetes Deployment
-
-```powershell
-# Deploy to local Kubernetes (Docker Desktop)
-cd fda/devops/jobs
-.\deploy-local-k8s.ps1
-
-# Cleanup
-.\cleanup-local-k8s.ps1
-```
-
-### Production Kubernetes Deployment
-
-```powershell
-# Deploy to production cluster
-cd fda/devops/jobs
-.\deploy-production.ps1
-
-# Cleanup
-.\cleanup-environment.ps1
-```
-
-### Deployment Scripts
-
-Located in `fda/devops/jobs/`:
-- `deploy-local-k8s.ps1` - Deploy to local Kubernetes
-- `deploy-production.ps1` - Deploy to production
-- `cleanup-local-k8s.ps1` - Clean up local deployment
-- `cleanup-environment.ps1` - Clean up production deployment
-- `setup-local-user-secrets.ps1` - Set up local secrets
-- `apply-secrets.ps1` - Apply secrets to Kubernetes
-
-### Docker Images
-
-Build individual service images:
-```bash
-# Authentication Service
-docker build -t fda-authentication:latest ./fda/src/services/authentication
-
-# Gateway Service
-docker build -t fda-gateway:latest ./fda/src/gateway
-
-# Customer App
-docker build -t fda-customer-app:latest ./fda/src/customer-app
-```
-
-## 📚 API Documentation
-
-### Swagger UI
-
-Each service exposes Swagger UI for API documentation:
-- Authentication: http://localhost:8081/swagger
-- Catalog: http://localhost:8082/swagger
-- CRM: http://localhost:8083/swagger
-- Cart: http://localhost:8084/swagger
-- Order: http://localhost:8085/swagger
-
-### Postman Collections
-
-Postman collections are available in `fda/postman-collections/`:
-- `Authentication-Service.postman_collection.json`
-- `Catalog-Service.postman_collection.json`
-- `CRM-Service.postman_collection.json`
-- `Cart-Service.postman_collection.json`
-- `Order-Service.postman_collection.json`
-- `Capstone-Workflow.postman_collection.json`
-
-**Environments:**
-- `Capstone-Local-Environment.postman_environment.json`
-- `Capstone-Production-Environment.postman_environment.json`
+---
 
 ## 📁 Project Structure
 
 ```
-capstone/
-├── fda/                                    # Main application folder
-│   ├── devops/                            # DevOps configurations
-│   │   ├── docker/                        # Docker configurations
-│   │   │   └── docker-compose-working.yml # Docker Compose file
-│   │   ├── jobs/                          # Deployment scripts
-│   │   │   ├── deploy-local-k8s.ps1
-│   │   │   ├── deploy-production.ps1
-│   │   │   └── cleanup-*.ps1
-│   │   └── kubernetes/                    # Kubernetes manifests
-│   │       ├── local/                     # Local K8s configs
-│   │       └── production/                # Production K8s configs
-│   ├── docs/                              # Documentation
-│   │   ├── services/                      # Service documentation
-│   │   ├── devops/                        # DevOps documentation
-│   │   └── testing/                       # Testing documentation
-│   ├── postman-collections/               # Postman API collections
-│   └── src/                               # Source code
-│       ├── services/                      # Backend microservices
-│       │   ├── authentication/            # Authentication service
-│       │   ├── catalog/                   # Catalog service
-│       │   ├── crm/                       # CRM service
-│       │   ├── cart/                      # Cart service
-│       │   └── order/                     # Order service
-│       ├── gateway/                       # API Gateway (Node.js)
-│       └── customer-app/                  # Customer frontend (React)
-├── .vscode/                               # VS Code configurations
-│   ├── tasks.json                         # Build tasks
-│   └── launch.json                        # Debug configurations
-├── .gitignore                             # Git ignore rules
-└── README.md                              # This file
+fda/
+├── src/
+│   ├── services/           # Backend microservices (.NET 8.0)
+│   │   ├── authentication/ # User authentication & RBAC
+│   │   ├── catalog/        # Menu & restaurant catalog
+│   │   ├── crm/            # Customer & restaurant management
+│   │   ├── cart/           # Shopping cart service
+│   │   └── order/          # Order management
+│   ├── gateway/            # API Gateway (Node.js/Express)
+│   └── customer-app/       # Frontend (React)
+├── devops/
+│   └── jobs/              # Deployment & utility scripts
+│       ├── powershell/    # Windows PowerShell scripts
+│       │   ├── verify.ps1
+│       │   ├── build.ps1
+│       │   ├── secrets.ps1
+│       │   ├── deploy.ps1
+│       │   ├── seed.ps1
+│       │   ├── test.ps1
+│       │   ├── setup.ps1
+│       │   └── cleanup.ps1
+│       ├── bash/          # Linux/macOS Bash scripts
+│       │   ├── verify.sh
+│       │   ├── build.sh
+│       │   ├── secrets.sh
+│       │   ├── deploy.sh
+│       │   ├── seed.sh
+│       │   ├── test.sh
+│       │   ├── setup.sh
+│       │   └── cleanup.sh
+│       └── data/          # Seed data files
+│           └── seed-menu-items.json
+└── postman-collections/   # API test collections
 ```
 
-### Service Structure
+---
 
-Each .NET service follows this structure:
+## 🏗️ Architecture
+
+### Microservices Overview
+
+The application follows a microservices architecture with:
+
+- **6 Backend Services**: Authentication, Catalog, CRM, Cart, Order, Payment (ASP.NET Core)
+- **API Gateway**: Node.js/Express for request routing and aggregation
+- **Frontend**: React SPA with responsive design
+- **Database**: MongoDB (shared instance for development)
+- **Container Orchestration**: Kubernetes (K3s/Docker Desktop)
+- **CI/CD**: PowerShell automation scripts
+
+### System Architecture
+
 ```
-service-name/
-├── API/                    # Web API project
-│   ├── Controllers/        # API controllers
-│   ├── Program.cs          # Application entry point
-│   └── appsettings.json    # Configuration
-├── DataAccess/             # Data access layer
-│   ├── Repositories/       # Repository pattern
-│   └── MongoDbContext.cs   # Database context
-├── Models/                 # Domain models and DTOs
-└── service-name.sln        # Solution file
+┌─────────────────────────────────────────────────────────┐
+│                     Internet/Users                       │
+└────────────────────┬────────────────────────────────────┘
+                     │
+                     ▼
+        ┌────────────────────────┐
+        │   Customer App (React) │
+        │   Port: 30080          │
+        └────────────┬───────────┘
+                     │
+                     ▼
+        ┌────────────────────────┐
+        │   API Gateway (Node)   │
+        │   Port: 30005          │
+        └────────────┬───────────┘
+                     │
+        ┌────────────┴───────────────────────────┐
+        │                                        │
+        ▼                                        ▼
+┌──────────────┐                        ┌──────────────┐
+│   Backend    │                        │   Backend    │
+│   Services   │◄──────────────────────►│   Services   │
+│ (.NET Core)  │                        │ (.NET Core)  │
+└──────┬───────┘                        └──────┬───────┘
+       │                                       │
+       │          ┌──────────────┐             │
+       └─────────►│   MongoDB    │◄────────────┘
+                  │  Port: 27017 │
+                  └──────────────┘
 ```
 
-## 🔄 Development Workflow
+### Service Ports
 
-### Branching Strategy
+**Local Kubernetes:**
+- MongoDB: 30000
+- Authentication: 30001
+- Catalog: 30002
+- CRM: 30003
+- Cart: 30004
+- Order: 30005
+- Payment: 30006
+- Gateway: 30005
+- Customer App: 30080
 
-- `master` - Production-ready code
-- `develop` - Integration branch for features
-- `feature/*` - Feature branches (branch from develop)
-- `fix/*` - Bug fix branches (branch from develop)
+---
 
-### Workflow
+## 🚀 Deployment Guide
 
-1. Create a feature branch from `develop`:
-   ```bash
-   git checkout develop
-   git pull origin develop
-   git checkout -b feature/your-feature-name
-   ```
+### Available Deployment Scripts
 
-2. Make your changes and commit:
-   ```bash
-   git add .
-   git commit -m "feat: your feature description"
-   ```
+The project includes cross-platform scripts for both Windows (PowerShell) and Linux/macOS (Bash):
 
-3. Push to remote:
-   ```bash
-   git push -u origin feature/your-feature-name
-   ```
+| Script | Description | Usage |
+|--------|-------------|-------|
+| **verify** | Verify Kubernetes setup and connectivity | Run first to check prerequisites |
+| **setup** | Setup .NET user secrets for local debugging | For VS Code F5 debugging only |
+| **build** | Build all Docker images | Required before deployment |
+| **secrets** | Apply Kubernetes secrets | Run before deploy |
+| **deploy** | Deploy complete stack to Kubernetes | Deploys all services |
+| **seed** | Seed sample menu data | Run after deployment |
+| **test** | Run Newman API tests | Validate deployment |
+| **cleanup** | Clean up Kubernetes resources | Remove all resources |
 
-4. Create a Pull Request to `develop` branch
+### Full Deployment Workflow
 
-5. After review and merge, delete the feature branch
+#### Windows (PowerShell)
+```powershell
+cd devops/jobs/powershell
 
-### Building Projects
+# 1. Verify Kubernetes setup
+.\verify.ps1
 
+# 2. Build Docker images
+.\build.ps1
+# Time: ~10-15 minutes (first build), ~5 minutes (subsequent)
+
+# 3. Apply MongoDB secrets
+.\secrets.ps1
+
+# 4. Deploy all services
+.\deploy.ps1
+# Deploys: MongoDB, Authentication, Catalog, CRM, Cart, Order, Gateway, Customer App
+
+# 5. Seed sample data
+.\seed.ps1
+# Creates 10 sample menu items from data/seed-menu-items.json
+
+# 6. Run API tests
+.\test.ps1
+# Runs: User Registration, Restaurant Owner, Operator workflows
+```
+
+#### Linux/macOS (Bash)
+```bash
+cd devops/jobs/bash
+
+# Make scripts executable (first time only)
+chmod +x *.sh
+
+# 1. Verify Kubernetes setup
+./verify.sh
+
+# 2. Build Docker images
+./build.sh
+
+# 3. Apply MongoDB secrets
+./secrets.sh
+
+# 4. Deploy all services
+./deploy.sh
+
+# 5. Seed sample data
+./seed.sh
+
+# 6. Run API tests
+./test.sh
+```
+
+### Verification
+
+#### Check Deployment Status
+```bash
+# View all pods
+kubectl get pods -n capstone-services
+kubectl get pods -n capstone-gateway
+kubectl get pods -n capstone-frontend
+
+# View all services
+kubectl get svc -A | grep capstone
+
+# Check service logs
+kubectl logs -f <pod-name> -n capstone-services
+```
+
+#### Access Points
+Once deployed, access the application at:
+- **Customer App**: http://localhost:30080
+- **API Gateway**: http://localhost:30005
+- **Authentication Service**: http://localhost:30001
+- **Catalog Service**: http://localhost:30002
+- **CRM Service**: http://localhost:30003
+- **Cart Service**: http://localhost:30004
+- **Order Service**: http://localhost:30005
+- **MongoDB**: mongodb://localhost:30000
+
+### Cleanup
+
+#### Remove Kubernetes Resources
+**Windows:**
+```powershell
+# Remove all Kubernetes resources (keeps Docker images)
+.\cleanup.ps1
+
+# Remove resources AND Docker images
+.\cleanup.ps1 -DeleteImages
+
+# Skip confirmation prompt
+.\cleanup.ps1 -Force
+```
+
+**Linux/macOS:**
+```bash
+# Remove all Kubernetes resources (keeps Docker images)
+./cleanup.sh
+
+# Remove resources AND Docker images
+./cleanup.sh --delete-images
+
+# Skip confirmation prompt
+./cleanup.sh --force
+
+# Combined flags
+./cleanup.sh -d -f
+```
+
+### Local Development (VS Code F5 Debugging)
+
+For running services locally without Kubernetes:
+
+#### Setup User Secrets
+**Windows:**
+```powershell
+.\setup.ps1
+```
+
+**Linux/macOS:**
+```bash
+./setup.sh
+```
+
+This configures MongoDB connection strings using .NET user secrets for local debugging.
+
+#### Build & Debug
 ```bash
 # Build all services
-dotnet build fda/src/services/capstone.sln
+dotnet build src/services/capstone.sln
 
-# Build individual services
-dotnet build fda/src/services/authentication/authentication.sln
-dotnet build fda/src/services/catalog/Catalog.sln
-dotnet build fda/src/services/crm/crm.sln
-dotnet build fda/src/services/cart/Cart.sln
-dotnet build fda/src/services/order/Order.sln
-
-# Clean build artifacts
-dotnet clean fda/src/services/capstone.sln
+# Or use VS Code
+# Press F5 → Select service to debug
 ```
+
+**Services start on ports:**
+- Authentication: 30001
+- Catalog: 30002
+- CRM: 30003
+- Cart: 30004
+- Order: 30005
+
+### Seed Data
+
+Sample menu items are stored in `devops/jobs/data/seed-menu-items.json` and include:
+- **10 Menu Items** from 6 restaurants
+- **Categories**: Appetizer, Main Course, Dessert, Beverage, Salad
+- **Cuisines**: Italian, American, Indian, Thai, French, Mediterranean, Health Food
+- Complete nutritional information, allergens, and dietary flags
+
+### Script Parameters
+
+#### Cleanup Script Options
+- **PowerShell**: `-DeleteImages`, `-Force`
+- **Bash**: `--delete-images` or `-d`, `--force` or `-f`
+
+#### Seed Script Options
+- **PowerShell**: `-GatewayUrl "http://localhost:5000"`
+- **Bash**: `./seed.sh "http://localhost:5000"`
+
+### Troubleshooting
+
+#### Permission Denied (Linux/macOS)
+```bash
+chmod +x devops/jobs/bash/*.sh
+```
+
+#### PowerShell Execution Policy (Windows)
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### Docker Not Running
+```bash
+# Start Docker Desktop or your container runtime
+# Windows: Start Docker Desktop
+# Linux: sudo systemctl start docker
+```
+
+#### Kubernetes Not Accessible
+- Enable Kubernetes in Docker Desktop settings (Settings → Kubernetes → Enable)
+- Or ensure K3s/Kind cluster is running
+
+#### Pods Stuck in Pending
+```bash
+# Check events
+kubectl get events -n capstone-services --sort-by='.lastTimestamp'
+
+# Check pod details
+kubectl describe pod <pod-name> -n capstone-services
+
+# Common issue: Insufficient resources
+# Solution: Increase Docker Desktop memory to 8GB+ (Settings → Resources)
+```
+
+#### Services Not Responding
+```bash
+# Check pod logs
+kubectl logs <pod-name> -n capstone-services
+
+# Restart deployment
+kubectl rollout restart deployment/<deployment-name> -n capstone-services
+```
+
+---
+
+## 🔐 Role-Based Access Control (RBAC)
+
+### User Roles
+
+#### 1. Customer (external_users)
+- Order food and track deliveries
+- Manage profile and addresses
+- Rate restaurants and provide feedback
+- View order history
+
+#### 2. Biller (Restaurant Owner)
+- UPI payment processing
+- Full menu management (CRUD)
+- Staff management (Operators, Workers)
+- Financial reporting and analytics
+- Restaurant profile management
+
+#### 3. Operator (Order Manager)
+- Order confirmation and management
+- Customer service coordination
+- Menu item management
+- Order handover to delivery agents
+
+#### 4. Worker (Kitchen Staff)
+- View assigned orders
+- Update food preparation status
+- View menu items
+- Mark orders ready for delivery
+
+#### 5. DeliveryAgent (fda_delivery_network)
+- View assigned deliveries
+- Update delivery status
+- Mark orders delivered
+- Provide delivery proof
+
+#### 6. IT Department Roles (fda_it_department)
+- **Developer**: Full system access
+- **Tester**: QA and testing access
+- **NetworkAdmin**: Monitoring and health checks
+- **DatabaseAdmin**: Database management
+
+### Authentication Flow
+
+1. **Registration**: Phone/email with OTP verification
+2. **Login**: JWT token-based authentication
+3. **Authorization**: Role-based permissions via JWT claims
+4. **Token Refresh**: Automatic token renewal
+
+### JWT Claims Structure
+
+```json
+{
+  "sub": "user_id",
+  "role": "Customer|Biller|Operator|Worker|DeliveryAgent",
+  "organization": "external_users|restaurant_name|fda_delivery_network",
+  "restaurantName": "restaurant_name", // for restaurant staff
+  "upiId": "biller_upi_id",          // for Billers
+  "permissions": ["read:menu", "write:order", ...]
+}
+```
+
+---
+
+## 🗄️ Database Structure
+
+### MongoDB Collections
+
+#### Authentication Service
+- **users**: User accounts with credentials
+- **roles**: Role definitions and permissions
+- **sessions**: Active user sessions
+- **otps**: OTP verification records
+
+#### Catalog Service
+- **restaurants**: Restaurant profiles
+- **menus**: Menu items and categories
+- **cuisine_types**: Available cuisines
+
+#### CRM Service
+- **customers**: Customer profiles
+- **restaurants**: Restaurant business data
+- **addresses**: Delivery addresses
+
+#### Cart Service
+- **carts**: Shopping cart items
+- **cart_items**: Individual cart entries
+
+#### Order Service
+- **orders**: Order records
+- **order_items**: Order line items
+- **order_history**: Order status tracking
+
+#### Payment Service
+- **payments**: Payment transactions
+- **refunds**: Refund records
+- **upi_accounts**: UPI payment details
+
+---
+
+## 📜 Available Scripts (devops/jobs/)
+
+### Building & Deployment
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `build-images-local.ps1` | Build all Docker images | `.\build-images-local.ps1` |
+| `deploy-local.ps1` | Deploy backend services | `.\deploy-local.ps1` |
+| `deploy-local-full-stack.ps1` | Deploy complete stack | `.\deploy-local-full-stack.ps1` |
+
+### Cleanup
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `cleanup-local.ps1` | Quick cleanup (keep images) | `.\cleanup-local.ps1` |
+| `cleanup-complete.ps1` | Complete cleanup | `.\cleanup-complete.ps1 -DeleteImages` |
+
+### Configuration
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `apply-secrets.ps1` | Apply Kubernetes secrets | `.\apply-secrets.ps1` |
+| `setup-local-user-secrets.ps1` | Setup .NET user secrets | `.\setup-local-user-secrets.ps1` |
+| `setup-user-secrets.ps1` | General secrets setup | `.\setup-user-secrets.ps1` |
+
+### Utilities
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `seed-sample-data.ps1` | Seed sample menu data | `.\seed-sample-data.ps1` |
+| `verify-k8s-setup.ps1` | Verify Kubernetes setup | `.\verify-k8s-setup.ps1` |
+| `run-newman-tests.ps1` | Run API tests | `.\run-newman-tests.ps1` |
+| `port-forward.ps1` | Port forwarding utility | `.\port-forward.ps1` |
+
+---
 
 ## 🧪 Testing
 
-### Running Tests with Newman
+### Postman Collections
 
-```bash
-# Install Newman globally
-npm install -g newman newman-reporter-htmlextra
+Located in `postman-collections/`:
 
-# Run authentication tests
-newman run fda/postman-collections/Authentication-Service.postman_collection.json \
-  -e fda/postman-collections/Capstone-Local-Environment.postman_environment.json \
-  -r htmlextra --reporter-htmlextra-export test-results/authentication-report.html
+1. **User Registration Workflows**
+   - Customer registration
+   - OTP verification
+   - Profile management
+
+2. **Restaurant Owner Workflows**
+   - Biller registration
+   - Menu management (CRUD)
+   - Staff management
+   - Order management
+
+3. **Operator Service Workflows**
+   - Order confirmation
+   - Customer service
+   - Order handover
+
+### Run API Tests
+
+```powershell
+cd devops/jobs
+.\run-newman-tests.ps1
 ```
 
-### Manual Testing
+**Prerequisites:**
+- Newman installed: `npm install -g newman`
+- Services deployed and running
 
-1. Start all services using Docker Compose
-2. Import Postman collections from `fda/postman-collections/`
-3. Import the local environment
-4. Execute requests in the workflow collection
+---
 
-## 🤝 Contributing
+## 🔧 Configuration
+
+### Environment Variables
+
+#### MongoDB Connection
+```bash
+MONGO_CONNECTION_STRING=mongodb://admin:password@localhost:27017/database?authSource=admin
+```
+
+#### JWT Settings
+```bash
+JWT_SECRET=your-secret-key-here
+JWT_ISSUER=FoodDeliveryAPI
+JWT_AUDIENCE=FoodDeliveryClients
+JWT_EXPIRATION_MINUTES=60
+```
+
+#### Service URLs
+```bash
+AUTHENTICATION_API_URL=http://authentication-service:5001
+CATALOG_API_URL=http://catalog-service:5002
+CRM_API_URL=http://crm-service:5003
+CART_API_URL=http://cart-service:5004
+ORDER_API_URL=http://order-service:5005
+PAYMENT_API_URL=http://payment-service:5006
+GATEWAY_URL=http://gateway:4000
+```
+
+### Kubernetes Secrets
+
+Secrets are stored in `devops/kubernetes/local/secrets.yaml`:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-secret
+  namespace: capstone-services
+type: Opaque
+stringData:
+  connection-string: mongodb://admin:password@mongodb:27017/
+  jwt-secret: your-jwt-secret
+```
+
+Apply secrets:
+```powershell
+.\devops\jobs\apply-secrets.ps1
+```
+
+---
+
+## 🚨 Troubleshooting
+
+### Pods Not Starting
+
+```powershell
+# Check pod status
+kubectl get pods -n capstone-services
+
+# Describe pod for events
+kubectl describe pod <pod-name> -n capstone-services
+
+# View logs
+kubectl logs <pod-name> -n capstone-services
+```
+
+### Image Pull Errors
+
+```powershell
+# Ensure images are built
+.\devops\jobs\build-images-local.ps1
+
+# Verify images exist
+docker images | grep services-
+```
+
+### MongoDB Connection Issues
+
+```powershell
+# Test MongoDB connectivity
+kubectl exec -it mongodb-<pod-id> -n capstone-services -- mongosh
+
+# Check secrets
+kubectl get secrets -n capstone-services
+```
+
+### Port Conflicts
+
+```powershell
+# Find process using port
+netstat -ano | findstr :30001
+
+# Kill process
+taskkill /PID <process-id> /F
+```
+
+### Service Connectivity Issues
+
+```powershell
+# Test service connectivity from pod
+kubectl exec -it <pod-name> -n capstone-services -- curl http://catalog-service:5002/health
+
+# Check service DNS
+kubectl exec -it <pod-name> -n capstone-services -- nslookup catalog-service.capstone-services.svc.cluster.local
+```
+
+---
+
+## 📊 Monitoring & Health Checks
+
+### Health Check Endpoints
+
+All services expose health check endpoints:
+
+```bash
+# Authentication Service
+curl http://localhost:30001/health
+
+# Catalog Service
+curl http://localhost:30002/health
+
+# Gateway
+curl http://localhost:30005/health
+
+# Customer App
+curl http://localhost:30080/health
+```
+
+### Kubernetes Health Probes
+
+Services use liveness and readiness probes:
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+```
+
+### View Logs
+
+```powershell
+# Tail logs in real-time
+kubectl logs -f <pod-name> -n capstone-services
+
+# View last 100 lines
+kubectl logs --tail=100 <pod-name> -n capstone-services
+
+# View logs for all pods with label
+kubectl logs -l app=catalog-api -n capstone-services --tail=50
+```
+
+---
+
+## 🔒 Security Best Practices
+
+### Implemented
+✅ JWT-based authentication
+✅ Role-based access control (RBAC)
+✅ Password hashing (bcrypt)
+✅ OTP verification for registration
+✅ MongoDB authentication enabled
+✅ User secrets for local development
+✅ Kubernetes secrets for deployment
+✅ CORS configuration
+✅ Rate limiting (Gateway)
+✅ Input validation
+
+### Production Recommendations
+⚠️ Enable HTTPS/TLS
+⚠️ Implement API key management
+⚠️ Use managed secrets service (Azure Key Vault, AWS Secrets Manager)
+⚠️ Enable audit logging
+⚠️ Implement WAF (Web Application Firewall)
+⚠️ Regular security scanning
+⚠️ Database encryption at rest
+⚠️ Network policies (Kubernetes)
+⚠️ Pod security policies
+
+---
+
+## 📈 Scaling & Performance
+
+### Kubernetes Horizontal Pod Autoscaler (HPA)
+
+For production deployments:
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: catalog-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: catalog-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+```
+
+### Resource Limits
+
+Each service has defined resource requests and limits:
+
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+```
+
+### Performance Tips
+
+1. **Database Indexing**: Ensure MongoDB collections have appropriate indexes
+2. **Caching**: Implement Redis for frequently accessed data
+3. **Connection Pooling**: MongoDB connection pooling enabled
+4. **Async Operations**: Use async/await patterns consistently
+5. **API Pagination**: Implement pagination for large datasets
+
+---
+
+## 🔄 CI/CD Pipeline
+
+### Recommended Workflow
+
+```yaml
+1. Code Commit → GitHub
+2. Build & Test → GitHub Actions
+3. Build Docker Images → Container Registry
+4. Run Integration Tests → Newman/Postman
+5. Deploy to Staging → Kubernetes (ArgoCD)
+6. Smoke Tests → Automated
+7. Deploy to Production → Manual Approval
+```
+
+### GitHub Actions Example
+
+```yaml
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Images
+        run: ./devops/jobs/build-images-local.ps1
+      - name: Run Tests
+        run: ./devops/jobs/run-newman-tests.ps1
+      - name: Deploy
+        run: ./devops/jobs/deploy-local.ps1
+```
+
+---
+
+## 📚 API Documentation
+
+### Authentication Service
+
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567890",
+  "email": "user@example.com",
+  "password": "SecurePass123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567890",
+  "password": "SecurePass123!"
+}
+```
+
+### Catalog Service
+
+#### Get Restaurants
+```http
+GET /api/restaurants
+Authorization: Bearer <jwt-token>
+```
+
+#### Get Menu Items
+```http
+GET /api/restaurants/{restaurantId}/menu
+Authorization: Bearer <jwt-token>
+```
+
+#### Create Menu Item (Biller/Operator only)
+```http
+POST /api/restaurants/{restaurantId}/menu
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+
+{
+  "name": "Margherita Pizza",
+  "description": "Classic pizza with tomato and mozzarella",
+  "price": 12.99,
+  "category": "Pizza",
+  "isAvailable": true
+}
+```
+
+### Cart Service
+
+#### Add to Cart
+```http
+POST /api/cart/items
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+
+{
+  "menuItemId": "64a1b2c3d4e5f6",
+  "quantity": 2
+}
+```
+
+#### Get Cart
+```http
+GET /api/cart
+Authorization: Bearer <jwt-token>
+```
+
+### Order Service
+
+#### Create Order
+```http
+POST /api/orders
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+
+{
+  "restaurantId": "64a1b2c3d4e5f6",
+  "deliveryAddressId": "64a1b2c3d4e5f7",
+  "items": [
+    {
+      "menuItemId": "64a1b2c3d4e5f8",
+      "quantity": 2,
+      "price": 12.99
+    }
+  ]
+}
+```
+
+#### Get Order Status
+```http
+GET /api/orders/{orderId}
+Authorization: Bearer <jwt-token>
+```
+
+---
+
+## 🛠️ Development Workflow
+
+### Adding a New Feature
+
+1. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/new-feature
+   ```
+
+2. **Make Changes**
+   - Update service code
+   - Add tests
+   - Update API documentation
+
+3. **Test Locally**
+   ```powershell
+   # Build and test
+   dotnet build
+   dotnet test
+   
+   # Deploy to local K8s
+   cd devops/jobs
+   .\build-images-local.ps1
+   .\deploy-local.ps1
+   
+   # Run API tests
+   .\run-newman-tests.ps1
+   ```
+
+4. **Commit and Push**
+   ```bash
+   git add .
+   git commit -m "feat: Add new feature"
+   git push origin feature/new-feature
+   ```
+
+5. **Create Pull Request**
+   - Code review
+   - CI/CD pipeline runs
+   - Merge to develop/main
+
+### Database Migration
+
+1. **Create Migration Script**
+   ```javascript
+   // migrations/001_add_customer_preferences.js
+   db.customers.updateMany(
+     {},
+     { $set: { preferences: { notifications: true } } }
+   );
+   ```
+
+2. **Test Migration Locally**
+   ```bash
+   mongosh mongodb://localhost:27017/crmdb < migrations/001_add_customer_preferences.js
+   ```
+
+3. **Apply to Production**
+   - Backup database first
+   - Run during maintenance window
+   - Verify with test queries
+
+---
+
+## 📞 Support & Contributing
+
+### Getting Help
+
+- **Issues**: Create an issue on GitHub
+- **Documentation**: Check this README
+- **Logs**: Review service logs with `kubectl logs`
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
 
 ### Code Style
 
 - **C#**: Follow Microsoft C# coding conventions
-- **TypeScript/JavaScript**: Follow Airbnb JavaScript Style Guide
-- **Naming**: Use meaningful, descriptive names
-
-### Commit Messages
-
-Follow conventional commits format:
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `refactor:` - Code refactoring
-- `test:` - Adding tests
-- `chore:` - Maintenance tasks
-
-### Pull Request Process
-
-1. Ensure all tests pass
-2. Update documentation if needed
-3. Request review from team members
-4. Address review comments
-5. Merge after approval
-
-## 📝 Additional Documentation
-
-- [Local Development Setup](fda/docs/LOCAL-DEVELOPMENT-SETUP.md)
-- [Deployment Strategy](fda/docs/devops/DEPLOYMENT-STRATEGY.md)
-- [Secrets Management](fda/docs/devops/SECRETS-MANAGEMENT.md)
-- [RBAC Comprehensive Guide](fda/docs/services/RBAC-COMPREHENSIVE.md)
-- [Testing Guide](fda/docs/testing/README.md)
-
-## 📧 Contact
-
-For questions or support, please contact the development team.
-
-## 📄 License
-
-This project is part of a capstone project and is for educational purposes.
+- **JavaScript**: Use ESLint configuration
+- **Formatting**: Use Prettier for JS/TS files
 
 ---
 
-**Last Updated:** November 26, 2025
+## 📝 License
+
+This project is part of a capstone project for educational purposes.
+
+---
+
+## 🎓 Project Information
+
+- **Repository**: https://github.com/nagendra-sathyamurthy/capstone
+- **Technologies**: .NET 8.0, MongoDB, Node.js, React, Kubernetes, Docker
+- **Maintainer**: Nagendra Sathyamurthy
+- **Last Updated**: December 1, 2025
+
+---
+
+## 📋 Appendix
+
+### MongoDB Connection String Examples
+
+**Local Development:**
+```
+mongodb://admin:password@localhost:27017/authenticationdb?authSource=admin
+```
+
+**Kubernetes Service:**
+```
+mongodb://admin:password@mongodb.capstone-services.svc.cluster.local:27017/authenticationdb?authSource=admin
+```
+
+**MongoDB Atlas (Production):**
+```
+mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+```
+
+### Useful Kubernetes Commands
+
+```powershell
+# Get all resources
+kubectl get all -n capstone-services
+
+# Describe deployment
+kubectl describe deployment catalog-deployment -n capstone-services
+
+# Scale deployment
+kubectl scale deployment catalog-deployment --replicas=3 -n capstone-services
+
+# Restart deployment
+kubectl rollout restart deployment catalog-deployment -n capstone-services
+
+# View deployment history
+kubectl rollout history deployment catalog-deployment -n capstone-services
+
+# Execute command in pod
+kubectl exec -it <pod-name> -n capstone-services -- /bin/sh
+
+# Copy files from pod
+kubectl cp <pod-name>:/path/to/file ./local-file -n capstone-services
+```
+
+### Docker Commands
+
+```powershell
+# List images
+docker images
+
+# Remove image
+docker rmi <image-id>
+
+# View logs
+docker logs <container-id>
+
+# Clean up
+docker system prune -a
+
+# Build specific service
+docker build -t services-catalog:latest -f src/services/catalog/Dockerfile src/services/
+```
+
+---
+
+**🚀 Happy Coding!**

@@ -1,97 +1,91 @@
 # Run all Newman tests for deployed services
-# This script runs API tests against locally deployed services
+# This script runs API tests against locally deployed Kubernetes services
 
 Write-Host "=== Capstone Services - Newman Test Suite ===" -ForegroundColor Green
 Write-Host ""
 
-# Check if Docker is running
-Write-Host "Checking Docker status..." -ForegroundColor Cyan
-$dockerRunning = $false
-$maxAttempts = 10
-$attempt = 0
-
-while (-not $dockerRunning -and $attempt -lt $maxAttempts) {
-    try {
-        docker ps > $null 2>&1
-        if ($?) {
-            $dockerRunning = $true
-            Write-Host "✓ Docker is running" -ForegroundColor Green
-        }
-    } catch {
-        $attempt++
-        if ($attempt -lt $maxAttempts) {
-            Write-Host "Waiting for Docker... (attempt $attempt/$maxAttempts)" -ForegroundColor Yellow
-            Start-Sleep -Seconds 5
-        }
+# Check if kubectl is available
+Write-Host "Checking Kubernetes status..." -ForegroundColor Cyan
+try {
+    $context = kubectl config current-context 2>$null
+    if ($context) {
+        Write-Host "✓ Kubernetes context: $context" -ForegroundColor Green
+    } else {
+        Write-Host "✗ Kubernetes cluster not accessible" -ForegroundColor Red
+        exit 1
     }
-}
-
-if (-not $dockerRunning) {
-    Write-Host "✗ Docker is not running. Please start Docker Desktop or Rancher Desktop first." -ForegroundColor Red
-    Write-Host "  Run: rdctl start" -ForegroundColor Yellow
+} catch {
+    Write-Host "✗ kubectl not found. Please install kubectl first." -ForegroundColor Red
     exit 1
 }
 
 # Check if services are running
 Write-Host ""
-Write-Host "Checking services..." -ForegroundColor Cyan
-$services = docker ps --filter "name=capstone-" --format "{{.Names}}" 2>$null
+Write-Host "Checking services in capstone-services namespace..." -ForegroundColor Cyan
+$pods = kubectl get pods -n capstone-services --no-headers 2>$null
 
-if (-not $services) {
+if (-not $pods) {
     Write-Host "✗ No services are running. Please deploy services first." -ForegroundColor Red
-    Write-Host "  Run: docker-compose -f docker-compose-local.yml up -d" -ForegroundColor Yellow
+    Write-Host "  Run: .\deploy.ps1" -ForegroundColor Yellow
     exit 1
 }
 
 Write-Host "✓ Services are running:" -ForegroundColor Green
-$services | ForEach-Object { Write-Host "  - $_" -ForegroundColor Gray }
+kubectl get pods -n capstone-services --no-headers | ForEach-Object { 
+    $podInfo = $_ -split '\s+'
+    Write-Host "  - $($podInfo[0]): $($podInfo[2])" -ForegroundColor Gray 
+}
 
 # Create test results directory
-$testResultsDir = "..\..\..\..\test-results"
+$testResultsDir = "..\..\test-results"
 New-Item -ItemType Directory -Force -Path $testResultsDir | Out-Null
 Write-Host ""
 Write-Host "Test results will be saved to: $testResultsDir" -ForegroundColor Cyan
 Write-Host ""
 
-# Define test collections for deployed services
+# Define test collections
+$collectionsPath = "..\..\postman-collections"
 $testCollections = @(
     @{
-        Name = "Authentication"
-        Collection = "Authentication-Service-Fixed.postman_collection.json"
-        Report = "authentication-test-report"
+        Name = "User Registration"
+        Collection = "$collectionsPath\user-registration\User-Registration-Flow.postman_collection.json"
+        Report = "user-registration-report"
     },
     @{
-        Name = "Catalog"
-        Collection = "Catalog-Service-WithAuth.postman_collection.json"
-        Report = "catalog-test-report"
+        Name = "Restaurant Owner Workflows"
+        Collection = "$collectionsPath\restaurant-owner-workflows\Restaurant-Owner-Workflows.postman_collection.json"
+        Report = "restaurant-owner-report"
     },
     @{
-        Name = "CRM"
-        Collection = "CRM-Service-WithAuth.postman_collection.json"
-        Report = "crm-test-report"
-    },
-    @{
-        Name = "Cart"
-        Collection = "Cart-Service.postman_collection.json"
-        Report = "cart-test-report"
+        Name = "Operator Service Workflows"
+        Collection = "$collectionsPath\operator-service-workflows\Operator-Service-Workflows.postman_collection.json"
+        Report = "operator-service-report"
     }
 )
 
-$environment = "Capstone-Local-Environment.postman_environment.json"
+$environment = "$collectionsPath\Capstone-Local-Environment.postman_environment.json"
 $totalTests = $testCollections.Count
 $currentTest = 0
 $passedTests = 0
 $failedTests = 0
 
-# Run tests for each service
+# Run tests for each collection
 foreach ($test in $testCollections) {
     $currentTest++
-    Write-Host "[$currentTest/$totalTests] Testing $($test.Name) Service..." -ForegroundColor Yellow
+    Write-Host "[$currentTest/$totalTests] Testing $($test.Name)..." -ForegroundColor Yellow
     Write-Host "─────────────────────────────────────────────────────────────" -ForegroundColor Gray
     
     $collectionPath = $test.Collection
     $reportPath = "$testResultsDir\$($test.Report).html"
     $jsonReportPath = "$testResultsDir\$($test.Report).json"
+    
+    # Check if collection file exists
+    if (-not (Test-Path $collectionPath)) {
+        Write-Host "✗ Collection file not found: $collectionPath" -ForegroundColor Red
+        $failedTests++
+        Write-Host ""
+        continue
+    }
     
     try {
         # Run newman with both HTML and JSON reporters
@@ -108,7 +102,6 @@ foreach ($test in $testCollections) {
             $passedTests++
         } else {
             Write-Host "✗ $($test.Name) tests failed (exit code: $LASTEXITCODE)" -ForegroundColor Red
-            Write-Host "Output: $($output | Out-String)" -ForegroundColor Gray
             $failedTests++
         }
     } catch {
@@ -121,7 +114,7 @@ foreach ($test in $testCollections) {
 
 # Summary
 Write-Host "=== Test Summary ===" -ForegroundColor Green
-Write-Host "Total Services Tested: $totalTests" -ForegroundColor White
+Write-Host "Total Test Collections: $totalTests" -ForegroundColor White
 Write-Host "Passed: $passedTests" -ForegroundColor Green
 Write-Host "Failed: $failedTests" -ForegroundColor $(if ($failedTests -gt 0) { "Red" } else { "White" })
 Write-Host ""

@@ -1,13 +1,8 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: capstone-frontend
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: customer-app-config
-  namespace: capstone-frontend
+  namespace: capstone-services
 data:
   REACT_APP_GATEWAY_URL: "http://localhost:30500"  # Updated to match new gateway NodePort
   REACT_APP_ENV: "development"
@@ -16,7 +11,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: customer-app
-  namespace: capstone-frontend
+  namespace: capstone-services
   labels:
     app: customer-app
 spec:
@@ -31,21 +26,14 @@ spec:
     spec:
       containers:
       - name: customer-app
-        image: capstone-customer-app:latest
-        imagePullPolicy: Never
+        image: customer-app:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
           name: http
         envFrom:
         - configMapRef:
             name: customer-app-config
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
         livenessProbe:
           httpGet:
             path: /
@@ -67,7 +55,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: customer-app-service
-  namespace: capstone-frontend
+  namespace: capstone-services
   labels:
     app: customer-app
 spec:

@@ -1,22 +1,17 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: capstone-gateway
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: gateway-config
-  namespace: capstone-gateway
+  namespace: capstone-services
 data:
   PORT: "5000"
   NODE_ENV: "production"
-  AUTH_SERVICE_URL: "https://auth.your-domain.com"
-  CATALOG_SERVICE_URL: "https://catalog.your-domain.com"
-  CRM_SERVICE_URL: "https://crm.your-domain.com"
-  CART_SERVICE_URL: "https://cart.your-domain.com"
-  ORDER_SERVICE_URL: "https://order.your-domain.com"
-  PAYMENT_SERVICE_URL: "https://payment.your-domain.com"
+  AUTH_SERVICE_URL: "http://authentication-service:8080"
+  CATALOG_SERVICE_URL: "http://catalog-service:8080"
+  CRM_SERVICE_URL: "http://crm-service:8080"
+  CART_SERVICE_URL: "http://cart-service:8080"
+  ORDER_SERVICE_URL: "http://order-service:8080"
+  PAYMENT_SERVICE_URL: "http://payment-service:8080"
   CORS_ORIGIN: "https://app.your-domain.com"
   RATE_LIMIT_WINDOW_MS: "900000"
   RATE_LIMIT_MAX_REQUESTS: "100"
@@ -26,7 +21,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gateway
-  namespace: capstone-gateway
+  namespace: capstone-services
   labels:
     app: gateway
 spec:
@@ -54,13 +49,6 @@ spec:
         envFrom:
         - configMapRef:
             name: gateway-config
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "200m"
-          limits:
-            memory: "512Mi"
-            cpu: "1000m"
         livenessProbe:
           httpGet:
             path: /health
@@ -82,7 +70,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gateway-service
-  namespace: capstone-gateway
+  namespace: capstone-services
   labels:
     app: gateway
 spec:
@@ -99,7 +87,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: gateway-hpa
-  namespace: capstone-gateway
+  namespace: capstone-services
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

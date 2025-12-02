@@ -46,14 +46,7 @@ spec:
         - name: DatabaseSettings__DatabaseName
           value: "catalogdb"
         - name: DatabaseSettings__CollectionName
-          value: "items"
-        resources:
-          requests:
-            memory: "128Mi"  # Reduced for local dev
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "250m"
+          value: "menuitems"
 ---
 apiVersion: v1
 kind: Service

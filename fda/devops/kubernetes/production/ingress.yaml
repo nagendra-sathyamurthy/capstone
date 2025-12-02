@@ -99,7 +99,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: capstone-gateway-ingress
-  namespace: capstone-gateway
+  namespace: capstone-services
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -142,7 +142,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: capstone-frontend-ingress
-  namespace: capstone-frontend
+  namespace: capstone-services
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"

@@ -42,13 +42,6 @@ spec:
           value: "cartdb"
         - name: DatabaseSettings__CollectionName
           value: "carts"
-        resources:
-          requests:
-            memory: "128Mi"  # Reduced for local dev
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

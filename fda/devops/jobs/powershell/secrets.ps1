@@ -30,7 +30,7 @@ catch {
 }
 
 # Apply secrets
-$secretsPath = "../kubernetes/local/mongodb-secret.yaml"
+$secretsPath = "../../kubernetes/local/mongodb-secret.yaml"
 
 try {
     Write-Host "Applying MongoDB secrets..." -ForegroundColor Cyan
@@ -40,20 +40,16 @@ try {
     
     # Verify secrets
     Write-Host "`nVerifying applied secrets:" -ForegroundColor Cyan
-    kubectl get secrets -n $namespace | Where-Object { $_ -match "mongodb|authentication|catalog|crm|cart" }
+    kubectl get secrets -n $namespace | Where-Object { $_ -match "mongodb" }
     
     Write-Host "`nSecret details:" -ForegroundColor Cyan
-    $secrets = @("mongodb-secret", "authentication-secret", "catalog-secret", "crm-secret", "cart-secret")
-    
-    foreach ($secret in $secrets) {
-        Write-Host "- $secret" -ForegroundColor Gray
-        $secretInfo = kubectl get secret $secret -n $namespace --ignore-not-found -o jsonpath='{.data}' 2>$null
-        if ($secretInfo) {
-            $keys = kubectl get secret $secret -n $namespace -o jsonpath='{.data}' | ConvertFrom-Json | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
-            Write-Host "  Keys: $($keys -join ', ')" -ForegroundColor DarkGray
-        } else {
-            Write-Host "  Not found" -ForegroundColor Red
-        }
+    Write-Host "- mongodb-secret" -ForegroundColor Gray
+    $secretInfo = kubectl get secret mongodb-secret -n $namespace --ignore-not-found -o jsonpath='{.data}' 2>$null
+    if ($secretInfo) {
+        $keys = kubectl get secret mongodb-secret -n $namespace -o jsonpath='{.data}' | ConvertFrom-Json | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+        Write-Host "  Keys: $($keys -join ', ')" -ForegroundColor DarkGray
+    } else {
+        Write-Host "  Not found" -ForegroundColor Red
     }
 }
 catch {

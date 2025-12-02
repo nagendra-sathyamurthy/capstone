@@ -1,22 +1,16 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: capstone-gateway
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: gateway-config
-  namespace: capstone-gateway
+  namespace: capstone-services
 data:
   PORT: "5000"
   NODE_ENV: "development"
-  AUTH_SERVICE_URL: "http://authentication-service.capstone-services.svc.cluster.local:8080"
-  CATALOG_SERVICE_URL: "http://catalog-service.capstone-services.svc.cluster.local:8080"
-  CRM_SERVICE_URL: "http://crm-service.capstone-services.svc.cluster.local:8080"
-  CART_SERVICE_URL: "http://cart-service.capstone-services.svc.cluster.local:8080"
-  ORDER_SERVICE_URL: "http://order-service.capstone-services.svc.cluster.local:8080"
-  PAYMENT_SERVICE_URL: "http://payment-service.capstone-services.svc.cluster.local:8080"
+  AUTH_SERVICE_URL: "http://authentication-service:8080"
+  CATALOG_SERVICE_URL: "http://catalog-service:8080"
+  CRM_SERVICE_URL: "http://crm-service:8080"
+  CART_SERVICE_URL: "http://cart-service:8080"
+  ORDER_SERVICE_URL: "http://order-service:8080"
   CORS_ORIGIN: "http://localhost:3000"
   RATE_LIMIT_WINDOW_MS: "900000"
   RATE_LIMIT_MAX_REQUESTS: "100"
@@ -26,7 +20,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gateway
-  namespace: capstone-gateway
+  namespace: capstone-services
   labels:
     app: gateway
 spec:
@@ -41,21 +35,14 @@ spec:
     spec:
       containers:
       - name: gateway
-        image: capstone-gateway:latest
-        imagePullPolicy: Never
+        image: gateway:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
           name: http
         envFrom:
         - configMapRef:
             name: gateway-config
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
         livenessProbe:
           httpGet:
             path: /health
@@ -77,15 +64,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gateway-service
-  namespace: capstone-gateway
+  namespace: capstone-services
   labels:
     app: gateway
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: gateway
   ports:
   - port: 5000
     targetPort: 5000
+    nodePort: 30500
     protocol: TCP
     name: http

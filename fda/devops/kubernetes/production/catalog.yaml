@@ -37,13 +37,6 @@ spec:
               key: password
         - name: MONGO_INITDB_DATABASE
           value: "catalogdb"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
         volumeMounts:
         - name: catalog-mongodb-storage
           mountPath: /data/db
@@ -122,14 +115,7 @@ spec:
         - name: DatabaseSettings__DatabaseName
           value: "catalogdb"
         - name: DatabaseSettings__CollectionName
-          value: "items"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
+          value: "menuitems"
         livenessProbe:
           httpGet:
             path: /health

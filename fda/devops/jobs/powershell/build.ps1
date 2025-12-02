@@ -50,12 +50,6 @@ Write-Host "  Building Order Service..." -ForegroundColor Gray
 if ($LASTEXITCODE -ne 0) { Write-Host "Failed to build order service" -ForegroundColor Red; exit 1 }
 Write-Host "  ✓ Order Service built" -ForegroundColor Green
 
-# Payment Service
-Write-Host "  Building Payment Service..." -ForegroundColor Gray
-& $containerCmd build -t services-payment:latest -f payment/Dockerfile .
-if ($LASTEXITCODE -ne 0) { Write-Host "Failed to build payment service" -ForegroundColor Red; exit 1 }
-Write-Host "  ✓ Payment Service built" -ForegroundColor Green
-
 Write-Host ""
 Write-Host "Step 2: Building Gateway..." -ForegroundColor Yellow
 Set-Location "$rootPath\src\gateway"

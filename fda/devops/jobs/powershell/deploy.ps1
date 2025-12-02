@@ -23,11 +23,17 @@ if ($LASTEXITCODE -ne 0) {
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptPath
 
+Write-Host "Step 0: Cleaning up old namespaces (if any)..." -ForegroundColor Yellow
+kubectl delete namespace capstone-gateway --ignore-not-found=true 2>$null
+kubectl delete namespace capstone-frontend --ignore-not-found=true 2>$null
+Write-Host "✓ Old namespaces cleaned up" -ForegroundColor Green
+Write-Host ""
+
 Write-Host "Step 1: Deploying Infrastructure (MongoDB, Namespace)..." -ForegroundColor Yellow
-kubectl apply -f local/namespace.yaml
-kubectl apply -f local/mongodb-secret.yaml
-kubectl apply -f local/mongodb-config.yaml
-kubectl apply -f local/mongodb.yaml
+kubectl apply -f ../../kubernetes/local/namespace.yaml
+kubectl apply -f ../../kubernetes/local/mongodb-secret.yaml
+kubectl apply -f ../../kubernetes/local/mongodb-config.yaml
+kubectl apply -f ../../kubernetes/local/mongodb.yaml
 Write-Host "✓ Infrastructure deployed" -ForegroundColor Green
 Write-Host ""
 
@@ -36,33 +42,33 @@ kubectl wait --for=condition=available --timeout=180s deployment/mongodb-deploym
 Write-Host ""
 
 Write-Host "Step 2: Deploying Backend Services..." -ForegroundColor Yellow
-kubectl apply -f local/authentication.yaml
-kubectl apply -f local/catalog.yaml
-kubectl apply -f local/crm.yaml
-kubectl apply -f local/cart.yaml
-kubectl apply -f local/order.yaml
-kubectl apply -f local/payment.yaml
+kubectl apply -f ../../kubernetes/local/authentication.yaml
+kubectl apply -f ../../kubernetes/local/catalog.yaml
+kubectl apply -f ../../kubernetes/local/crm.yaml
+kubectl apply -f ../../kubernetes/local/cart.yaml
+kubectl apply -f ../../kubernetes/local/order.yaml
 Write-Host "✓ Backend services deployed" -ForegroundColor Green
 Write-Host ""
 
 Write-Host "Step 3: Deploying Gateway..." -ForegroundColor Yellow
-kubectl apply -f local/gateway.yaml
+kubectl apply -f ../../kubernetes/local/gateway.yaml
 Write-Host "✓ Gateway deployed" -ForegroundColor Green
 Write-Host ""
 
 Write-Host "Step 4: Deploying Customer App (Frontend)..." -ForegroundColor Yellow
-kubectl apply -f local/customer-app.yaml
+kubectl apply -f ../../kubernetes/local/customer-app.yaml
 Write-Host "✓ Customer App deployed" -ForegroundColor Green
 Write-Host ""
 
 Write-Host "Step 5: Waiting for all services to be ready..." -ForegroundColor Yellow
 $services = @(
-    @{Name="authentication-service-deployment"; Namespace="capstone-services"},
-    @{Name="catalog-service-deployment"; Namespace="capstone-services"},
-    @{Name="crm-service-deployment"; Namespace="capstone-services"},
-    @{Name="cart-service-deployment"; Namespace="capstone-services"},
-    @{Name="gateway"; Namespace="capstone-gateway"},
-    @{Name="customer-app"; Namespace="capstone-frontend"}
+    @{Name="authentication-deployment"; Namespace="capstone-services"},
+    @{Name="catalog-deployment"; Namespace="capstone-services"},
+    @{Name="crm-deployment"; Namespace="capstone-services"},
+    @{Name="cart-deployment"; Namespace="capstone-services"},
+    @{Name="order-deployment"; Namespace="capstone-services"},
+    @{Name="gateway"; Namespace="capstone-services"},
+    @{Name="customer-app"; Namespace="capstone-services"}
 )
 
 foreach ($service in $services) {
@@ -82,17 +88,19 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Access Points:" -ForegroundColor White
 Write-Host "  Customer App:        http://localhost:30080" -ForegroundColor Green
-Write-Host "  API Gateway:         http://localhost:30005" -ForegroundColor Green
+Write-Host "  API Gateway:         http://localhost:30500" -ForegroundColor Green
 Write-Host "  Authentication:      http://localhost:30001" -ForegroundColor Cyan
 Write-Host "  Catalog Service:     http://localhost:30002" -ForegroundColor Cyan
 Write-Host "  CRM Service:         http://localhost:30003" -ForegroundColor Cyan
 Write-Host "  Cart Service:        http://localhost:30004" -ForegroundColor Cyan
 Write-Host "  MongoDB:             http://localhost:30000" -ForegroundColor Cyan
 Write-Host ""
+Write-Host "Namespace: capstone-services (all services in single namespace)" -ForegroundColor Magenta
+Write-Host ""
 Write-Host "Useful Commands:" -ForegroundColor Yellow
-Write-Host "  View all pods:       kubectl get pods -A" -ForegroundColor White
-Write-Host "  View all services:   kubectl get services -A" -ForegroundColor White
-Write-Host "  View Gateway logs:   kubectl logs -n capstone-gateway -l app=gateway --tail=100 -f" -ForegroundColor White
-Write-Host "  View App logs:       kubectl logs -n capstone-frontend -l app=customer-app --tail=100 -f" -ForegroundColor White
-Write-Host "  Port forwarding:     .\start-portforward.ps1" -ForegroundColor White
+Write-Host "  View all pods:       kubectl get pods -n capstone-services" -ForegroundColor White
+Write-Host "  View all services:   kubectl get services -n capstone-services" -ForegroundColor White
+Write-Host "  View Gateway logs:   kubectl logs -n capstone-services -l app=gateway --tail=100 -f" -ForegroundColor White
+Write-Host "  View App logs:       kubectl logs -n capstone-services -l app=customer-app --tail=100 -f" -ForegroundColor White
+Write-Host "  View All logs:       kubectl logs -n capstone-services -l app --tail=50" -ForegroundColor White
 Write-Host ""
