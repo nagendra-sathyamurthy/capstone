@@ -565,52 +565,195 @@ cd devops/jobs
 
 ## 🔧 Configuration
 
-### Environment Variables
+### Centralized Configuration Architecture
 
-#### MongoDB Connection
-```bash
-MONGO_CONNECTION_STRING=mongodb://admin:password@localhost:27017/database?authSource=admin
-```
+The project uses a centralized configuration approach with Kubernetes ConfigMaps and Secrets to eliminate duplication and ensure consistency across all services.
 
-#### JWT Settings
-```bash
-JWT_SECRET=your-secret-key-here
-JWT_ISSUER=FoodDeliveryAPI
-JWT_AUDIENCE=FoodDeliveryClients
-JWT_EXPIRATION_MINUTES=60
-```
+#### Configuration Structure
 
-#### Service URLs
-```bash
-AUTHENTICATION_API_URL=http://authentication-service:5001
-CATALOG_API_URL=http://catalog-service:5002
-CRM_API_URL=http://crm-service:5003
-CART_API_URL=http://cart-service:5004
-ORDER_API_URL=http://order-service:5005
-PAYMENT_API_URL=http://payment-service:5006
-GATEWAY_URL=http://gateway:4000
-```
+**1. `common-config.yaml` - Shared Non-Sensitive Configuration**
 
-### Kubernetes Secrets
+Contains 24 environment variables common across all .NET services:
+- ASP.NET Core settings (environment, URLs)
+- Logging configurations
+- Service URLs for inter-service communication
+- MongoDB connection pool settings
+- CORS settings
+- JWT configuration (non-secret)
+- Rate limiting defaults
 
-Secrets are stored in `devops/kubernetes/local/secrets.yaml`:
+**Benefits:**
+- ✅ Single source of truth for common variables
+- ✅ Reduced configuration from ~120 lines to ~98 lines (18% reduction)
+- ✅ Guaranteed consistency across all services
+- ✅ Easy updates (change one file instead of six)
+- ✅ No configuration drift
+
+**2. `mongodb-secret.yaml` - Sensitive Database Credentials**
+
+Kubernetes Secret containing MongoDB connection strings for each service (base64 encoded).
+
+**3. Service-Specific Configuration**
+
+Each service defines only its unique variables:
+- Database name
+- Collection name
+- Service-specific ports or settings
+
+#### How Services Load Configuration
+
+Each .NET service deployment follows this pattern:
 
 ```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: mongodb-secret
-  namespace: capstone-services
-type: Opaque
-stringData:
-  connection-string: mongodb://admin:password@mongodb:27017/
-  jwt-secret: your-jwt-secret
+spec:
+  containers:
+  - name: service-name
+    # Load ALL common variables from ConfigMap
+    envFrom:
+    - configMapRef:
+        name: common-service-config
+    # Add service-specific variables
+    env:
+    - name: MONGO_CONNECTION_STRING
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-secret
+          key: service-connection-string
+    - name: DATABASE_SETTINGS__DATABASE_NAME
+      value: "servicedb"
 ```
 
-Apply secrets:
+#### Configuration Priority
+
+When variables are defined in multiple places:
+1. **`env` variables** (service-specific) - Highest priority, overrides ConfigMap
+2. **`envFrom` ConfigMap** variables - Common defaults
+3. Container defaults - Lowest priority
+
+#### Environment Variable Naming Convention
+
+**RULE: Always use SCREAMING_SNAKE_CASE for environment variable names**
+
+All environment variables follow SCREAMING_SNAKE_CASE naming:
+- `ASPNETCORE_ENVIRONMENT`
+- `MONGO_CONNECTION_STRING`
+- `DATABASE_SETTINGS__DATABASE_NAME`
+- `LOGGING__LOG_LEVEL__DEFAULT`
+
+**Note:** .NET Core automatically maps these to hierarchical configuration:
+- `DATABASE_SETTINGS__DATABASE_NAME` → `DatabaseSettings:DatabaseName`
+- `LOGGING__LOG_LEVEL__DEFAULT` → `Logging:LogLevel:Default`
+
+Double underscores (`__`) represent configuration hierarchy levels.
+
+### Common Environment Variables
+
+From `common-config.yaml`:
+
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `ASPNETCORE_ENVIRONMENT` | Development | ASP.NET Core environment |
+| `ASPNETCORE_URLS` | http://+:8080 | Service listening URL |
+| `LOGGING__LOG_LEVEL__DEFAULT` | Information | Default log level |
+| `LOGGING__LOG_LEVEL__MICROSOFT` | Warning | Microsoft log level |
+| `LOGGING__LOG_LEVEL__MICROSOFT__HOSTING__LIFETIME` | Information | Hosting log level |
+| `AUTHENTICATION_SERVICE_URL` | http://authentication-service:8080 | Auth service URL |
+| `CATALOG_SERVICE_URL` | http://catalog-service:8080 | Catalog service URL |
+| `CRM_SERVICE_URL` | http://crm-service:8080 | CRM service URL |
+| `CART_SERVICE_URL` | http://cart-service:8080 | Cart service URL |
+| `ORDER_SERVICE_URL` | http://order-service:8080 | Order service URL |
+| `GATEWAY_SERVICE_URL` | http://gateway-service:5000 | Gateway URL |
+| `DATABASE_SETTINGS__MAX_CONNECTION_POOL_SIZE` | 100 | MongoDB max connections |
+| `DATABASE_SETTINGS__MIN_CONNECTION_POOL_SIZE` | 10 | MongoDB min connections |
+| `DATABASE_SETTINGS__SERVER_SELECTION_TIMEOUT` | 30000 | MongoDB timeout (ms) |
+| `DATABASE_SETTINGS__CONNECT_TIMEOUT` | 30000 | MongoDB connect timeout (ms) |
+| `CORS_ORIGIN` | http://localhost:3000 | Allowed CORS origin |
+| `CORS_ALLOW_CREDENTIALS` | true | CORS credentials setting |
+| `JWT_ISSUER` | CapstoneAuthService | JWT token issuer |
+| `JWT_AUDIENCE` | CapstoneServices | JWT token audience |
+| `JWT_EXPIRY_MINUTES` | 480 | JWT expiry (8 hours) |
+| `RATE_LIMIT_WINDOW_MS` | 60000 | Rate limit window |
+| `RATE_LIMIT_MAX_REQUESTS` | 100 | Max requests per window |
+| `ENVIRONMENT` | local | Environment name |
+| `TIMEZONE` | UTC | Server timezone |
+
+### Service-Specific Variables
+
+Each service defines in its own YAML:
+- `MONGO_CONNECTION_STRING` - From mongodb-secret (sensitive)
+- `DATABASE_SETTINGS__DATABASE_NAME` - Service's database name
+- `DATABASE_SETTINGS__COLLECTION_NAME` - Primary collection name
+
+### Updating Configuration
+
+#### Update Common Settings (Affects All Services)
 ```powershell
-.\devops\jobs\apply-secrets.ps1
+# 1. Edit common-config.yaml
+code fda/devops/kubernetes/local/common-config.yaml
+
+# 2. Apply changes
+kubectl apply -f fda/devops/kubernetes/local/common-config.yaml
+
+# 3. Restart all services to pick up changes
+kubectl rollout restart deployment -n capstone-services
 ```
+
+#### Update Service-Specific Settings
+```powershell
+# 1. Edit service YAML (e.g., authentication.yaml)
+code fda/devops/kubernetes/local/authentication.yaml
+
+# 2. Apply changes (service auto-restarts)
+kubectl apply -f fda/devops/kubernetes/local/authentication.yaml
+```
+
+#### Update Secrets (MongoDB Connection Strings)
+```powershell
+# 1. Edit mongodb-secret.yaml
+code fda/devops/kubernetes/local/mongodb-secret.yaml
+
+# 2. Apply changes
+kubectl apply -f fda/devops/kubernetes/local/mongodb-secret.yaml
+
+# 3. Restart services
+kubectl rollout restart deployment -n capstone-services
+```
+
+### Verify Configuration
+
+```powershell
+# Check if ConfigMap exists
+kubectl get configmap common-service-config -n capstone-services
+
+# View ConfigMap contents
+kubectl describe configmap common-service-config -n capstone-services
+
+# View all environment variables in a running pod
+kubectl exec deployment/authentication-deployment -n capstone-services -- printenv | sort
+
+# View specific variable
+kubectl exec deployment/authentication-deployment -n capstone-services -- printenv | grep ASPNETCORE_ENVIRONMENT
+```
+
+### Configuration Best Practices
+
+1. **Common Variables**: If 3+ services use a variable, add it to `common-config.yaml`
+2. **Secrets Management**: Never put sensitive data in ConfigMaps - use Secrets
+3. **Naming Convention**: Always use SCREAMING_SNAKE_CASE for variable names
+4. **Service-Specific**: Keep database names, collection names in service YAMLs
+5. **Documentation**: Update README.md when adding new common variables (don't create separate docs)
+6. **Testing**: Always restart services and verify after configuration changes
+
+### Deployment Order
+
+The deployment scripts apply configuration in this order:
+1. Namespace
+2. **common-config.yaml** (common configuration)
+3. mongodb-secret.yaml (secrets)
+4. mongodb-config.yaml and mongodb.yaml
+5. All service deployments
+
+This ensures common configuration exists before services reference it.
 
 ---
 
