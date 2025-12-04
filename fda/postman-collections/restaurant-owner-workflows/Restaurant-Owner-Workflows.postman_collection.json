@@ -130,7 +130,7 @@
               "mode": "raw",
               "raw": "{\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Pizza Palace Downtown\",\n  \"description\": \"Authentic Italian pizzas and pasta. Family-owned restaurant serving the community since 2010.\",\n  \"address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\",\n    \"country\": \"USA\",\n    \"landmark\": \"Near Central Park\"\n  },\n  \"contactInfo\": {\n    \"phone\": \"+1-555-0101\",\n    \"email\": \"contact@pizzapalace.com\",\n    \"website\": \"https://www.pizzapalace.com\"\n  },\n  \"timings\": {\n    \"monday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"tuesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"wednesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"thursday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"friday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"23:00\" },\n    \"saturday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"23:00\" },\n    \"sunday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" }\n  },\n  \"isActive\": true,\n  \"cuisineType\": \"Italian\",\n  \"imageUrl\": \"https://example.com/restaurants/pizzapalace.jpg\"\n}"
             },
-            "url": "{{crm_base_url}}/register"
+            "url": "{{crm_base_url}}/restaurant/register"
           },
           "response": []
         },
@@ -162,7 +162,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{crm_base_url}}/owner/{{user_id}}"
+            "url": "{{crm_base_url}}/restaurant/owner/{{user_id}}"
           },
           "response": []
         }
@@ -209,7 +209,7 @@
               "mode": "raw",
               "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"Pizza Palace Downtown\",\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic pizza with fresh mozzarella, tomato sauce, and basil leaves\",\n  \"preparationTimeMinutes\": 15,\n  \"packagingSize\": \"12 inch\",\n  \"unitOfMeasure\": \"pizza\",\n  \"pricePerUOM\": 14.99,\n  \"category\": \"Main Course\",\n  \"cuisine\": \"Italian\",\n  \"ingredients\": [\"Pizza dough\", \"Mozzarella cheese\", \"Tomato sauce\", \"Fresh basil\", \"Olive oil\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"isVegetarian\": true,\n  \"isVegan\": false,\n  \"isGlutenFree\": false,\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"availableFromTime\": \"11:00\",\n  \"availableToTime\": \"22:00\",\n  \"imageUrl\": \"https://example.com/menu/margherita.jpg\",\n  \"calories\": 1200,\n  \"protein\": 48,\n  \"carbohydrates\": 150,\n  \"fat\": 45\n}"
             },
-            "url": "{{catalog_base_url}}"
+            "url": "{{catalog_base_url}}/menu"
           },
           "response": []
         },
@@ -245,7 +245,7 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Pepperoni Pizza\",\n    \"description\": \"Classic pepperoni pizza with mozzarella and spicy pepperoni slices\",\n    \"preparationTimeMinutes\": 15,\n    \"packagingSize\": \"12 inch\",\n    \"unitOfMeasure\": \"pizza\",\n    \"pricePerUOM\": 16.99,\n    \"category\": \"Main Course\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Pizza dough\", \"Mozzarella\", \"Pepperoni\", \"Tomato sauce\"],\n    \"allergens\": [\"Gluten\", \"Dairy\"],\n    \"isVegetarian\": false,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 2,\n    \"isAvailable\": true,\n    \"calories\": 1400,\n    \"protein\": 55,\n    \"carbohydrates\": 155,\n    \"fat\": 52\n  },\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Caesar Salad\",\n    \"description\": \"Crisp romaine lettuce with Caesar dressing, croutons, and parmesan\",\n    \"preparationTimeMinutes\": 8,\n    \"packagingSize\": \"Regular\",\n    \"unitOfMeasure\": \"bowl\",\n    \"pricePerUOM\": 9.99,\n    \"category\": \"Appetizer\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Romaine lettuce\", \"Caesar dressing\", \"Croutons\", \"Parmesan\"],\n    \"allergens\": [\"Gluten\", \"Dairy\", \"Eggs\"],\n    \"isVegetarian\": true,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 1,\n    \"isAvailable\": true,\n    \"calories\": 250,\n    \"protein\": 8,\n    \"carbohydrates\": 15,\n    \"fat\": 18\n  },\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Breakfast Pizza\",\n    \"description\": \"Special breakfast pizza with eggs, bacon, and cheese - available mornings only\",\n    \"preparationTimeMinutes\": 18,\n    \"packagingSize\": \"12 inch\",\n    \"unitOfMeasure\": \"pizza\",\n    \"pricePerUOM\": 13.99,\n    \"category\": \"Main Course\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Pizza dough\", \"Eggs\", \"Bacon\", \"Mozzarella\", \"Tomato sauce\"],\n    \"allergens\": [\"Gluten\", \"Dairy\", \"Eggs\"],\n    \"isVegetarian\": false,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 1,\n    \"isAvailable\": true,\n    \"availableFromTime\": \"08:00\",\n    \"availableToTime\": \"11:30\",\n    \"calories\": 1350,\n    \"protein\": 62,\n    \"carbohydrates\": 145,\n    \"fat\": 58\n  }\n]"
             },
-            "url": "{{catalog_base_url}}/bulk"
+            "url": "{{catalog_base_url}}/menu/bulk"
           },
           "response": []
         }
@@ -281,7 +281,7 @@
               "mode": "raw",
               "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"Pizza Palace Downtown\",\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Margherita Pizza - Updated\",\n  \"description\": \"Classic pizza with fresh buffalo mozzarella, tomato sauce, and fresh basil leaves. Now with premium ingredients!\",\n  \"preparationTimeMinutes\": 15,\n  \"packagingSize\": \"12 inch\",\n  \"unitOfMeasure\": \"pizza\",\n  \"pricePerUOM\": 15.99,\n  \"category\": \"Main Course\",\n  \"cuisine\": \"Italian\",\n  \"ingredients\": [\"Pizza dough\", \"Buffalo Mozzarella\", \"Tomato sauce\", \"Fresh basil\", \"Olive oil\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"isVegetarian\": true,\n  \"isVegan\": false,\n  \"isGlutenFree\": false,\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"availableFromTime\": \"11:00\",\n  \"availableToTime\": \"22:00\",\n  \"imageUrl\": \"https://example.com/menu/margherita-premium.jpg\",\n  \"calories\": 1200,\n  \"protein\": 48,\n  \"carbohydrates\": 150,\n  \"fat\": 45\n}"
             },
-            "url": "{{catalog_base_url}}/{{menu_item_id}}"
+            "url": "{{catalog_base_url}}/menu/{{menu_item_id}}"
           },
           "response": []
         },
@@ -312,7 +312,7 @@
               "mode": "raw",
               "raw": "false"
             },
-            "url": "{{catalog_base_url}}/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/menu/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -343,7 +343,7 @@
               "mode": "raw",
               "raw": "true"
             },
-            "url": "{{catalog_base_url}}/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/menu/{{menu_item_id}}/availability"
           },
           "response": []
         }
@@ -375,7 +375,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{catalog_base_url}}/owner/{{user_id}}"
+            "url": "{{catalog_base_url}}/menu/owner/{{user_id}}"
           },
           "response": []
         },
@@ -405,7 +405,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{catalog_base_url}}/restaurant/{{restaurant_id}}"
+            "url": "{{catalog_base_url}}/menu/restaurant/{{restaurant_id}}"
           },
           "response": []
         },
@@ -427,7 +427,7 @@
           "request": {
             "method": "DELETE",
             "header": [],
-            "url": "{{catalog_base_url}}/{{menu_item_id}}"
+            "url": "{{catalog_base_url}}/menu/{{menu_item_id}}"
           },
           "response": []
         }

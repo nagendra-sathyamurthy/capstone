@@ -70,7 +70,7 @@
           "mode": "raw",
           "raw": "{{user_data}}"
         },
-        "url": "{{auth_base_url}}/api/auth/register"
+        "url": "{{auth_base_url}}/register"
       }
     },
     {
@@ -109,7 +109,7 @@
           "mode": "raw",
           "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
         },
-        "url": "{{auth_base_url}}/api/auth/login"
+        "url": "{{auth_base_url}}/login"
       }
     },
     {
@@ -153,7 +153,7 @@
             "value": "application/json"
           }
         ],
-        "url": "{{auth_base_url}}/api/auth/validate"
+        "url": "{{auth_base_url}}/validate"
       }
     }
   ]

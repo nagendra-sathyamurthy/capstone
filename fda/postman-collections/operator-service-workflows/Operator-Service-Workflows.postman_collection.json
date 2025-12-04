@@ -121,7 +121,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/api/restaurant/{{restaurant_id}}"
+            "url": "{{order_base_url}}/restaurant/{{restaurant_id}}"
           },
           "response": []
         }
@@ -318,7 +318,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}"
+            "url": "{{order_base_url}}/operator/inventory/{{restaurant_id}}"
           },
           "response": []
         },
@@ -354,7 +354,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}/low-stock"
+            "url": "{{order_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
           },
           "response": []
         }
@@ -395,7 +395,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 50,\n  \"isAvailable\": true\n}"
             },
-            "url": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -431,7 +431,7 @@
               "mode": "raw",
               "raw": "{\n  \"availableFromTime\": \"09:00\",\n  \"availableToTime\": \"22:00\"\n}"
             },
-            "url": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -462,7 +462,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 0,\n  \"isAvailable\": false\n}"
             },
-            "url": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -493,7 +493,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 25,\n  \"isAvailable\": true\n}"
             },
-            "url": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         }
@@ -762,7 +762,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}/low-stock"
+            "url": "{{order_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
           },
           "response": []
         },
@@ -789,7 +789,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 45,\n  \"isAvailable\": true\n}"
             },
-            "url": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
