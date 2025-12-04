@@ -1,728 +1,626 @@
 {
-	"info": {
-		"_postman_id": "restaurant-owner-workflows-001",
-		"name": "Restaurant Owner Workflows",
-		"description": "Complete workflow collection for restaurant owners to manage their restaurants and menu items in the food delivery system",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{auth_token}}",
-				"type": "string"
-			}
-		]
-	},
-	"variable": [
-		{
-			"key": "auth_token",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "user_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "restaurant_id",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "menu_item_id",
-			"value": "",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "1. Authentication",
-			"item": [
-				{
-					"name": "Login Restaurant Owner",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response has token\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('token');",
-									"    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
-									"});",
-									"",
-									"pm.test(\"Response has userId\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('userId');",
-									"    pm.collectionVariables.set(\"user_id\", jsonData.userId);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"pizzapalace@example.com\",\n  \"password\": \"Password123!\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30001/api/auth/login",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30001",
-							"path": ["api", "auth", "login"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "2. Restaurant Registration",
-			"item": [
-				{
-					"name": "Register New Restaurant",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"pm.test(\"Restaurant has ID\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.collectionVariables.set(\"restaurant_id\", jsonData.id);",
-									"});",
-									"",
-									"pm.test(\"Restaurant has required fields\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('name');",
-									"    pm.expect(jsonData).to.have.property('address');",
-									"    pm.expect(jsonData).to.have.property('contactInfo');",
-									"    pm.expect(jsonData).to.have.property('timings');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Pizza Palace Downtown\",\n  \"description\": \"Authentic Italian pizzas and pasta. Family-owned restaurant serving the community since 2010.\",\n  \"address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\",\n    \"country\": \"USA\",\n    \"landmark\": \"Near Central Park\"\n  },\n  \"contactInfo\": {\n    \"phone\": \"+1-555-0101\",\n    \"email\": \"contact@pizzapalace.com\",\n    \"website\": \"https://www.pizzapalace.com\"\n  },\n  \"timings\": {\n    \"monday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"tuesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"wednesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"thursday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"friday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"23:00\" },\n    \"saturday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"23:00\" },\n    \"sunday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" }\n  },\n  \"isActive\": true,\n  \"cuisineType\": \"Italian\",\n  \"imageUrl\": \"https://example.com/restaurants/pizzapalace.jpg\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/register",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "register"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get My Restaurants",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response is array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.be.an('array');",
-									"});",
-									"",
-									"pm.test(\"Has at least one restaurant\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length).to.be.at.least(1);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/owner/{{user_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "owner", "{{user_id}}"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "3. Menu Management - Add Items",
-			"item": [
-				{
-					"name": "Add Single Menu Item",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 201\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"pm.test(\"Menu item has ID\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.collectionVariables.set(\"menu_item_id\", jsonData.id);",
-									"});",
-									"",
-									"pm.test(\"Menu item linked to restaurant\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('restaurantId');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"Pizza Palace Downtown\",\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic pizza with fresh mozzarella, tomato sauce, and basil leaves\",\n  \"preparationTimeMinutes\": 15,\n  \"packagingSize\": \"12 inch\",\n  \"unitOfMeasure\": \"pizza\",\n  \"pricePerUOM\": 14.99,\n  \"category\": \"Main Course\",\n  \"cuisine\": \"Italian\",\n  \"ingredients\": [\"Pizza dough\", \"Mozzarella cheese\", \"Tomato sauce\", \"Fresh basil\", \"Olive oil\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"isVegetarian\": true,\n  \"isVegan\": false,\n  \"isGlutenFree\": false,\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"availableFromTime\": \"11:00\",\n  \"availableToTime\": \"22:00\",\n  \"imageUrl\": \"https://example.com/menu/margherita.jpg\",\n  \"calories\": 1200,\n  \"protein\": 48,\n  \"carbohydrates\": 150,\n  \"fat\": 45\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/menu",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Multiple Menu Items (Bulk)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Bulk creation successful\", function () {",
-									"    var response = pm.response.text();",
-									"    pm.expect(response).to.include('Successfully created');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "[\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Pepperoni Pizza\",\n    \"description\": \"Classic pepperoni pizza with mozzarella and spicy pepperoni slices\",\n    \"preparationTimeMinutes\": 15,\n    \"packagingSize\": \"12 inch\",\n    \"unitOfMeasure\": \"pizza\",\n    \"pricePerUOM\": 16.99,\n    \"category\": \"Main Course\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Pizza dough\", \"Mozzarella\", \"Pepperoni\", \"Tomato sauce\"],\n    \"allergens\": [\"Gluten\", \"Dairy\"],\n    \"isVegetarian\": false,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 2,\n    \"isAvailable\": true,\n    \"calories\": 1400,\n    \"protein\": 55,\n    \"carbohydrates\": 155,\n    \"fat\": 52\n  },\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Caesar Salad\",\n    \"description\": \"Crisp romaine lettuce with Caesar dressing, croutons, and parmesan\",\n    \"preparationTimeMinutes\": 8,\n    \"packagingSize\": \"Regular\",\n    \"unitOfMeasure\": \"bowl\",\n    \"pricePerUOM\": 9.99,\n    \"category\": \"Appetizer\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Romaine lettuce\", \"Caesar dressing\", \"Croutons\", \"Parmesan\"],\n    \"allergens\": [\"Gluten\", \"Dairy\", \"Eggs\"],\n    \"isVegetarian\": true,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 1,\n    \"isAvailable\": true,\n    \"calories\": 250,\n    \"protein\": 8,\n    \"carbohydrates\": 15,\n    \"fat\": 18\n  },\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Breakfast Pizza\",\n    \"description\": \"Special breakfast pizza with eggs, bacon, and cheese - available mornings only\",\n    \"preparationTimeMinutes\": 18,\n    \"packagingSize\": \"12 inch\",\n    \"unitOfMeasure\": \"pizza\",\n    \"pricePerUOM\": 13.99,\n    \"category\": \"Main Course\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Pizza dough\", \"Eggs\", \"Bacon\", \"Mozzarella\", \"Tomato sauce\"],\n    \"allergens\": [\"Gluten\", \"Dairy\", \"Eggs\"],\n    \"isVegetarian\": false,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 1,\n    \"isAvailable\": true,\n    \"availableFromTime\": \"08:00\",\n    \"availableToTime\": \"11:30\",\n    \"calories\": 1350,\n    \"protein\": 62,\n    \"carbohydrates\": 145,\n    \"fat\": 58\n  }\n]"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/menu/bulk",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "bulk"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "4. Menu Management - Modify Items",
-			"item": [
-				{
-					"name": "Update Menu Item",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"Pizza Palace Downtown\",\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Margherita Pizza - Updated\",\n  \"description\": \"Classic pizza with fresh buffalo mozzarella, tomato sauce, and fresh basil leaves. Now with premium ingredients!\",\n  \"preparationTimeMinutes\": 15,\n  \"packagingSize\": \"12 inch\",\n  \"unitOfMeasure\": \"pizza\",\n  \"pricePerUOM\": 15.99,\n  \"category\": \"Main Course\",\n  \"cuisine\": \"Italian\",\n  \"ingredients\": [\"Pizza dough\", \"Buffalo Mozzarella\", \"Tomato sauce\", \"Fresh basil\", \"Olive oil\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"isVegetarian\": true,\n  \"isVegan\": false,\n  \"isGlutenFree\": false,\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"availableFromTime\": \"11:00\",\n  \"availableToTime\": \"22:00\",\n  \"imageUrl\": \"https://example.com/menu/margherita-premium.jpg\",\n  \"calories\": 1200,\n  \"protein\": 48,\n  \"carbohydrates\": 150,\n  \"fat\": 45\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/menu/{{menu_item_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "{{menu_item_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Item Availability (Make Unavailable)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "false"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/menu/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Item Availability (Make Available)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "true"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/menu/{{menu_item_id}}/availability",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "{{menu_item_id}}", "availability"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "5. Menu Management - View & Remove",
-			"item": [
-				{
-					"name": "Get All My Menu Items",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Response is array\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.be.an('array');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/menu/owner/{{user_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "owner", "{{user_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Restaurant Menu Items",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"All items belong to restaurant\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    var restaurantId = pm.collectionVariables.get(\"restaurant_id\");",
-									"    jsonData.forEach(function(item) {",
-									"        pm.expect(item.restaurantId).to.eql(restaurantId);",
-									"    });",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/menu/restaurant/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "restaurant", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Menu Item",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/menu/{{menu_item_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "menu", "{{menu_item_id}}"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "6. Restaurant Management - Update Details",
-			"item": [
-				{
-					"name": "Update Restaurant Status (Make Inactive)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "false"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}/status",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}", "status"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Restaurant Status (Make Active)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "true"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}/status",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}", "status"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Contact Information",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"phone\": \"+1-555-0199\",\n  \"email\": \"newcontact@pizzapalace.com\",\n  \"website\": \"https://www.pizzapalace-downtown.com\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}/contact",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}", "contact"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Address",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"street\": \"456 Market Street Suite 100\",\n  \"city\": \"San Francisco\",\n  \"state\": \"CA\",\n  \"zipCode\": \"94105\",\n  \"country\": \"USA\",\n  \"landmark\": \"Next to City Hall\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}/address",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}", "address"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Business Hours",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 204\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"monday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"tuesday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"wednesday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"thursday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"friday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"23:30\" },\n  \"saturday\": { \"isOpen\": true, \"openTime\": \"09:00\", \"closeTime\": \"23:30\" },\n  \"sunday\": { \"isOpen\": true, \"openTime\": \"09:00\", \"closeTime\": \"21:00\" }\n}"
-						},
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}/hours",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}", "hours"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Restaurant Details",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Restaurant details returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('name');",
-									"    pm.expect(jsonData).to.have.property('isActive');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:30002/api/restaurant/{{restaurant_id}}",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "30002",
-							"path": ["api", "restaurant", "{{restaurant_id}}"]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "restaurant-owner-workflows-001",
+    "name": "Restaurant Owner Workflows",
+    "description": "Complete workflow collection for restaurant owners to manage their restaurants and menu items in the food delivery system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurant_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "menu_item_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Login Restaurant Owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has userId\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('userId');",
+                  "    pm.collectionVariables.set(\"user_id\", jsonData.userId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pizzapalace@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": "{{auth_base_url}}/login"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Restaurant Registration",
+      "item": [
+        {
+          "name": "Register New Restaurant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Restaurant has ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.collectionVariables.set(\"restaurant_id\", jsonData.id);",
+                  "});",
+                  "",
+                  "pm.test(\"Restaurant has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('address');",
+                  "    pm.expect(jsonData).to.have.property('contactInfo');",
+                  "    pm.expect(jsonData).to.have.property('timings');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Pizza Palace Downtown\",\n  \"description\": \"Authentic Italian pizzas and pasta. Family-owned restaurant serving the community since 2010.\",\n  \"address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\",\n    \"country\": \"USA\",\n    \"landmark\": \"Near Central Park\"\n  },\n  \"contactInfo\": {\n    \"phone\": \"+1-555-0101\",\n    \"email\": \"contact@pizzapalace.com\",\n    \"website\": \"https://www.pizzapalace.com\"\n  },\n  \"timings\": {\n    \"monday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"tuesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"wednesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"thursday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"friday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"23:00\" },\n    \"saturday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"23:00\" },\n    \"sunday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" }\n  },\n  \"isActive\": true,\n  \"cuisineType\": \"Italian\",\n  \"imageUrl\": \"https://example.com/restaurants/pizzapalace.jpg\"\n}"
+            },
+            "url": "{{crm_base_url}}/register"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Restaurants",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Has at least one restaurant\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.length).to.be.at.least(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{crm_base_url}}/owner/{{user_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Menu Management - Add Items",
+      "item": [
+        {
+          "name": "Add Single Menu Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Menu item has ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.collectionVariables.set(\"menu_item_id\", jsonData.id);",
+                  "});",
+                  "",
+                  "pm.test(\"Menu item linked to restaurant\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('restaurantId');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"Pizza Palace Downtown\",\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic pizza with fresh mozzarella, tomato sauce, and basil leaves\",\n  \"preparationTimeMinutes\": 15,\n  \"packagingSize\": \"12 inch\",\n  \"unitOfMeasure\": \"pizza\",\n  \"pricePerUOM\": 14.99,\n  \"category\": \"Main Course\",\n  \"cuisine\": \"Italian\",\n  \"ingredients\": [\"Pizza dough\", \"Mozzarella cheese\", \"Tomato sauce\", \"Fresh basil\", \"Olive oil\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"isVegetarian\": true,\n  \"isVegan\": false,\n  \"isGlutenFree\": false,\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"availableFromTime\": \"11:00\",\n  \"availableToTime\": \"22:00\",\n  \"imageUrl\": \"https://example.com/menu/margherita.jpg\",\n  \"calories\": 1200,\n  \"protein\": 48,\n  \"carbohydrates\": 150,\n  \"fat\": 45\n}"
+            },
+            "url": "{{catalog_base_url}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Multiple Menu Items (Bulk)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Bulk creation successful\", function () {",
+                  "    var response = pm.response.text();",
+                  "    pm.expect(response).to.include('Successfully created');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Pepperoni Pizza\",\n    \"description\": \"Classic pepperoni pizza with mozzarella and spicy pepperoni slices\",\n    \"preparationTimeMinutes\": 15,\n    \"packagingSize\": \"12 inch\",\n    \"unitOfMeasure\": \"pizza\",\n    \"pricePerUOM\": 16.99,\n    \"category\": \"Main Course\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Pizza dough\", \"Mozzarella\", \"Pepperoni\", \"Tomato sauce\"],\n    \"allergens\": [\"Gluten\", \"Dairy\"],\n    \"isVegetarian\": false,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 2,\n    \"isAvailable\": true,\n    \"calories\": 1400,\n    \"protein\": 55,\n    \"carbohydrates\": 155,\n    \"fat\": 52\n  },\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Caesar Salad\",\n    \"description\": \"Crisp romaine lettuce with Caesar dressing, croutons, and parmesan\",\n    \"preparationTimeMinutes\": 8,\n    \"packagingSize\": \"Regular\",\n    \"unitOfMeasure\": \"bowl\",\n    \"pricePerUOM\": 9.99,\n    \"category\": \"Appetizer\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Romaine lettuce\", \"Caesar dressing\", \"Croutons\", \"Parmesan\"],\n    \"allergens\": [\"Gluten\", \"Dairy\", \"Eggs\"],\n    \"isVegetarian\": true,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 1,\n    \"isAvailable\": true,\n    \"calories\": 250,\n    \"protein\": 8,\n    \"carbohydrates\": 15,\n    \"fat\": 18\n  },\n  {\n    \"restaurantId\": \"{{restaurant_id}}\",\n    \"restaurantName\": \"Pizza Palace Downtown\",\n    \"ownerId\": \"{{user_id}}\",\n    \"name\": \"Breakfast Pizza\",\n    \"description\": \"Special breakfast pizza with eggs, bacon, and cheese - available mornings only\",\n    \"preparationTimeMinutes\": 18,\n    \"packagingSize\": \"12 inch\",\n    \"unitOfMeasure\": \"pizza\",\n    \"pricePerUOM\": 13.99,\n    \"category\": \"Main Course\",\n    \"cuisine\": \"Italian\",\n    \"ingredients\": [\"Pizza dough\", \"Eggs\", \"Bacon\", \"Mozzarella\", \"Tomato sauce\"],\n    \"allergens\": [\"Gluten\", \"Dairy\", \"Eggs\"],\n    \"isVegetarian\": false,\n    \"isVegan\": false,\n    \"isGlutenFree\": false,\n    \"spiceLevel\": 1,\n    \"isAvailable\": true,\n    \"availableFromTime\": \"08:00\",\n    \"availableToTime\": \"11:30\",\n    \"calories\": 1350,\n    \"protein\": 62,\n    \"carbohydrates\": 145,\n    \"fat\": 58\n  }\n]"
+            },
+            "url": "{{catalog_base_url}}/bulk"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Menu Management - Modify Items",
+      "item": [
+        {
+          "name": "Update Menu Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"Pizza Palace Downtown\",\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Margherita Pizza - Updated\",\n  \"description\": \"Classic pizza with fresh buffalo mozzarella, tomato sauce, and fresh basil leaves. Now with premium ingredients!\",\n  \"preparationTimeMinutes\": 15,\n  \"packagingSize\": \"12 inch\",\n  \"unitOfMeasure\": \"pizza\",\n  \"pricePerUOM\": 15.99,\n  \"category\": \"Main Course\",\n  \"cuisine\": \"Italian\",\n  \"ingredients\": [\"Pizza dough\", \"Buffalo Mozzarella\", \"Tomato sauce\", \"Fresh basil\", \"Olive oil\"],\n  \"allergens\": [\"Gluten\", \"Dairy\"],\n  \"isVegetarian\": true,\n  \"isVegan\": false,\n  \"isGlutenFree\": false,\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"availableFromTime\": \"11:00\",\n  \"availableToTime\": \"22:00\",\n  \"imageUrl\": \"https://example.com/menu/margherita-premium.jpg\",\n  \"calories\": 1200,\n  \"protein\": 48,\n  \"carbohydrates\": 150,\n  \"fat\": 45\n}"
+            },
+            "url": "{{catalog_base_url}}/{{menu_item_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Item Availability (Make Unavailable)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "false"
+            },
+            "url": "{{catalog_base_url}}/{{menu_item_id}}/availability"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Item Availability (Make Available)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "true"
+            },
+            "url": "{{catalog_base_url}}/{{menu_item_id}}/availability"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Menu Management - View & Remove",
+      "item": [
+        {
+          "name": "Get All My Menu Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{catalog_base_url}}/owner/{{user_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Restaurant Menu Items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"All items belong to restaurant\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    var restaurantId = pm.collectionVariables.get(\"restaurant_id\");",
+                  "    jsonData.forEach(function(item) {",
+                  "        pm.expect(item.restaurantId).to.eql(restaurantId);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{catalog_base_url}}/restaurant/{{restaurant_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Menu Item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{catalog_base_url}}/{{menu_item_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Restaurant Management - Update Details",
+      "item": [
+        {
+          "name": "Update Restaurant Status (Make Inactive)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "false"
+            },
+            "url": "{{crm_base_url}}/{{restaurant_id}}/status"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Restaurant Status (Make Active)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "true"
+            },
+            "url": "{{crm_base_url}}/{{restaurant_id}}/status"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Contact Information",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+1-555-0199\",\n  \"email\": \"newcontact@pizzapalace.com\",\n  \"website\": \"https://www.pizzapalace-downtown.com\"\n}"
+            },
+            "url": "{{crm_base_url}}/{{restaurant_id}}/contact"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"street\": \"456 Market Street Suite 100\",\n  \"city\": \"San Francisco\",\n  \"state\": \"CA\",\n  \"zipCode\": \"94105\",\n  \"country\": \"USA\",\n  \"landmark\": \"Next to City Hall\"\n}"
+            },
+            "url": "{{crm_base_url}}/{{restaurant_id}}/address"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Business Hours",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"monday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"tuesday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"wednesday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"thursday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" },\n  \"friday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"23:30\" },\n  \"saturday\": { \"isOpen\": true, \"openTime\": \"09:00\", \"closeTime\": \"23:30\" },\n  \"sunday\": { \"isOpen\": true, \"openTime\": \"09:00\", \"closeTime\": \"21:00\" }\n}"
+            },
+            "url": "{{crm_base_url}}/{{restaurant_id}}/hours"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Restaurant Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Restaurant details returned\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('isActive');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{crm_base_url}}/{{restaurant_id}}"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
 }

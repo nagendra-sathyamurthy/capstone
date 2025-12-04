@@ -70,11 +70,7 @@
           "mode": "raw",
           "raw": "{{user_data}}"
         },
-        "url": {
-          "raw": "{{auth_base_url}}/api/auth/register",
-          "host": ["{{auth_base_url}}"],
-          "path": ["api", "auth", "register"]
-        }
+        "url": "{{auth_base_url}}/api/auth/register"
       }
     },
     {
@@ -113,11 +109,7 @@
           "mode": "raw",
           "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
         },
-        "url": {
-          "raw": "{{auth_base_url}}/api/auth/login",
-          "host": ["{{auth_base_url}}"],
-          "path": ["api", "auth", "login"]
-        }
+        "url": "{{auth_base_url}}/api/auth/login"
       }
     },
     {
@@ -161,11 +153,7 @@
             "value": "application/json"
           }
         ],
-        "url": {
-          "raw": "{{auth_base_url}}/api/auth/validate",
-          "host": ["{{auth_base_url}}"],
-          "path": ["api", "auth", "validate"]
-        }
+        "url": "{{auth_base_url}}/api/auth/validate"
       }
     }
   ]
