@@ -10,7 +10,7 @@ const catalogRoutes = require('./routes/catalog');
 const crmRoutes = require('./routes/crm');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/order');
-const paymentRoutes = require('./routes/payment');
+const operatorRoutes = require('./routes/operator');
 const { errorHandler } = require('./middleware/errorHandler');
 const { requestLogger } = require('./middleware/requestLogger');
 
@@ -28,15 +28,16 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // limit each IP to 1000 requests per windowMs (increased for development)
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use('/api/', limiter);
+// Rate limiting - DISABLED FOR TESTING
+// const limiter = rateLimit({
+//   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+//   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // limit each IP to 1000 requests per windowMs (increased for development)
+//   message: 'Too many requests from this IP, please try again later.',
+//   standardHeaders: true,
+//   legacyHeaders: false,
+// });
+// app.use('/api/', limiter);
+
 
 // Body parser
 app.use(express.json());
@@ -68,7 +69,7 @@ app.use('/api/catalog', catalogRoutes);
 app.use('/api/crm', crmRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/payments', paymentRoutes);
+app.use('/api/operator', operatorRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -82,7 +83,7 @@ app.get('/', (req, res) => {
       crm: '/api/crm',
       cart: '/api/cart',
       orders: '/api/orders',
-      payments: '/api/payments'
+      operator: '/api/operator'
     }
   });
 });

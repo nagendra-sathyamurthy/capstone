@@ -25,7 +25,6 @@ spec:
     - crm.your-domain.com
     - cart.your-domain.com
     - order.your-domain.com
-    - payment.your-domain.com
     secretName: capstone-services-tls
   rules:
   # Authentication Service
@@ -83,23 +82,12 @@ spec:
             name: order-service
             port:
               number: 8080
-  # Payment Service
-  - host: payment.your-domain.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: payment-service
-            port:
-              number: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: capstone-gateway-ingress
-  namespace: capstone-gateway
+  namespace: capstone-services
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -142,7 +130,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: capstone-frontend-ingress
-  namespace: capstone-frontend
+  namespace: capstone-services
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"

@@ -304,7 +304,8 @@ namespace Authentication.API.BusinessServices
                 new Claim("role", user.Role.ToString()),
                 new Claim("organization", user.Organization),
                 new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id!)
+                new Claim(ClaimTypes.NameIdentifier, user.Id!),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             // Add permissions as claims
@@ -337,7 +338,8 @@ namespace Authentication.API.BusinessServices
                 new Claim("phone", phone),
                 new Claim("role", "Customer"),
                 new Claim(ClaimTypes.Name, phone),
-                new Claim(ClaimTypes.NameIdentifier, userId)
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Role, "Customer")
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor

@@ -142,6 +142,16 @@ export const catalogService = {
     }
   },
 
+  // Get all available menu items
+  getAvailableMenuItems: async (): Promise<any> => {
+    try {
+      const response = await catalogAPI.get('/api/catalog/menu');
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch menu items');
+    }
+  },
+
   // Search menu items
   searchMenuItems: async (query: any, filters: any = {}): Promise<any> => {
     try {

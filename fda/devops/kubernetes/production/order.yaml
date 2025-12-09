@@ -37,13 +37,6 @@ spec:
               key: password
         - name: MONGO_INITDB_DATABASE
           value: "orderdb"
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "300m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
         volumeMounts:
         - name: order-mongodb-storage
           mountPath: /data/db
@@ -123,13 +116,6 @@ spec:
           value: "orderdb"
         - name: DatabaseSettings__CollectionName
           value: "orders"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
         livenessProbe:
           httpGet:
             path: /health

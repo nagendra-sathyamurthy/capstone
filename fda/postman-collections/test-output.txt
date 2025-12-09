@@ -1,0 +1,552 @@
+newman
+
+Customer Workflows
+
+Γûí 0. Authentication
+Γöö Register Customer
+  Γöî
+  Γöé 'Warning: user_id not set. Please login first.'
+  Γöé 'Warning: auth_token not set. Please login first.'
+  Γöö
+  POST http://localhost:30500/api/auth/register  
+  409 Conflict Γÿà 59ms time Γÿà 382BΓåæ 1.67kBΓåô size Γÿà 9Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 85B
+  Γöé {
+  Γöé   "email": "john.customer@example.com",
+  Γöé   "password": "Customer123!",
+  Γöé   "role": 0
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 679B
+  Γöé {"error":true,"message":"User with this email already 
+  Γöé exists.","stack":"AxiosError: Request failed with stat
+  Γöé us code 409\n    at settle (/app/node_modules/axios/di
+  Γöé st/node/axios.cjs:2106:12)\n    at IncomingMessage.han
+  Γöé dleStreamEnd (/app/node_modules/axios/dist/node/axios.
+  Γöé cjs:3491:11)\n    at IncomingMessage.emit (node:events
+  Γöé :536:35)\n    at endReadableNT (node:internal/streams/
+  Γöé readable:1698:12)\n    at process.processTicksAndRejec
+  Γöé tions (node:internal/process/task_queues:82:21)\n    a
+  Γöé t Axios.request (/app/node_modules/axios/dist/node/axi
+  Γöé os.cjs:4731:41)\n    at process.processTicksAndRejecti
+  Γöé ons (node:internal/process/task_queues:95:5)\n    at a
+  Γöé sync /app/routes/auth.js:9:20"}
+  Γöö
+  prepare   wait   dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  12ms      19ms   3ms          2ms             21ms             12ms       600┬╡s     71ms  
+
+  ΓêÜ  Registration successful or user exists
+
+Γöö Login Customer
+  Γöî
+  Γöé 'Warning: user_id not set. Please login first.'
+  Γöé 'Warning: auth_token not set. Please login first.'
+  Γöö
+  POST http://localhost:30500/api/auth/login  
+  200 OK Γÿà 16ms time Γÿà 366BΓåæ 1.96kBΓåô size Γÿà 9Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 72B
+  Γöé {
+  Γöé   "email": "john.customer@example.com",
+  Γöé   "password": "Customer123!"
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 974B
+  Γöé {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2V
+  Γöé ySWQiOiI2OTMxNzA5MDc1MmY3YzgyNDZhYTkyYzEiLCJlbWFpbCI6I
+  Γöé mpvaG4uY3VzdG9tZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoiQ3VzdG9
+  Γöé tZXIiLCJvcmdhbml6YXRpb24iOiJleHRlcm5hbF91c2VycyIsInVua
+  Γöé XF1ZV9uYW1lIjoiam9obi5jdXN0b21lckBleGFtcGxlLmNvbSIsIm5
+  Γöé hbWVpZCI6IjY5MzE3MDkwNzUyZjdjODI0NmFhOTJjMSIsInBlcm1pc
+  Γöé 3Npb24iOlsidmlld19tZW51IiwicGxhY2Vfb3JkZXIiLCJ0cmFja19
+  Γöé vcmRlciIsIm1hbmFnZV9wcm9maWxlIiwidmlld19vcmRlcl9oaXN0b
+  Γöé 3J5IiwicHJvdmlkZV9kZWxpdmVyeV9mZWVkYmFjayIsInJhdGVfZGV
+  Γöé saXZlcmVkX2l0ZW1zIl0sIm5iZiI6MTc2NTI4NzkzMCwiZXhwIjoxN
+  Γöé zY1MzE2NzMwLCJpYXQiOjE3NjUyODc5MzB9.d4jH1Qyn-GVqmjSii4
+  Γöé Qi4Yx9QKsYY9LvjecoLbCq448","user":{"id":"69317090752f7
+  Γöé c8246aa92c1","email":"john.customer@example.com","role
+  Γöé ":0,"organization":"external_users","permissions":["vi
+  Γöé ew_menu","place_order","track_order","manage_profile",
+  Γöé "view_order_history","provide_delivery_feedback","rate
+  Γöé _delivered_items"],"lastLoginTime":"2025-12-09T13:45:3
+  Γöé 0.1889179Z"},"expiresAt":"2025-12-09T21:45:30.1915678Z
+  Γöé "}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       954┬╡s   (cache)      (cache)         12ms             2ms        125┬╡s     16ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Response has token
+  ΓêÜ  Response has userId
+
+Γûí 1. User Profile Management
+Γöö Get User Profile
+  GET http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1  
+  200 OK Γÿà 28ms time Γÿà 912BΓåæ 1.77kBΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 791B
+  Γöé {"id":"69317244d1549b0056addcb0","userId":"69317090752
+  Γöé f7c8246aa92c1","firstName":"John","lastName":"Doe","em
+  Γöé ail":"john.doe@example.com","phoneNumber":"+9198765432
+  Γöé 10","role":0,"organization":null,"permissions":[],"dat
+  Γöé eOfBirth":"1990-05-15T00:00:00Z","deliveryAddresses":[
+  Γöé ],"profileImage":"data:image/png;base64,iVBORw0KGgoAAA
+  Γöé ANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwAD
+  Γöé hgGAWjR9awAAAABJRU5ErkJggg==","foodPreferences":{"diet
+  Γöé ary":"all","cuisines":null,"allergies":["Peanuts"],"di
+  Γöé slikedIngredients":["Onion","Garlic"],"updatedAt":"202
+  Γöé 5-12-09T13:44:15.251Z"},"dietaryPreferences":["Vegetar
+  Γöé ian","No Onion"],"favoriteRestaurants":null,"employeeI
+  Γöé nfo":null,"businessInfo":null,"deliveryInfo":null,"tec
+  Γöé hInfo":null,"createdAt":"2025-12-04T11:36:36.14Z","upd
+  Γöé atedAt":"2025-12-09T13:44:15.765Z"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  663┬╡s     370┬╡s   (cache)      (cache)         25ms             1ms        96┬╡s      28ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Profile data exists
+
+Γöö Update User Profile
+  PUT http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1  
+  200 OK Γÿà 59ms time Γÿà 1.14kBΓåæ 1.02kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 170B
+  Γöé {
+  Γöé   "name": "John Doe",
+  Γöé   "email": "john.doe@example.com",
+  Γöé   "phone": "+919876543210",
+  Γöé   "dateOfBirth": "1990-05-15",
+  Γöé   "dietaryPreferences": ["Vegetarian", "No Onion"]
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 42B
+  Γöé {"message":"Profile updated successfully"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  3ms       691┬╡s   (cache)      (cache)         56ms             1ms        92┬╡s      62ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Profile updated successfully
+
+Γöö Update Profile Image
+  PUT http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1/profile-image  
+  200 OK Γÿà 20ms time Γÿà 1.12kBΓåæ 1.03kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 142B
+  Γöé {
+  Γöé   "profileImage": "data:image/png;base64,iVBORw0KGgoAA
+  Γöé AANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwA
+  Γöé DhgGAWjR9awAAAABJRU5ErkJggg=="
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 49B
+  Γöé {"message":"Profile image updated successfully."}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       707┬╡s   (cache)      (cache)         17ms             1ms        89┬╡s      20ms  
+
+  ΓêÜ  Status code is 200
+  1. Profile image updated
+
+Γöö Update Food Preferences
+  PUT http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1/food-preferences  
+  200 OK Γÿà 16ms time Γÿà 1.2kBΓåæ 1.12kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 222B
+  Γöé {
+  Γöé   "dietaryRestrictions": ["Vegetarian", "Gluten-Free"]
+  Γöé ,
+  Γöé   "favoriteCategories": ["Italian", "Chinese", "South 
+  Γöé Indian"],
+  Γöé   "dislikedIngredients": ["Onion", "Garlic"],
+  Γöé   "spiceLevel": "Medium",
+  Γöé   "allergies": ["Peanuts"]
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 141B
+  Γöé {"dietary":"all","cuisines":null,"allergies":["Peanuts
+  Γöé "],"dislikedIngredients":["Onion","Garlic"],"updatedAt
+  Γöé ":"2025-12-09T13:45:30.7091063Z"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       535┬╡s   (cache)      (cache)         13ms             1ms        92┬╡s      17ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Food preferences updated
+
+Γûí 2. Address Management
+Γöö Get All Addresses
+  GET http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1/addresses  
+  200 OK Γÿà 24ms time Γÿà 922BΓåæ 981BΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 2B
+  Γöé []
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  909┬╡s     638┬╡s   (cache)      (cache)         21ms             1ms        70┬╡s      24ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Addresses array returned
+
+Γöö Add New Address
+  POST http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1/addresses  
+  200 OK Γÿà 18ms time Γÿà 1.19kBΓåæ 1.31kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 209B
+  Γöé {
+  Γöé   "type": "home",
+  Γöé   "line1": "123, MG Road",
+  Γöé   "line2": "Near City Mall",
+  Γöé   "landmark": "Opposite Cafe Coffee Day",
+  Γöé   "city": "Bangalore",
+  Γöé   "state": "Karnataka",
+  Γöé   "pincode": "560001",
+  Γöé   "isDefault": true
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 328B
+  Γöé {"id":"693827fad1549b0056addcbc","type":"home","line1"
+  Γöé :"123, MG Road","line2":"Near City Mall","landmark":"O
+  Γöé pposite Cafe Coffee Day","city":"Bangalore","state":"K
+  Γöé arnataka","pincode":"560001","country":"India","latitu
+  Γöé de":null,"longitude":null,"createdAt":"2025-12-09T13:4
+  Γöé 5:30.9622959Z","updatedAt":"2025-12-09T13:45:30.962296
+  Γöé 2Z"}
+  Γöö
+  prepare   wait   dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       1ms    (cache)      (cache)         14ms             1ms        219┬╡s     19ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Address created with ID
+
+Γöö Update Address
+  PUT http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1/addresses/693827fad1549b0056addcbc  
+  200 OK Γÿà 22ms time Γÿà 1.22kBΓåæ 1.31kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 215B
+  Γöé {
+  Γöé   "type": "work",
+  Γöé   "line1": "456, Koramangala 4th Block",
+  Γöé   "line2": "8th Main Road",
+  Γöé   "landmark": "Near Sony Signal",
+  Γöé   "city": "Bangalore",
+  Γöé   "state": "Karnataka",
+  Γöé   "pincode": "560034",
+  Γöé   "isDefault": false
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 329B
+  Γöé {"id":"693827fad1549b0056addcbc","type":"work","line1"
+  Γöé :"456, Koramangala 4th Block","line2":"8th Main Road",
+  Γöé "landmark":"Near Sony Signal","city":"Bangalore","stat
+  Γöé e":"Karnataka","pincode":"560034","country":"India","l
+  Γöé atitude":null,"longitude":null,"createdAt":"2025-12-09
+  Γöé T13:45:30.962Z","updatedAt":"2025-12-09T13:45:31.06984
+  Γöé 19Z"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  947┬╡s     461┬╡s   (cache)      (cache)         19ms             1ms        67┬╡s      22ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Address updated successfully
+
+Γöö Delete Address
+  DELETE http://localhost:30500/api/crm/userprofile/by-user/69317090752f7c8246aa92c1/addresses/693827fad1549b0056addcbc  
+  204 No Content Γÿà 28ms time Γÿà 950BΓåæ 921BΓåô size Γÿà 8Γåæ 19Γåô headers Γÿà 0 cookies
+  Γåô text/plain Γÿà text Γÿà plain Γÿà utf8
+
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       619┬╡s   (cache)      (cache)         25ms             1ms        115┬╡s     29ms  
+
+  ΓêÜ  Status code is 204
+
+Γûí 3. Complete Order Flow
+Γöö Step 1 - Browse Restaurants
+  GET http://localhost:30500/api/catalog/restaurants  
+  200 OK Γÿà 17ms time Γÿà 883BΓåæ 10.12kBΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 9.14kB
+  Γöé [{"id":"693823158b271c3817f8263b","ownerId":"693672f94
+  Γöé f291eabaaae136c","name":"Pizza Palace","description":"
+  Γöé Best pizzas in town with authentic Italian recipes","a
+  Γöé ddress":{"street":"123 Main Street","city":"New York",
+  Γöé "state":"NY","zipCode":"10001","country":"USA","landma
+  Γöé rk":null},"contactInfo":{"phone":"+1-555-0100","email"
+  Γöé :"contact@pizzapalace.com","website":"www.pizzapalace.
+  Γöé com"},"timings":{"monday":{"isOpen":true,"openTime":"0
+  Γöé 9:00","closeTime":"22:00"},"tuesday":{"isOpen":true,"o
+  Γöé penTime":"09:00","closeTime":"22:00"},"wednesday":{"is
+  Γöé Open":true,"openTime":"09:00","closeTime":"22:00"},"th
+  Γöé ursday":{"isOpen":true,"openTime":"09:00","closeTime":
+  Γöé "22:00"},"friday":{"isOpen":true,"openTime":"09:00","c
+  Γöé loseTime":"22:00"},"saturday":{"isOpen":true,"openTime
+  Γöé ":"09:00","closeTime":"22:00"},"sunday":{"isOpen":true
+  Γöé ,"openTime":"09:00","closeTime":"22:00"}},"isActive":t
+  Γöé rue,"imageUrl":null,"cuisineType":"Italian","rating":4
+  Γöé .5,"totalReviews":0,"createdAt":"2025-12-09T13:24:37.9
+  Γöé 65Z","updatedAt":"2025-12-09T13:24:37.965Z"},{"id":"69
+  Γöé 3823168b271c3817f8263c","ownerId":"693672f94f291eabaaa
+  Γöé e136c","name":"Burger Junction","description":"Gourmet
+  Γöé  burgers made with premium ingredients","address":{"st
+  Γöé reet":"456 Oak Avenue","city":"New York","state":"NY",
+  Γöé "zipCode":"10002","country":"USA","landmark":null},"co
+  Γöé ntactInfo":{"phone":"+1-555-0200","email":"info@burger
+  Γöé junction.com","website":"www.burgerjunction.com"},"tim
+  Γöé ings":{"monday":{"isOpen":true,"openTime":"09:00","clo
+  Γöé seTime":"22:00"},"tuesday":{"isOpen":true,"openTime":"
+  Γöé 09:00","closeTime":"22:00"},"wednesday":{"isOpen":true
+  Γöé ,"openTime":"09:00","closeTime":"22:00"},"thursday":{"
+  Γöé isOpen":true,"openTime":"09:00","closeTime":"22:00"},"
+  Γöé friday":{"isOpen":true,"openTime":"09:00","closeTime":
+  Γöé "22:00"},"saturday":{"isOpen":true,"openTime":"09:00",
+  Γöé "closeTime":"22:00"},"sunday":{"isOpen":true,"openTime
+  Γöé ":"09:00","closeTime":"22:00"}},"isActive":true,"image
+  Γöé Url":null,"cuisineType":"American","rating":4.3,"total
+  Γöé Reviews":0,"createdAt":"2025-12-09T13:24:38.337Z","upd
+  Γöé atedAt":"2025-12-09T13:24:38.337Z"},{"id":"6938231
+  Γöé (showing 2.05kB/9.14kB)
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  798┬╡s     482┬╡s   (cache)      (cache)         13ms             2ms        105┬╡s     17ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Restaurants array returned
+
+Γöö Step 2 - View Restaurant Menu
+  GET http://localhost:30500/api/catalog/menu/restaurant/693823158b271c3817f8263b  
+  200 OK Γÿà 15ms time Γÿà 912BΓåæ 981BΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 2B
+  Γöé []
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  657┬╡s     477┬╡s   (cache)      (cache)         12ms             1ms        42┬╡s      14ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Menu items returned
+
+Γöö Step 3 - Add Item to Cart
+  POST http://localhost:30500/api/cart/69317090752f7c8246aa92c1/add  
+  400 Bad Request Γÿà 9ms time Γÿà 1.1kBΓåæ 1.77kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 146B
+  Γöé {
+  Γöé   "itemId": "",
+  Γöé   "name": "{{menu_item_name}}",
+  Γöé   "price": {{menu_item_price}},
+  Γöé   "quantity": 2,
+  Γöé   "specialInstructions": "Extra spicy please"
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 774B
+  Γöé {"error":true,"message":"Expected property name or '}'
+  Γöé  in JSON at position 62","stack":"SyntaxError: Expecte
+  Γöé d property name or '}' in JSON at position 62\n    at 
+  Γöé JSON.parse (<anonymous>)\n    at parse (/app/node_modu
+  Γöé les/body-parser/lib/types/json.js:92:19)\n    at /app/
+  Γöé node_modules/body-parser/lib/read.js:128:18\n    at As
+  Γöé yncResource.runInAsyncScope (node:async_hooks:206:9)\n
+  Γöé     at invokeCallback (/app/node_modules/raw-body/inde
+  Γöé x.js:238:16)\n    at done (/app/node_modules/raw-body/
+  Γöé index.js:227:7)\n    at IncomingMessage.onEnd (/app/no
+  Γöé de_modules/raw-body/index.js:287:7)\n    at IncomingMe
+  Γöé ssage.emit (node:events:524:28)\n    at endReadableNT 
+  Γöé (node:internal/streams/readable:1698:12)\n    at proce
+  Γöé ss.processTicksAndRejections (node:internal/process/ta
+  Γöé sk_queues:82:21)"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  851┬╡s     549┬╡s   (cache)      (cache)         6ms              1ms        407┬╡s     9ms   
+
+  2. Status code is 200
+  3. Item added to cart
+
+Γöö Step 4 - View Cart
+  GET http://localhost:30500/api/cart/69317090752f7c8246aa92c1  
+  200 OK Γÿà 35ms time Γÿà 893BΓåæ 1.06kBΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 77B
+  Γöé {"message":"GetCart not implemented yet","cartId":"693
+  Γöé 17090752f7c8246aa92c1"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  783┬╡s     388┬╡s   (cache)      (cache)         33ms             999┬╡s      41┬╡s      35ms  
+
+  ΓêÜ  Status code is 200
+  4. Cart has items
+
+Γöö Step 5 - Place Order
+  POST http://localhost:30500/api/orders  
+  400 Bad Request Γÿà 7ms time Γÿà 1.46kBΓåæ 1.77kBΓåô size Γÿà 10Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåæ raw Γÿà 539B
+  Γöé {
+  Γöé   "customerId": "69317090752f7c8246aa92c1",
+  Γöé   "restaurantId": "693823158b271c3817f8263b",
+  Γöé   "restaurantName": "Pizza Palace",
+  Γöé   "items": [
+  Γöé     {
+  Γöé       "menuItemId": "",
+  Γöé       "name": "{{menu_item_name}}",
+  Γöé       "quantity": 2,
+  Γöé       "price": {{menu_item_price}},
+  Γöé       "specialInstructions": "Extra spicy please"
+  Γöé     }
+  Γöé   ],
+  Γöé   "totalAmount": 499.00,
+  Γöé   "status": 0,
+  Γöé   "notes": "Please call before delivery",
+  Γöé   "deliveryAddress": {
+  Γöé     "line1": "123, MG Road",
+  Γöé     "city": "Bangalore",
+  Γöé     "state": "Karnataka",
+  Γöé     "pincode": "560001"
+  Γöé   }
+  Γöé }
+  Γöö 
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 776B
+  Γöé {"error":true,"message":"Expected property name or '}'
+  Γöé  in JSON at position 244","stack":"SyntaxError: Expect
+  Γöé ed property name or '}' in JSON at position 244\n    a
+  Γöé t JSON.parse (<anonymous>)\n    at parse (/app/node_mo
+  Γöé dules/body-parser/lib/types/json.js:92:19)\n    at /ap
+  Γöé p/node_modules/body-parser/lib/read.js:128:18\n    at 
+  Γöé AsyncResource.runInAsyncScope (node:async_hooks:206:9)
+  Γöé \n    at invokeCallback (/app/node_modules/raw-body/in
+  Γöé dex.js:238:16)\n    at done (/app/node_modules/raw-bod
+  Γöé y/index.js:227:7)\n    at IncomingMessage.onEnd (/app/
+  Γöé node_modules/raw-body/index.js:287:7)\n    at Incoming
+  Γöé Message.emit (node:events:524:28)\n    at endReadableN
+  Γöé T (node:internal/streams/readable:1698:12)\n    at pro
+  Γöé cess.processTicksAndRejections (node:internal/process/
+  Γöé task_queues:82:21)"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  806┬╡s     400┬╡s   (cache)      (cache)         2ms              3ms        47┬╡s      7ms   
+
+  5. Status code is 200
+  6. Order created successfully
+
+Γûí 4. Order History & Tracking
+Γöö View Order History
+  GET http://localhost:30500/api/orders/customer/69317090752f7c8246aa92c1  
+  200 OK Γÿà 36ms time Γÿà 904BΓåæ 981BΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 2B
+  Γöé []
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       518┬╡s   (cache)      (cache)         33ms             1ms        33┬╡s      36ms  
+
+  ΓêÜ  Status code is 200
+  ΓêÜ  Orders array returned
+
+Γöö Get Order Details
+  GET http://localhost:30500/api/orders/  
+  400 Bad Request Γÿà 9ms time Γÿà 871BΓåæ 1.02kBΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 35B
+  Γöé {"error":"Customer ID is required"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  547┬╡s     373┬╡s   (cache)      (cache)         7ms              854┬╡s      56┬╡s      9ms   
+
+  7. Status code is 200
+  8. Order details retrieved
+
+Γöö Track Order Status
+  GET http://localhost:30500/api/orders/  
+  400 Bad Request Γÿà 11ms time Γÿà 871BΓåæ 1.02kBΓåô size Γÿà 8Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 35B
+  Γöé {"error":"Customer ID is required"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  1ms       399┬╡s   (cache)      (cache)         8ms              1ms        36┬╡s      11ms  
+
+  9. Status code is 200
+ 10. Order tracking info available
+
+Γöö Cancel Order
+  POST http://localhost:30500/api/orders//cancel  
+  404 Not Found Γÿà 5ms time Γÿà 898BΓåæ 1.09kBΓåô size Γÿà 9Γåæ 21Γåô headers Γÿà 0 cookies
+  Γöî Γåô application/json Γÿà text Γÿà json Γÿà utf8 Γÿà 104B
+  Γöé {"error":"Not Found","message":"Cannot POST /api/order
+  Γöé s//cancel","timestamp":"2025-12-09T13:45:32.170Z"}
+  Γöö
+  prepare   wait    dns-lookup   tcp-handshake   transfer-start   download   process   total 
+  654┬╡s     520┬╡s   (cache)      (cache)         2ms              1ms        37┬╡s      5ms   
+
+ 11. Status code is 200
+ 12. Order cancelled successfully
+
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö¼ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé                         Γöé          executed Γöé            failed Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé              iterations Γöé                 1 Γöé                 0 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé                requests Γöé                19 Γöé                 0 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé            test-scripts Γöé                38 Γöé                 0 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé      prerequest-scripts Γöé                19 Γöé                 0 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö╝ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé              assertions Γöé                37 Γöé                12 Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓö┤ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé total run duration: 2.3s                                        Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé total data received: 14.28kB (approx)                           Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé average response time: 22ms [min: 5ms, max: 59ms, s.d.: 15ms]   Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé average DNS lookup time: 3ms [min: 3ms, max: 3ms, s.d.: 0┬╡s]    Γöé
+Γö£ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöñ
+Γöé average first byte time: 18ms [min: 2ms, max: 56ms, s.d.: 12ms] Γöé
+ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+
+[31m   # [39m[31m failure        [39m[31m detail                                                                  [39m
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 01.  AssertionError  Profile image updated                                                   
+                      expected { Object (message) } to be true                                
+                      at assertion:1 in test-script                                           
+                      inside "1. User Profile Management / Update Profile Image"              
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 02.  AssertionError  Status code is 200                                                      
+                      expected response to have status code 200 but got 400                   
+                      at assertion:0 in test-script                                           
+                      inside "3. Complete Order Flow / Step 3 - Add Item to Cart"             
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 03.  AssertionError  Item added to cart                                                      
+                      expected { error: true, ΓÇª(2) } to have property 'items'                 
+                      at assertion:1 in test-script                                           
+                      inside "3. Complete Order Flow / Step 3 - Add Item to Cart"             
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 04.  AssertionError  Cart has items                                                          
+                      expected { ΓÇª(2) } to have property 'items'                              
+                      at assertion:1 in test-script                                           
+                      inside "3. Complete Order Flow / Step 4 - View Cart"                    
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 05.  AssertionError  Status code is 200                                                      
+                      expected response to have status code 200 but got 400                   
+                      at assertion:0 in test-script                                           
+                      inside "3. Complete Order Flow / Step 5 - Place Order"                  
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 06.  AssertionError  Order created successfully                                              
+                      expected { error: true, ΓÇª(2) } to have property 'orderId'               
+                      at assertion:1 in test-script                                           
+                      inside "3. Complete Order Flow / Step 5 - Place Order"                  
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 07.  AssertionError  Status code is 200                                                      
+                      expected response to have status code 200 but got 400                   
+                      at assertion:0 in test-script                                           
+                      inside "4. Order History & Tracking / Get Order Details"                
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 08.  AssertionError  Order details retrieved                                                 
+                      expected { error: 'Customer ID is required' } to have property 'id'     
+                      at assertion:1 in test-script                                           
+                      inside "4. Order History & Tracking / Get Order Details"                
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 09.  AssertionError  Status code is 200                                                      
+                      expected response to have status code 200 but got 400                   
+                      at assertion:0 in test-script                                           
+                      inside "4. Order History & Tracking / Track Order Status"               
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 10.  AssertionError  Order tracking info available                                           
+                      expected { error: 'Customer ID is required' } to have property 'status' 
+                      at assertion:1 in test-script                                           
+                      inside "4. Order History & Tracking / Track Order Status"               
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 11.  AssertionError  Status code is 200                                                      
+                      expected response to have status code 200 but got 404                   
+                      at assertion:0 in test-script                                           
+                      inside "4. Order History & Tracking / Cancel Order"                     
+[90m     [39m[90m                [39m[90m                                                                         [39m
+ 12.  AssertionError  Order cancelled successfully                                            
+                      expected undefined to equal 7                                           
+                      at assertion:1 in test-script                                           
+                      inside "4. Order History & Tracking / Cancel Order"                     

@@ -226,5 +226,34 @@ namespace Order.API.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Cancel an order (Customer)
+        /// </summary>
+        [HttpPost("{orderId}/cancel")]
+        [Authorize]
+        public async Task<ActionResult> CancelOrder(string orderId)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdAsync(orderId);
+                
+                if (order == null)
+                    return NotFound(new { error = "Order not found" });
+
+                // Only allow cancellation if order is still pending or accepted
+                if (order.Status != OrderStatus.Pending && order.Status != OrderStatus.Accepted)
+                {
+                    return BadRequest(new { error = "Cannot cancel order in current status" });
+                }
+
+                await _orderService.UpdateOrderStatusAsync(orderId, OrderStatus.Cancelled);
+                return Ok(new { message = "Order cancelled successfully", orderId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }

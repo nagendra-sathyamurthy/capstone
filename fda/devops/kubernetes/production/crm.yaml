@@ -37,13 +37,6 @@ spec:
               key: password
         - name: MONGO_INITDB_DATABASE
           value: "crmdb"
-        resources:
-          requests:
-            memory: "1Gi"  # Higher resources for CRM data
-            cpu: "300m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
         volumeMounts:
         - name: crm-mongodb-storage
           mountPath: /data/db
@@ -123,13 +116,6 @@ spec:
           value: "crmdb"
         - name: DatabaseSettings__CollectionName
           value: "customers"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
         livenessProbe:
           httpGet:
             path: /health

@@ -16,9 +16,15 @@ namespace Cart.API
 
         public async Task<Cart.Models.Cart> CreateCartAsync(string userId)
         {
-            var cart = new Cart.Models.Cart { Id = Guid.NewGuid().ToString(), UserId = userId };
+            // Use userId as cartId for easy lookup
+            var cart = new Cart.Models.Cart { Id = userId, UserId = userId };
             await _cartRepository.AddAsync(cart);
             return cart;
+        }
+
+        public async Task<Cart.Models.Cart?> GetCartByIdAsync(string cartId)
+        {
+            return await _cartRepository.GetByIdAsync(cartId);
         }
 
         public async Task<Cart.Models.Cart> AddItemAsync(string cartId, Cart.Models.CartItem item)

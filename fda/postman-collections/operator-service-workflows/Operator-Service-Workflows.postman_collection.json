@@ -57,6 +57,49 @@
       "name": "1. Authentication",
       "item": [
         {
+          "name": "Register Operator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 201 or 409 (already exists)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    pm.test(\"Response has userId\", function () {",
+                  "        var jsonData = pm.response.json();",
+                  "        if (jsonData.userId) {",
+                  "            pm.collectionVariables.set(\"operator_id\", jsonData.userId);",
+                  "        }",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"operator.pizzapalace@example.com\",\n  \"password\": \"Operator123!\",\n  \"role\": 2\n}"
+            },
+            "url": "{{auth_base_url}}/register"
+          },
+          "response": []
+        },
+        {
           "name": "Login Operator",
           "event": [
             {
@@ -71,17 +114,20 @@
                   "    var jsonData = pm.response.json();",
                   "    pm.expect(jsonData).to.have.property('token');",
                   "    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+                  "    pm.environment.set(\"auth_token\", jsonData.token);",
                   "});",
                   "",
                   "pm.test(\"Response has userId\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('userId');",
-                  "    pm.collectionVariables.set(\"operator_id\", jsonData.userId);",
+                  "    pm.expect(jsonData).to.have.property('user');",
+                  "    pm.expect(jsonData.user).to.have.property('id');",
+                  "    pm.collectionVariables.set(\"operator_id\", jsonData.user.id);",
+                  "    pm.environment.set(\"user_id\", jsonData.user.id);",
                   "});",
                   "",
                   "pm.test(\"User has Operator role\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.role).to.equal('Operator');",
+                  "    pm.expect(jsonData.user.role).to.equal(2);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -89,6 +135,9 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [
               {
@@ -100,19 +149,7 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"operator.pizzapalace@example.com\",\n  \"password\": \"Operator123!\"\n}"
             },
-            "url": {
-              "raw": "http://localhost:30001/api/auth/login",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30001",
-              "path": [
-                "api",
-                "auth",
-                "login"
-              ]
-            }
+            "url": "{{auth_base_url}}/login"
           },
           "response": []
         },
@@ -133,17 +170,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/restaurant/{{restaurant_id}}",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "restaurant",
-                "{{restaurant_id}}"
-              ]
-            }
+            "url": "{{order_base_url}}/restaurant/{{restaurant_id}}"
           },
           "response": []
         }
@@ -182,21 +209,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/restaurant/{{restaurant_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "pending",
-                "{{restaurant_id}}"
-              ]
-            }
+            "url": "{{order_base_url}}/restaurant/{{restaurant_id}}"
           },
           "response": []
         },
@@ -223,21 +236,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/restaurant/{{restaurant_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "ready",
-                "{{restaurant_id}}"
-              ]
-            }
+            "url": "{{order_base_url}}/restaurant/{{restaurant_id}}"
           },
           "response": []
         },
@@ -268,20 +267,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}"
           },
           "response": []
         }
@@ -314,21 +300,7 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/accept",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "accept"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/accept"
           },
           "response": []
         },
@@ -356,21 +328,7 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/decline",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "decline"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/decline"
           },
           "response": []
         }
@@ -409,18 +367,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{restaurant_id}}"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{restaurant_id}}"
           },
           "response": []
         },
@@ -456,19 +403,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}/low-stock",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{restaurant_id}}",
-                "low-stock"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
           },
           "response": []
         }
@@ -509,19 +444,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 50,\n  \"isAvailable\": true\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{menu_item_id}}",
-                "availability"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -557,19 +480,7 @@
               "mode": "raw",
               "raw": "{\n  \"availableFromTime\": \"09:00\",\n  \"availableToTime\": \"22:00\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{menu_item_id}}",
-                "availability"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -600,19 +511,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 0,\n  \"isAvailable\": false\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{menu_item_id}}",
-                "availability"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -643,19 +542,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 25,\n  \"isAvailable\": true\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{menu_item_id}}",
-                "availability"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         }
@@ -697,21 +584,7 @@
               "mode": "raw",
               "raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 2,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "package"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/package"
           },
           "response": []
         },
@@ -742,21 +615,7 @@
               "mode": "raw",
               "raw": "{\n  \"includeCutlery\": false,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 1,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "package"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/package"
           },
           "response": []
         },
@@ -787,21 +646,7 @@
               "mode": "raw",
               "raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 3,\n  \"isFragile\": true,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "package"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/package"
           },
           "response": []
         }
@@ -859,21 +704,7 @@
               "mode": "raw",
               "raw": "\"{{delivery_agent_id}}\""
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/generate-handover-otp",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "generate-handover-otp"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/generate-handover-otp"
           },
           "response": []
         },
@@ -910,20 +741,7 @@
               "mode": "raw",
               "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"{{handover_otp}}\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/handover",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "handover"
-              ]
-            }
+            "url": "{{order_base_url}}/handover"
           },
           "response": []
         },
@@ -960,20 +778,7 @@
               "mode": "raw",
               "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"999999\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/handover",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "handover"
-              ]
-            }
+            "url": "{{order_base_url}}/handover"
           },
           "response": []
         }
@@ -988,21 +793,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/restaurant/{{restaurant_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "pending",
-                "{{restaurant_id}}"
-              ]
-            }
+            "url": "{{order_base_url}}/restaurant/{{restaurant_id}}"
           },
           "response": []
         },
@@ -1011,20 +802,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}"
           },
           "response": []
         },
@@ -1033,19 +811,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{restaurant_id}}/low-stock",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{restaurant_id}}",
-                "low-stock"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
           },
           "response": []
         },
@@ -1054,21 +820,7 @@
           "request": {
             "method": "POST",
             "header": [],
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/accept",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "accept"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/accept"
           },
           "response": []
         },
@@ -1086,19 +838,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 45,\n  \"isAvailable\": true\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/operator/inventory/{{menu_item_id}}/availability",
-              "host": [
-                "{{order_base_url}}"
-              ],
-              "path": [
-                "api",
-                "order",
-                "inventory",
-                "{{menu_item_id}}",
-                "availability"
-              ]
-            }
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -1116,21 +856,7 @@
               "mode": "raw",
               "raw": "{\n  \"includeCutlery\": true,\n  \"includeNapkins\": true,\n  \"numberOfBags\": 2,\n  \"isFragile\": false,\n  \"packagedBy\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/package",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "package"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/package"
           },
           "response": []
         },
@@ -1162,21 +888,7 @@
               "mode": "raw",
               "raw": "\"{{delivery_agent_id}}\""
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/{{order_id}}/generate-handover-otp",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "{{order_id}}",
-                "generate-handover-otp"
-              ]
-            }
+            "url": "{{order_base_url}}/{{order_id}}/generate-handover-otp"
           },
           "response": []
         },
@@ -1194,20 +906,7 @@
               "mode": "raw",
               "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"deliveryAgentId\": \"{{delivery_agent_id}}\",\n  \"otp\": \"{{handover_otp}}\",\n  \"operatorId\": \"{{operator_id}}\"\n}"
             },
-            "url": {
-              "raw": "{{order_base_url}}/api/order/handover",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "30002",
-              "path": [
-                "api",
-                "operator",
-                "orders",
-                "handover"
-              ]
-            }
+            "url": "{{order_base_url}}/handover"
           },
           "response": []
         }

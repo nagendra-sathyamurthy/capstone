@@ -30,105 +30,6 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { addToCart, totalItems } = useCart();
 
-  // Mock data for demonstration
-  const mockRestaurants: Restaurant[] = [
-    {
-      id: '1',
-      name: 'Spice Kitchen',
-      cuisine: 'Indian',
-      rating: 4.5,
-      deliveryTime: '30-35 min',
-      image: '🏪',
-      isOpen: true
-    },
-    {
-      id: '2',
-      name: 'Pizza Palace',
-      cuisine: 'Italian',
-      rating: 4.2,
-      deliveryTime: '25-30 min',
-      image: '🍕',
-      isOpen: true
-    },
-    {
-      id: '3',
-      name: 'Burger Junction',
-      cuisine: 'American',
-      rating: 4.0,
-      deliveryTime: '20-25 min',
-      image: '🍔',
-      isOpen: false
-    }
-  ];
-
-  const mockMenuItems: MenuItem[] = [
-    {
-      id: '1',
-      name: 'Chicken Biryani',
-      description: 'Aromatic basmati rice with tender chicken',
-      price: 299,
-      category: 'Main Course',
-      image: '🍛',
-      restaurant: 'Spice Kitchen',
-      restaurantId: '1',
-      isVeg: false,
-      isAvailable: true,
-      rating: 4.6
-    },
-    {
-      id: '2',
-      name: 'Margherita Pizza',
-      description: 'Fresh tomato sauce, mozzarella, and basil',
-      price: 399,
-      category: 'Pizza',
-      image: '🍕',
-      restaurant: 'Pizza Palace',
-      restaurantId: '2',
-      isVeg: true,
-      isAvailable: true,
-      rating: 4.3
-    },
-    {
-      id: '3',
-      name: 'Paneer Butter Masala',
-      description: 'Creamy curry with cottage cheese',
-      price: 249,
-      category: 'Main Course',
-      image: '🍛',
-      restaurant: 'Spice Kitchen',
-      restaurantId: '1',
-      isVeg: true,
-      isAvailable: true,
-      rating: 4.4
-    },
-    {
-      id: '4',
-      name: 'Chicken Burger',
-      description: 'Grilled chicken patty with fresh vegetables',
-      price: 199,
-      category: 'Burger',
-      image: '🍔',
-      restaurant: 'Burger Junction',
-      restaurantId: '3',
-      isVeg: false,
-      isAvailable: false,
-      rating: 4.1
-    },
-    {
-      id: '5',
-      name: 'Veg Biryani',
-      description: 'Fragrant rice with mixed vegetables',
-      price: 229,
-      category: 'Main Course',
-      image: '🍛',
-      restaurant: 'Spice Kitchen',
-      restaurantId: '1',
-      isVeg: true,
-      isAvailable: true,
-      rating: 4.2
-    }
-  ];
-
   useEffect(() => {
     if (!user) {
       navigate('/');
@@ -201,17 +102,92 @@ const Dashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // For demo purposes, using mock data
-      // In production, these would be actual API calls
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setRestaurants(mockRestaurants);
-      setMenuItems(mockMenuItems);
+      // Fetch menu items from catalog API
+      console.log('[Dashboard] Fetching menu items from API...');
+      const menuResponse = await catalogService.getAvailableMenuItems();
+      console.log('[Dashboard] Menu items received:', menuResponse);
+      
+      if (menuResponse && menuResponse.length > 0) {
+        // Transform API response to match frontend MenuItem type
+        const transformedMenuItems = menuResponse.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          price: item.pricePerUOM,
+          category: item.category,
+          image: getCategoryEmoji(item.category),
+          restaurant: item.restaurantName || 'Restaurant',
+          restaurantId: item.restaurantId || '1',
+          isVeg: item.isVegetarian,
+          isAvailable: item.isAvailable,
+          rating: 4.0 + Math.random() // Random rating for demo
+        }));
+        
+        setMenuItems(transformedMenuItems);
+        
+        // Extract unique restaurants from menu items
+        const restaurantsMap = new Map(
+          menuResponse
+            .filter((item: any) => item.restaurantName)
+            .map((item: any) => [
+              item.restaurantId,
+              {
+                id: item.restaurantId,
+                name: item.restaurantName,
+                cuisine: item.cuisine || 'Multi-Cuisine',
+                rating: 4.0 + Math.random(),
+                deliveryTime: '25-35 min',
+                image: getRestaurantEmoji(item.cuisine),
+                isOpen: true
+              }
+            ])
+        );
+        
+        const uniqueRestaurants = Array.from(restaurantsMap.values()) as Restaurant[];
+        
+        setRestaurants(uniqueRestaurants);
+        console.log('[Dashboard] Loaded', transformedMenuItems.length, 'menu items and', uniqueRestaurants.length, 'restaurants');
+      } else {
+        console.log('[Dashboard] No menu items found, displaying empty state');
+        toast.info('No menu items available at the moment. Please run the seed script to add sample data.');
+      }
     } catch (error) {
-      toast.error('Failed to load data');
+      console.error('[Dashboard] Error loading data:', error);
+      toast.error('Failed to load menu data. Please try again later.');
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Helper function to get emoji based on category
+  const getCategoryEmoji = (category: string): string => {
+    const emojiMap: { [key: string]: string } = {
+      'Appetizer': '🥗',
+      'Main Course': '🍛',
+      'Dessert': '🍰',
+      'Beverage': '🥤',
+      'Salad': '🥗',
+      'Pizza': '🍕',
+      'Burger': '🍔',
+      'Default': '🍽️'
+    };
+    return emojiMap[category] || emojiMap['Default'];
+  };
+  
+  // Helper function to get emoji based on cuisine
+  const getRestaurantEmoji = (cuisine: string): string => {
+    const emojiMap: { [key: string]: string } = {
+      'Italian': '🍕',
+      'American': '🍔',
+      'Indian': '🍛',
+      'Thai': '🍜',
+      'French': '🥖',
+      'Mediterranean': '🥙',
+      'Health Food': '🥗',
+      'Default': '🏪'
+    };
+    return emojiMap[cuisine] || emojiMap['Default'];
   };
 
   const filteredMenuItems = menuItems.filter(item => {
