@@ -111,7 +111,7 @@ fda/
 
 The application follows a microservices architecture with:
 
-- **6 Backend Services**: Authentication, Catalog, CRM, Cart, Order, Payment (ASP.NET Core)
+- **5 Backend Services**: Authentication, Catalog, CRM, Cart, Order (ASP.NET Core)
 - **API Gateway**: Node.js/Express for request routing and aggregation
 - **Frontend**: React SPA with responsive design
 - **Database**: MongoDB (shared instance for development)
@@ -161,8 +161,7 @@ The application follows a microservices architecture with:
 - CRM: 30003
 - Cart: 30004
 - Order: 30005
-- Payment: 30006
-- Gateway: 30005
+- Gateway: 30500
 - Customer App: 30080
 
 ---
@@ -485,11 +484,6 @@ kubectl rollout restart deployment/<deployment-name> -n capstone-services
 - **order_items**: Order line items
 - **order_history**: Order status tracking
 
-#### Payment Service
-- **payments**: Payment transactions
-- **refunds**: Refund records
-- **upi_accounts**: UPI payment details
-
 ---
 
 ## 📜 Available Scripts (devops/jobs/)
@@ -530,36 +524,213 @@ kubectl rollout restart deployment/<deployment-name> -n capstone-services
 
 ## 🧪 Testing
 
-### Postman Collections
+### Automated Test Suite
 
-Located in `postman-collections/`:
+**Location:** `fda/devops/jobs/powershell/test.ps1`
 
-1. **User Registration Workflows**
-   - Customer registration
-   - OTP verification
-   - Profile management
+The centralized test script runs all Postman API collections against deployed services with comprehensive reporting.
 
-2. **Restaurant Owner Workflows**
-   - Biller registration
-   - Menu management (CRUD)
-   - Staff management
-   - Order management
+#### Test Collections (66+ API requests)
 
-3. **Operator Service Workflows**
-   - Order confirmation
-   - Customer service
-   - Order handover
+1. **User Registration** - Authentication and account creation
+2. **Restaurant Owner Workflows** - Restaurant and menu management  
+3. **Operator Service Workflows** - Kitchen operations and order management
+4. **Customer Workflows** - Customer profile, orders, and payments
 
-### Run API Tests
+#### Run All Tests
 
 ```powershell
-cd devops/jobs
-.\run-newman-tests.ps1
+# Navigate to scripts directory
+cd fda/devops/jobs/powershell
+
+# Run all API tests
+.\test.ps1
 ```
 
-**Prerequisites:**
-- Newman installed: `npm install -g newman`
-- Services deployed and running
+#### Test Features
+- ✅ Kubernetes service validation
+- ✅ Sequential test execution
+- ✅ HTML and JSON report generation
+- ✅ Comprehensive test summary
+- ✅ CI/CD ready with exit codes
+
+#### Test Reports
+
+Reports are generated in `fda/test-results/`:
+- `user-registration-report.html`
+- `restaurant-owner-report.html`
+- `operator-service-report.html`
+- `customer-workflows-report.html`
+- JSON reports for automation
+
+**Expected Duration:** 8-12 minutes for complete suite
+
+#### Prerequisites
+- Newman installed: `npm install -g newman newman-reporter-htmlextra`
+- Services deployed and running in Kubernetes
+- Environment file: `postman-collections/Capstone-Local-Environment.postman_environment.json`
+
+#### Test Collections Details
+
+**User Registration Workflows**
+- Customer, Restaurant Owner, Kitchen Worker, Delivery Agent, IT Admin registration
+- OTP verification and authentication
+- Profile management
+- Role-based access control testing
+
+**Restaurant Owner Workflows**
+- Restaurant registration with business information
+- Menu management (Create, Read, Update, Delete)
+- Menu item availability control
+- Business hours and contact management
+- Restaurant status updates
+
+**Operator Service Workflows**
+- View and accept orders
+- Inventory management and low-stock alerts
+- Menu item availability updates
+- Order packaging with special instructions
+- Secure order handover with OTP generation/verification
+- End-to-end kitchen workflow
+
+**Customer Workflows**
+- User profile management (name, email, phone, preferences)
+- Address management (add, update, delete delivery addresses)
+- Complete order flow (browse → cart → checkout → order placement)
+- Order history and real-time tracking
+- Order cancellation (when allowed)
+
+### API Endpoint Reference
+
+#### Gateway Configuration
+- **Gateway URL**: `http://localhost:30500`
+- **Gateway Routes**:
+  - `/api/auth` → Authentication Service
+  - `/api/catalog` → Catalog Service (Menu, Restaurants, Inventory)
+  - `/api/crm` → CRM Service (Customer Management)
+  - `/api/cart` → Cart Service
+  - `/api/order` → Order Service
+
+#### Authentication Service Endpoints
+**Base**: `/api/auth`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Register new user (all roles) |
+| POST | `/login` | Login with email/phone + password |
+| POST | `/login/email-otp` | Login with email + OTP |
+| POST | `/login/phone-otp` | Login with phone + OTP |
+| POST | `/generate-otp` | Generate OTP for verification |
+| POST | `/verify-otp` | Verify OTP code |
+| GET | `/validate` | Validate JWT token |
+| GET | `/profile` | Get user profile |
+| PUT | `/password` | Update password |
+
+#### Catalog Service Endpoints
+**Base**: `/api/catalog`
+
+**Restaurant Management** (`/restaurant`):
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/restaurant/register` | Register new restaurant |
+| GET | `/restaurant` | Get active restaurants |
+| GET | `/restaurant/{id}` | Get restaurant by ID |
+| GET | `/restaurant/owner/{ownerId}` | Get owner's restaurants |
+| PUT | `/restaurant/{id}` | Update restaurant |
+| PATCH | `/restaurant/{id}/status` | Update restaurant status |
+| PATCH | `/restaurant/{id}/contact` | Update contact info |
+| PATCH | `/restaurant/{id}/hours` | Update business hours |
+
+**Menu Management** (`/menu`):
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/menu` | Get available menu items |
+| GET | `/menu/{id}` | Get menu item by ID |
+| GET | `/menu/restaurant/{restaurantId}` | Get restaurant menu |
+| GET | `/menu/owner/{ownerId}` | Get owner's menu items |
+| GET | `/menu/category/{category}` | Filter by category |
+| GET | `/menu/cuisine/{cuisine}` | Filter by cuisine |
+| GET | `/menu/vegetarian` | Get vegetarian items |
+| GET | `/menu/vegan` | Get vegan items |
+| GET | `/menu/gluten-free` | Get gluten-free items |
+| GET | `/menu/search?searchTerm=pizza` | Search menu items |
+| POST | `/menu` | Create menu item |
+| POST | `/menu/bulk` | Create multiple items |
+| PUT | `/menu/{id}` | Update menu item |
+| PATCH | `/menu/{id}/availability` | Update availability |
+| DELETE | `/menu/{id}` | Delete menu item |
+
+**Operator Inventory** (`/operator/inventory`):
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/operator/inventory/{restaurantId}` | View restaurant inventory |
+| GET | `/operator/inventory/{restaurantId}/low-stock` | Get low-stock alerts |
+| PATCH | `/operator/inventory/{menuItemId}/availability` | Update item availability |
+
+#### Order Service Endpoints
+**Base**: `/api/order`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/order` | Create new order |
+| GET | `/order/{orderId}` | Get order details |
+| GET | `/order/restaurant/{restaurantId}` | Get restaurant orders |
+| GET | `/order/restaurant/{restaurantId}/pending` | Get pending orders |
+| GET | `/order/restaurant/{restaurantId}/ready` | Get ready orders |
+| GET | `/order/customer/{customerId}` | Get customer order history |
+| POST | `/order/{orderId}/accept` | Accept order (Operator) |
+| POST | `/order/{orderId}/decline` | Decline order (Operator) |
+| PATCH | `/order/{orderId}/status` | Update order status |
+| POST | `/order/{orderId}/package` | Add packaging details |
+| POST | `/order/{orderId}/generate-handover-otp` | Generate handover OTP |
+| POST | `/order/handover` | Complete handover with OTP |
+
+#### CRM Service Endpoints
+**Base**: `/api/crm`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/customer` | Get all customers |
+| GET | `/customer/{id}` | Get customer by ID |
+| POST | `/customer` | Create customer profile |
+| PUT | `/customer/{id}` | Update customer |
+| DELETE | `/customer/{id}` | Delete customer |
+| GET | `/customer/{id}/addresses` | Get customer addresses |
+| POST | `/customer/{id}/addresses` | Add delivery address |
+| PUT | `/customer/{id}/addresses/{addressId}` | Update address |
+| DELETE | `/customer/{id}/addresses/{addressId}` | Delete address |
+
+#### Cart Service Endpoints
+**Base**: `/api/cart`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/cart/{userId}` | Get user's cart |
+| POST | `/cart/{userId}/add` | Add item to cart |
+| PUT | `/cart/{userId}/update` | Update cart item |
+| DELETE | `/cart/{userId}/remove/{itemId}` | Remove cart item |
+| DELETE | `/cart/{userId}/clear` | Clear entire cart |
+
+### Environment Variables for Testing
+
+```json
+{
+  "gateway_base_url": "http://localhost:30500",
+  "auth_base_url": "http://localhost:30500/api/auth",
+  "catalog_base_url": "http://localhost:30500/api/catalog",
+  "crm_base_url": "http://localhost:30500/api/crm",
+  "cart_base_url": "http://localhost:30500/api/cart",
+  "order_base_url": "http://localhost:30500/api/order"
+}
+```
+
+### Testing Best Practices
+
+1. **Run Tests After Deployment**: Always run test suite after deploying changes
+2. **Review HTML Reports**: Check detailed reports for any failures
+3. **Sequential Execution**: Tests run in order (User Registration → Restaurant → Operator → Customer)
+4. **Environment Validation**: Script validates Kubernetes services before testing
+5. **Clean Test Data**: Each test suite uses isolated test data to avoid conflicts
 
 ---
 

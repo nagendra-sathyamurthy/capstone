@@ -42,6 +42,49 @@
       "name": "1. Authentication",
       "item": [
         {
+          "name": "Register Restaurant Owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 201 or 409 (already exists)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    pm.test(\"Response has userId\", function () {",
+                  "        var jsonData = pm.response.json();",
+                  "        if (jsonData.userId) {",
+                  "            pm.collectionVariables.set(\"user_id\", jsonData.userId);",
+                  "        }",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pizzapalace@example.com\",\n  \"password\": \"Password123!\",\n  \"role\": 1\n}"
+            },
+            "url": "{{auth_base_url}}/register"
+          },
+          "response": []
+        },
+        {
           "name": "Login Restaurant Owner",
           "event": [
             {
@@ -56,12 +99,15 @@
                   "    var jsonData = pm.response.json();",
                   "    pm.expect(jsonData).to.have.property('token');",
                   "    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+                  "    pm.environment.set(\"auth_token\", jsonData.token);",
                   "});",
                   "",
                   "pm.test(\"Response has userId\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('userId');",
-                  "    pm.collectionVariables.set(\"user_id\", jsonData.userId);",
+                  "    pm.expect(jsonData).to.have.property('user');",
+                  "    pm.expect(jsonData.user).to.have.property('id');",
+                  "    pm.collectionVariables.set(\"user_id\", jsonData.user.id);",
+                  "    pm.environment.set(\"user_id\", jsonData.user.id);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -69,6 +115,9 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [
               {
@@ -130,7 +179,7 @@
               "mode": "raw",
               "raw": "{\n  \"ownerId\": \"{{user_id}}\",\n  \"name\": \"Pizza Palace Downtown\",\n  \"description\": \"Authentic Italian pizzas and pasta. Family-owned restaurant serving the community since 2010.\",\n  \"address\": {\n    \"street\": \"123 Main Street\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94102\",\n    \"country\": \"USA\",\n    \"landmark\": \"Near Central Park\"\n  },\n  \"contactInfo\": {\n    \"phone\": \"+1-555-0101\",\n    \"email\": \"contact@pizzapalace.com\",\n    \"website\": \"https://www.pizzapalace.com\"\n  },\n  \"timings\": {\n    \"monday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"tuesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"wednesday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"thursday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"22:00\" },\n    \"friday\": { \"isOpen\": true, \"openTime\": \"11:00\", \"closeTime\": \"23:00\" },\n    \"saturday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"23:00\" },\n    \"sunday\": { \"isOpen\": true, \"openTime\": \"10:00\", \"closeTime\": \"22:00\" }\n  },\n  \"isActive\": true,\n  \"cuisineType\": \"Italian\",\n  \"imageUrl\": \"https://example.com/restaurants/pizzapalace.jpg\"\n}"
             },
-            "url": "{{crm_base_url}}/restaurant/register"
+            "url": "{{catalog_base_url}}/restaurant/register"
           },
           "response": []
         },
@@ -162,7 +211,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{crm_base_url}}/restaurant/owner/{{user_id}}"
+            "url": "{{catalog_base_url}}/restaurant/owner/{{user_id}}"
           },
           "response": []
         }

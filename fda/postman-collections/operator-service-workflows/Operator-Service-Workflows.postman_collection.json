@@ -57,6 +57,49 @@
       "name": "1. Authentication",
       "item": [
         {
+          "name": "Register Operator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 201 or 409 (already exists)\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    pm.test(\"Response has userId\", function () {",
+                  "        var jsonData = pm.response.json();",
+                  "        if (jsonData.userId) {",
+                  "            pm.collectionVariables.set(\"operator_id\", jsonData.userId);",
+                  "        }",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"operator.pizzapalace@example.com\",\n  \"password\": \"Operator123!\",\n  \"role\": 2\n}"
+            },
+            "url": "{{auth_base_url}}/register"
+          },
+          "response": []
+        },
+        {
           "name": "Login Operator",
           "event": [
             {
@@ -71,17 +114,20 @@
                   "    var jsonData = pm.response.json();",
                   "    pm.expect(jsonData).to.have.property('token');",
                   "    pm.collectionVariables.set(\"auth_token\", jsonData.token);",
+                  "    pm.environment.set(\"auth_token\", jsonData.token);",
                   "});",
                   "",
                   "pm.test(\"Response has userId\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.have.property('userId');",
-                  "    pm.collectionVariables.set(\"operator_id\", jsonData.userId);",
+                  "    pm.expect(jsonData).to.have.property('user');",
+                  "    pm.expect(jsonData.user).to.have.property('id');",
+                  "    pm.collectionVariables.set(\"operator_id\", jsonData.user.id);",
+                  "    pm.environment.set(\"user_id\", jsonData.user.id);",
                   "});",
                   "",
                   "pm.test(\"User has Operator role\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.role).to.equal('Operator');",
+                  "    pm.expect(jsonData.user.role).to.equal(2);",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -89,6 +135,9 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [
               {
@@ -318,7 +367,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/operator/inventory/{{restaurant_id}}"
+            "url": "{{catalog_base_url}}/operator/inventory/{{restaurant_id}}"
           },
           "response": []
         },
@@ -354,7 +403,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
+            "url": "{{catalog_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
           },
           "response": []
         }
@@ -395,7 +444,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 50,\n  \"isAvailable\": true\n}"
             },
-            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -431,7 +480,7 @@
               "mode": "raw",
               "raw": "{\n  \"availableFromTime\": \"09:00\",\n  \"availableToTime\": \"22:00\"\n}"
             },
-            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -462,7 +511,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 0,\n  \"isAvailable\": false\n}"
             },
-            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },
@@ -493,7 +542,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 25,\n  \"isAvailable\": true\n}"
             },
-            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         }
@@ -762,7 +811,7 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{order_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
+            "url": "{{catalog_base_url}}/operator/inventory/{{restaurant_id}}/low-stock"
           },
           "response": []
         },
@@ -789,7 +838,7 @@
               "mode": "raw",
               "raw": "{\n  \"quantityAvailable\": 45,\n  \"isAvailable\": true\n}"
             },
-            "url": "{{order_base_url}}/operator/inventory/{{menu_item_id}}/availability"
+            "url": "{{catalog_base_url}}/operator/inventory/{{menu_item_id}}/availability"
           },
           "response": []
         },

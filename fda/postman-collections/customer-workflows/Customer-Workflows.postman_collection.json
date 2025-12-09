@@ -1,0 +1,944 @@
+{
+	"info": {
+		"_postman_id": "customer-workflows-001",
+		"name": "Customer Workflows",
+		"description": "Complete customer journey workflows including address management, profile setup, order placement, and order history viewing.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "restaurant_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "menu_item_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "order_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "address_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "0. Authentication",
+			"item": [
+				{
+					"name": "Register Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Registration successful or user exists\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 409]);",
+									"});",
+									"",
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.id) {",
+									"        pm.collectionVariables.set('user_id', jsonData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.customer@example.com\",\n  \"password\": \"Customer123!\",\n  \"role\": 0\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/auth/register",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a new customer account. Returns 409 if user already exists."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"    pm.collectionVariables.set('auth_token', jsonData.token);",
+									"    pm.environment.set('auth_token', jsonData.token);",
+									"});",
+									"",
+								"pm.test(\"Response has userId\", function () {",
+								"    var jsonData = pm.response.json();",
+								"    pm.expect(jsonData).to.have.property('user');",
+								"    pm.expect(jsonData.user).to.have.property('id');",
+								"    pm.collectionVariables.set('user_id', jsonData.user.id);",
+								"    pm.environment.set('user_id', jsonData.user.id);",
+								"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.customer@example.com\",\n  \"password\": \"Customer123!\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/auth/login",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login and receive authentication token."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication requests to get auth_token and user_id for subsequent requests"
+		},
+		{
+			"name": "1. User Profile Management",
+			"item": [
+				{
+					"name": "Get User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Profile data exists\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('userId');",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}"]
+						},
+						"description": "Retrieve the complete user profile including personal information, addresses, and preferences."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Profile updated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+919876543210\",\n  \"dateOfBirth\": \"1990-05-15\",\n  \"dietaryPreferences\": [\"Vegetarian\", \"No Onion\"]\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}"]
+						},
+						"description": "Update user profile information including name, email, phone, date of birth, and dietary preferences."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Image",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+								"pm.test(\"Status code is 200\", function () {",
+								"    pm.response.to.have.status(200);",
+								"});",
+								"",
+								"pm.test(\"Profile image updated\", function () {",
+								"    var jsonData = pm.response.json();",
+								"    pm.expect(jsonData).to.have.property('message');",
+								"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"profileImage\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}/profile-image",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}", "profile-image"]
+						},
+						"description": "Update user profile picture with base64 encoded image data."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Food Preferences",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Food preferences updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('updatedAt');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dietaryRestrictions\": [\"Vegetarian\", \"Gluten-Free\"],\n  \"favoriteCategories\": [\"Italian\", \"Chinese\", \"South Indian\"],\n  \"dislikedIngredients\": [\"Onion\", \"Garlic\"],\n  \"spiceLevel\": \"Medium\",\n  \"allergies\": [\"Peanuts\"]\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}/food-preferences",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}", "food-preferences"]
+						},
+						"description": "Update food preferences including dietary restrictions, favorite categories, allergies, and spice level."
+					},
+					"response": []
+				}
+			],
+			"description": "User profile management endpoints for creating and updating customer information."
+		},
+		{
+			"name": "2. Address Management",
+			"item": [
+				{
+					"name": "Get All Addresses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Addresses array returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"// Save first address ID if available",
+									"var addresses = pm.response.json();",
+									"if (addresses && addresses.length > 0) {",
+									"    pm.environment.set('address_id', addresses[0].id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}/addresses",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}", "addresses"]
+						},
+						"description": "Get all delivery addresses for the user."
+					},
+					"response": []
+				},
+				{
+					"name": "Add New Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Address created with ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set('address_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"home\",\n  \"line1\": \"123, MG Road\",\n  \"line2\": \"Near City Mall\",\n  \"landmark\": \"Opposite Cafe Coffee Day\",\n  \"city\": \"Bangalore\",\n  \"state\": \"Karnataka\",\n  \"pincode\": \"560001\",\n  \"isDefault\": true\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}/addresses",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}", "addresses"]
+						},
+						"description": "Add a new delivery address for the user. Address types can be 'home', 'work', or 'other'."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Address updated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"work\",\n  \"line1\": \"456, Koramangala 4th Block\",\n  \"line2\": \"8th Main Road\",\n  \"landmark\": \"Near Sony Signal\",\n  \"city\": \"Bangalore\",\n  \"state\": \"Karnataka\",\n  \"pincode\": \"560034\",\n  \"isDefault\": false\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}/addresses/{{address_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}", "addresses", "{{address_id}}"]
+						},
+						"description": "Update an existing delivery address."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/crm/userprofile/by-user/{{user_id}}/addresses/{{address_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "crm", "userprofile", "by-user", "{{user_id}}", "addresses", "{{address_id}}"]
+						},
+						"description": "Delete a delivery address from the user's profile."
+					},
+					"response": []
+				}
+			],
+			"description": "Delivery address management for the customer."
+		},
+		{
+			"name": "3. Complete Order Flow",
+			"item": [
+				{
+					"name": "Step 1 - Browse Restaurants",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Restaurants array returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"// Save first restaurant ID for next steps",
+									"var restaurants = pm.response.json();",
+									"if (restaurants && restaurants.length > 0) {",
+									"    pm.environment.set('restaurant_id', restaurants[0].id);",
+									"    pm.environment.set('restaurant_name', restaurants[0].name);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/catalog/restaurants",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "catalog", "restaurants"]
+						},
+						"description": "Browse all active restaurants available for ordering."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 2 - View Restaurant Menu",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Menu items returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+								"// Save first menu item for cart",
+								"var menuItems = pm.response.json();",
+								"if (menuItems && menuItems.length > 0) {",
+								"    pm.environment.set('menu_item_id', menuItems[0].id);",
+								"    pm.environment.set('menu_item_name', menuItems[0].name);",
+								"    pm.environment.set('menu_item_price', menuItems[0].pricePerUOM);",
+								"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/catalog/menu/restaurant/{{restaurant_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "catalog", "menu", "restaurant", "{{restaurant_id}}"]
+						},
+						"description": "View all menu items for the selected restaurant."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 3 - Add Item to Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Item added to cart\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('items');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"itemId\": \"{{menu_item_id}}\",\n  \"name\": \"{{menu_item_name}}\",\n  \"price\": {{menu_item_price}},\n  \"quantity\": 2,\n  \"specialInstructions\": \"Extra spicy please\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/cart/{{user_id}}/add",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "cart", "{{user_id}}", "add"]
+						},
+						"description": "Add a menu item to the shopping cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 4 - View Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Cart has items\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('items');",
+									"    pm.expect(jsonData.items).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/cart/{{user_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "cart", "{{user_id}}"]
+						},
+						"description": "View current cart contents with total amount."
+					},
+					"response": []
+				},
+				{
+					"name": "Step 5 - Place Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Order created successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('orderId');",
+									"    pm.environment.set('order_id', jsonData.orderId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"{{user_id}}\",\n  \"restaurantId\": \"{{restaurant_id}}\",\n  \"restaurantName\": \"{{restaurant_name}}\",\n  \"items\": [\n    {\n      \"menuItemId\": \"{{menu_item_id}}\",\n      \"name\": \"{{menu_item_name}}\",\n      \"quantity\": 2,\n      \"price\": {{menu_item_price}},\n      \"specialInstructions\": \"Extra spicy please\"\n    }\n  ],\n  \"totalAmount\": 499.00,\n  \"status\": 0,\n  \"notes\": \"Please call before delivery\",\n  \"deliveryAddress\": {\n    \"line1\": \"123, MG Road\",\n    \"city\": \"Bangalore\",\n    \"state\": \"Karnataka\",\n    \"pincode\": \"560001\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{gateway_base_url}}/api/orders",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "orders"]
+						},
+						"description": "Place a new order with cart items and delivery details."
+					},
+					"response": []
+				}
+			],
+			"description": "Complete flow from browsing restaurants to order placement."
+		},
+		{
+			"name": "4. Order History & Tracking",
+			"item": [
+				{
+					"name": "View Order History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Orders array returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"// Check order structure",
+									"var orders = pm.response.json();",
+									"if (orders && orders.length > 0) {",
+									"    pm.test(\"Order has required fields\", function() {",
+									"        pm.expect(orders[0]).to.have.property('id');",
+									"        pm.expect(orders[0]).to.have.property('customerId');",
+									"        pm.expect(orders[0]).to.have.property('restaurantName');",
+									"        pm.expect(orders[0]).to.have.property('totalAmount');",
+									"        pm.expect(orders[0]).to.have.property('status');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/orders/customer/{{user_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "orders", "customer", "{{user_id}}"]
+						},
+						"description": "Get complete order history for the customer with all past orders."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Order details retrieved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('items');",
+									"    pm.expect(jsonData.items).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/orders/{{order_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "orders", "{{order_id}}"]
+						},
+						"description": "Get detailed information for a specific order including all items, pricing, and status."
+					},
+					"response": []
+				},
+				{
+					"name": "Track Order Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Order tracking info available\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/orders/{{order_id}}",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "orders", "{{order_id}}"]
+						},
+						"description": "Track real-time status of an order (Pending → Preparing → Ready → Out for Delivery → Delivered)."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Order cancelled successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.equal(7);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_base_url}}/api/orders/{{order_id}}/cancel",
+							"host": ["{{gateway_base_url}}"],
+							"path": ["api", "orders", "{{order_id}}", "cancel"]
+						},
+						"description": "Cancel an order (only allowed for orders in Pending or Accepted status)."
+					},
+					"response": []
+				}
+			],
+			"description": "View order history, track orders, and cancel orders if needed."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Set default values if not already set",
+					"if (!pm.environment.get('gateway_base_url')) {",
+					"    pm.environment.set('gateway_base_url', 'http://localhost:30500');",
+					"}",
+					"",
+					"if (!pm.environment.get('user_id')) {",
+					"    console.log('Warning: user_id not set. Please login first.');",
+					"}",
+					"",
+					"if (!pm.environment.get('auth_token')) {",
+					"    console.log('Warning: auth_token not set. Please login first.');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

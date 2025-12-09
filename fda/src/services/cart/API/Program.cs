@@ -80,6 +80,26 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Add role-based authorization
+builder.Services.AddAuthorization(options =>
+{
+    // Restaurant Owner policy
+    options.AddPolicy("RestaurantOwnerOnly", policy =>
+        policy.RequireRole("RestaurantOwner", "Biller"));
+    
+    // Restaurant Operator policy
+    options.AddPolicy("RestaurantOperatorOnly", policy =>
+        policy.RequireRole("RestaurantOperator", "Operator", "KitchenWorker", "Worker"));
+    
+    // Delivery Agent policy
+    options.AddPolicy("DeliveryAgentOnly", policy =>
+        policy.RequireRole("DeliveryAgent"));
+    
+    // IT Admin policy
+    options.AddPolicy("ITAdminOnly", policy =>
+        policy.RequireRole("ITAdmin", "Admin"));
+});
+
 // Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

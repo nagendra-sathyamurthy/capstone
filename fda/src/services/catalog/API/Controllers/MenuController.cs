@@ -272,16 +272,25 @@ namespace catalog.API.Controllers
 
         // Restaurant-based endpoints
         /// <summary>
-        /// Get menu items by restaurant ID
+        /// Get available menu items by restaurant ID (Customer view)
+        /// Matches Postman collection path: /api/catalog/menu/restaurant/{restaurantId}
         /// </summary>
         [HttpGet("restaurant/{restaurantId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<MenuItem>>> GetMenuItemsByRestaurant(string restaurantId)
         {
             if (string.IsNullOrWhiteSpace(restaurantId))
-                return BadRequest("Restaurant ID cannot be empty");
+                return BadRequest(new { error = true, message = "Restaurant ID cannot be empty" });
 
-            var items = await _menuService.GetMenuItemsByRestaurantIdAsync(restaurantId);
-            return Ok(items);
+            try
+            {
+                var items = await _menuService.GetAvailableMenuItemsByRestaurantIdAsync(restaurantId);
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = true, message = ex.Message });
+            }
         }
 
         /// <summary>

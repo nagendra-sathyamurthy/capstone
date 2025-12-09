@@ -40,6 +40,10 @@ namespace Order.Models
 
         public string? HandoverBy { get; set; } // Operator who handed over
 
+        public DateTime? PickedUpAt { get; set; } // When delivery agent picked up
+
+        public DateTime? DeliveredAt { get; set; } // When delivered to customer
+
         public string? Notes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

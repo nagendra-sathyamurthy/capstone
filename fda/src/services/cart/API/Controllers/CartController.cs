@@ -36,12 +36,16 @@ namespace Cart.API.Controllers
         {
             try
             {
-                // We need to add a GetByIdAsync method to CartService
-                return Ok(new { message = "GetCart not implemented yet", cartId = id });
+                var cart = await _cartService.GetCartByIdAsync(id);
+                if (cart == null)
+                {
+                    return NotFound(new { message = $"Cart with ID {id} not found" });
+                }
+                return Ok(cart);
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
 

@@ -50,16 +50,25 @@ $testCollections = @(
         Name = "User Registration"
         Collection = "$collectionsPath\user-registration\User-Registration-Flow.postman_collection.json"
         Report = "user-registration-report"
+        DataFile = "$collectionsPath\user-registration\data\customer-registration.json"
     },
     @{
         Name = "Restaurant Owner Workflows"
         Collection = "$collectionsPath\restaurant-owner-workflows\Restaurant-Owner-Workflows.postman_collection.json"
         Report = "restaurant-owner-report"
+        DataFile = "$collectionsPath\restaurant-owner-workflows\data\restaurants-data.json"
     },
     @{
         Name = "Operator Service Workflows"
         Collection = "$collectionsPath\operator-service-workflows\Operator-Service-Workflows.postman_collection.json"
         Report = "operator-service-report"
+        DataFile = "$collectionsPath\operator-service-workflows\data\operators-data.json"
+    },
+    @{
+        Name = "Customer Workflows"
+        Collection = "$collectionsPath\customer-workflows\Customer-Workflows.postman_collection.json"
+        Report = "customer-workflows-report"
+        DataFile = "$collectionsPath\customer-workflows\data\customer-profiles-data.json"
     }
 )
 
@@ -89,13 +98,25 @@ foreach ($test in $testCollections) {
     
     try {
         # Run newman with both HTML and JSON reporters
-        npx newman run $collectionPath `
-            -e $environment `
-            --reporters cli,htmlextra,json `
-            --reporter-htmlextra-export $reportPath `
-            --reporter-json-export $jsonReportPath `
-            --timeout-request 10000 `
-            --color on 2>&1 | Tee-Object -Variable output
+        # Check if data file exists and use it for data-driven testing
+        $newmanArgs = @(
+            "run", $collectionPath,
+            "-e", $environment,
+            "--reporters", "cli,htmlextra,json",
+            "--reporter-htmlextra-export", $reportPath,
+            "--reporter-json-export", $jsonReportPath,
+            "--timeout-request", "10000",
+            "--color", "on"
+        )
+        
+        # Add iteration data if data file exists
+        if ($test.DataFile -and (Test-Path $test.DataFile)) {
+            Write-Host "  Using data file: $($test.DataFile)" -ForegroundColor Cyan
+            $newmanArgs += "--iteration-data"
+            $newmanArgs += $test.DataFile
+        }
+        
+        npx newman @newmanArgs 2>&1 | Tee-Object -Variable output
         
         if ($LASTEXITCODE -eq 0) {
             Write-Host "✓ $($test.Name) tests completed successfully" -ForegroundColor Green

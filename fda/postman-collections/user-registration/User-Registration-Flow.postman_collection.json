@@ -68,7 +68,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{{user_data}}"
+          "raw": "{\n  \"name\": \"{{name}}\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"{{role}}\",\n  \"phone\": \"{{phone}}\"\n}"
         },
         "url": "{{auth_base_url}}/register"
       }

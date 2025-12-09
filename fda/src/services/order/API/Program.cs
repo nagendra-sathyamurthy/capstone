@@ -62,6 +62,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 
 // Register services
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<DeliveryService>();
 
 // Add controllers
 builder.Services.AddControllers();
@@ -91,10 +92,22 @@ builder.Services.AddAuthorization(options =>
             context.User.HasClaim("role", "Operator") ||
             context.User.HasClaim("role", "Worker")));
     
+    // Restaurant Operator Only
+    options.AddPolicy("RestaurantOperatorOnly", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("role", "RestaurantOperator") ||
+            context.User.HasClaim("role", "Operator") ||
+            context.User.HasClaim("role", "KitchenWorker") ||
+            context.User.HasClaim("role", "Worker")));
+    
     // Delivery Agent policy
     options.AddPolicy("DeliveryAgent", policy =>
         policy.RequireAssertion(context =>
             context.User.HasClaim("role", "DeliveryAgent")));
+    
+    // Delivery Agent Only
+    options.AddPolicy("DeliveryAgentOnly", policy =>
+        policy.RequireRole("DeliveryAgent"));
 });
 
 var app = builder.Build();

@@ -11,7 +11,6 @@ data:
   CRM_SERVICE_URL: "http://crm-service:8080"
   CART_SERVICE_URL: "http://cart-service:8080"
   ORDER_SERVICE_URL: "http://order-service:8080"
-  PAYMENT_SERVICE_URL: "http://payment-service:8080"
   CORS_ORIGIN: "https://app.your-domain.com"
   RATE_LIMIT_WINDOW_MS: "900000"
   RATE_LIMIT_MAX_REQUESTS: "100"

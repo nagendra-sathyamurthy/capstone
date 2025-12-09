@@ -25,7 +25,6 @@ spec:
     - crm.your-domain.com
     - cart.your-domain.com
     - order.your-domain.com
-    - payment.your-domain.com
     secretName: capstone-services-tls
   rules:
   # Authentication Service
@@ -81,17 +80,6 @@ spec:
         backend:
           service:
             name: order-service
-            port:
-              number: 8080
-  # Payment Service
-  - host: payment.your-domain.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: payment-service
             port:
               number: 8080
 ---
