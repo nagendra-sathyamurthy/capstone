@@ -1,7 +1,7 @@
-using Catalog.Models;
-using Catalog.DataAccess;
+using catalog.Models;
+using catalog.DataAccess;
 
-namespace Catalog.API.Commands
+namespace catalog.API.Commands
 {
     /// <summary>
     /// Command for deleting a menu item
@@ -9,12 +9,12 @@ namespace Catalog.API.Commands
     public class DeleteMenuItemCommand : ICommand
     {
         private readonly string _menuItemId;
-        private readonly MenuRepository _menuRepository;
+        private readonly MenuItemRepository _menuRepository;
         private readonly bool _softDelete;
 
         public DeleteMenuItemCommand(
             string menuItemId,
-            MenuRepository menuRepository,
+            MenuItemRepository menuRepository,
             bool softDelete = true)
         {
             _menuItemId = menuItemId;
@@ -22,7 +22,7 @@ namespace Catalog.API.Commands
             _softDelete = softDelete;
         }
 
-        public async Task ExecuteAsync()
+        public Task ExecuteAsync()
         {
             // Validate inputs
             if (string.IsNullOrEmpty(_menuItemId))
@@ -31,7 +31,7 @@ namespace Catalog.API.Commands
             }
 
             // Get existing menu item
-            var menuItem = await _menuRepository.GetByIdAsync(_menuItemId);
+            var menuItem = _menuRepository.GetById(_menuItemId);
             if (menuItem == null)
             {
                 throw new InvalidOperationException($"Menu item with ID {_menuItemId} not found");
@@ -42,13 +42,15 @@ namespace Catalog.API.Commands
                 // Soft delete - mark as unavailable
                 menuItem.IsAvailable = false;
                 menuItem.UpdatedAt = DateTime.UtcNow;
-                await _menuRepository.UpdateAsync(menuItem);
+                _menuRepository.Update(_menuItemId, menuItem);
             }
             else
             {
                 // Hard delete - remove from database
-                await _menuRepository.DeleteAsync(_menuItemId);
+                _menuRepository.Delete(_menuItemId);
             }
+            
+            return Task.CompletedTask;
         }
     }
 }

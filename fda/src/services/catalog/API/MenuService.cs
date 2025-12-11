@@ -1,5 +1,6 @@
 using catalog.Models;
 using catalog.DataAccess;
+using catalog.API.Commands;
 using MongoDB.Driver;
 
 namespace catalog.API
@@ -30,43 +31,42 @@ namespace catalog.API
             return Task.FromResult(_menuItemRepository.GetById(id));
         }
 
-        public Task CreateMenuItemAsync(MenuItem menuItem)
+        public async Task CreateMenuItemAsync(MenuItem menuItem)
         {
-            menuItem.CreatedAt = DateTime.UtcNow;
-            menuItem.UpdatedAt = DateTime.UtcNow;
-            _menuItemRepository.Insert(menuItem);
-            return Task.CompletedTask;
+            // Use CreateMenuItemCommand for menu item creation logic
+            var command = new CreateMenuItemCommand(menuItem, _menuItemRepository);
+            await command.ExecuteAsync();
         }
 
-        public Task CreateMenuItemsAsync(List<MenuItem> menuItems)
+        public async Task CreateMenuItemsAsync(List<MenuItem> menuItems)
         {
-            var now = DateTime.UtcNow;
-            foreach (var item in menuItems)
+            // Create each menu item using the command
+            foreach (var menuItem in menuItems)
             {
-                item.CreatedAt = now;
-                item.UpdatedAt = now;
+                var command = new CreateMenuItemCommand(menuItem, _menuItemRepository);
+                await command.ExecuteAsync();
             }
-            _menuItemRepository.InsertMany(menuItems);
-            return Task.CompletedTask;
         }
 
-        public Task UpdateMenuItemAsync(string id, MenuItem menuItem)
+        public async Task UpdateMenuItemAsync(string id, MenuItem menuItem)
         {
-            menuItem.UpdatedAt = DateTime.UtcNow;
-            _menuItemRepository.Update(id, menuItem);
-            return Task.CompletedTask;
+            // Use UpdateMenuItemCommand for menu item updates
+            var command = new UpdateMenuItemCommand(id, menuItem, _menuItemRepository);
+            await command.ExecuteAsync();
         }
 
-        public Task DeleteMenuItemAsync(string id)
+        public async Task DeleteMenuItemAsync(string id)
         {
-            _menuItemRepository.Delete(id);
-            return Task.CompletedTask;
+            // Use DeleteMenuItemCommand for menu item deletion (soft delete by default)
+            var command = new DeleteMenuItemCommand(id, _menuItemRepository, softDelete: true);
+            await command.ExecuteAsync();
         }
 
-        public Task UpdateAvailabilityAsync(string id, bool isAvailable)
+        public async Task UpdateAvailabilityAsync(string id, bool isAvailable)
         {
-            _menuItemRepository.UpdateAvailability(id, isAvailable);
-            return Task.CompletedTask;
+            // Use UpdateMenuItemAvailabilityCommand for availability updates
+            var command = new UpdateMenuItemAvailabilityCommand(id, isAvailable, _menuItemRepository);
+            await command.ExecuteAsync();
         }
 
         // Food-specific query methods

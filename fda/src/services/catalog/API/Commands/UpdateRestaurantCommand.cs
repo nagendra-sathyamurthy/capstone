@@ -1,7 +1,7 @@
 using Catalog.Models;
 using Catalog.DataAccess;
 
-namespace Catalog.API.Commands
+namespace catalog.API.Commands
 {
     /// <summary>
     /// Command for updating an existing restaurant

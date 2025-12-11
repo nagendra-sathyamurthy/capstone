@@ -1,5 +1,6 @@
 using Authentication.Models;
 using Authentication.DataAccess;
+using Authentication.API.Commands;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
@@ -27,125 +28,25 @@ namespace Authentication.API.BusinessServices
 
         public async Task<LoginResponse?> Login(LoginRequest request)
         {
-            // Validate login request
-            if (!ValidateLoginRequest(request))
-            {
-                return null;
-            }
-
-            UserAccount? user = null;
-
-            // Get user based on login method - simplified to email only
-            switch (request.LoginMethod)
-            {
-                case LoginMethod.EmailPassword:
-                    user = await GetUserByEmail(request.Email!);
-                    if (user == null || !VerifyPassword(request.Password!, user.Password) || !user.IsActive)
-                    {
-                        await HandleFailedLogin(user);
-                        return null;
-                    }
-                    break;
-
-                case LoginMethod.EmailOtp:
-                    if (!await VerifyOtp(request.Email, null, request.Otp!, OtpPurpose.Login))
-                    {
-                        return null;
-                    }
-                    user = await GetUserByEmail(request.Email!);
-                    if (user == null || !user.IsActive)
-                    {
-                        return null;
-                    }
-                    break;
-
-                case LoginMethod.PhonePassword:
-                case LoginMethod.PhoneOtp:
-                    // Phone-based authentication is now handled by CRM service
-                    return null;
-
-                default:
-                    return null;
-            }
-
-            // Reset invalid logins on successful login
-            user.InvalidLogins = 0;
-            user.LastLoginTime = DateTime.UtcNow;
-            user.UpdatedAt = DateTime.UtcNow;
-            await _repository.UpdateAsync(user);
-
-            var token = GenerateJwtToken(user);
-            var expiresAt = DateTime.UtcNow.AddHours(8); // 8 hour token
-
-            return new LoginResponse
-            {
-                Token = token,
-                User = MapToUserInfo(user),
-                ExpiresAt = expiresAt
-            };
+            // Use LoginCommand for authentication logic
+            var command = new LoginCommand(request, _repository, _otpRepository, _jwtSecret);
+            return await command.ExecuteAsync();
         }
 
         public async Task<UserAccount> Register(RegisterRequest request)
         {
-            var existingEmail = await GetUserByEmail(request.Email);
-            if (existingEmail != null)
-            {
-                throw new InvalidOperationException("User with this email already exists.");
-            }
-
-            var user = new UserAccount
-            {
-                Email = request.Email,
-                Password = HashPassword(request.Password), // In production, use proper hashing
-                Role = request.Role,
-                Organization = Organizations.GetOrganizationForRole(request.Role, request.Organization),
-                Permissions = Permissions.GetPermissionsForRole(request.Role),
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            await _repository.AddAsync(user);
-            return user;
+            // Use RegisterUserCommand for registration logic
+            var command = new RegisterUserCommand(request, _repository);
+            return await command.ExecuteAsync();
         }
 
         // Role-specific validation removed - UserProfile data is now handled by CRM service
 
         public async Task<ValidateTokenResponse> ValidateToken(string token)
         {
-            try
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_jwtSecret);
-                
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
-
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var userId = jwtToken.Claims.First(x => x.Type == "userId").Value;
-                
-                var user = await _repository.GetByIdAsync(userId);
-                if (user == null || !user.IsActive)
-                {
-                    return new ValidateTokenResponse { IsValid = false, Error = "User not found or inactive" };
-                }
-
-                return new ValidateTokenResponse 
-                { 
-                    IsValid = true, 
-                    User = MapToUserInfo(user) 
-                };
-            }
-            catch
-            {
-                return new ValidateTokenResponse { IsValid = false, Error = "Invalid token" };
-            }
+            // Use ValidateTokenCommand for token validation logic
+            var command = new ValidateTokenCommand(token, _repository, _jwtSecret);
+            return await command.ExecuteAsync();
         }
 
         public async Task<UserAccount?> GetUserProfile(string userId)

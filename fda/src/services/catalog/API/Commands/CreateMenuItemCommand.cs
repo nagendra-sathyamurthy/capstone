@@ -1,7 +1,7 @@
 using catalog.Models;
 using catalog.DataAccess;
 
-namespace Catalog.API.Commands
+namespace catalog.API.Commands
 {
     /// <summary>
     /// Command for creating a new menu item
@@ -17,7 +17,7 @@ namespace Catalog.API.Commands
             _menuItemRepository = menuItemRepository;
         }
 
-        public async Task<MenuItem> ExecuteAsync()
+        public Task<MenuItem> ExecuteAsync()
         {
             if (_menuItem == null)
             {
@@ -31,8 +31,8 @@ namespace Catalog.API.Commands
             _menuItem.CreatedAt = DateTime.UtcNow;
             _menuItem.UpdatedAt = DateTime.UtcNow;
 
-            await _menuItemRepository.AddAsync(_menuItem);
-            return _menuItem;
+            _menuItemRepository.Insert(_menuItem);
+            return Task.FromResult(_menuItem);
         }
 
         private void ValidateMenuItem()

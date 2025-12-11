@@ -1,4 +1,4 @@
-namespace Catalog.API.Commands
+namespace catalog.API.Commands
 {
     /// <summary>
     /// Base interface for all commands

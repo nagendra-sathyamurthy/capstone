@@ -1,7 +1,7 @@
-using Catalog.Models;
-using Catalog.DataAccess;
+using catalog.Models;
+using catalog.DataAccess;
 
-namespace Catalog.API.Commands
+namespace catalog.API.Commands
 {
     /// <summary>
     /// Command for updating an existing menu item
@@ -10,12 +10,12 @@ namespace Catalog.API.Commands
     {
         private readonly string _menuItemId;
         private readonly MenuItem _updatedMenuItem;
-        private readonly MenuRepository _menuRepository;
+        private readonly MenuItemRepository _menuRepository;
 
         public UpdateMenuItemCommand(
             string menuItemId,
             MenuItem updatedMenuItem,
-            MenuRepository menuRepository)
+            MenuItemRepository menuRepository)
         {
             _menuItemId = menuItemId;
             _updatedMenuItem = updatedMenuItem;
@@ -72,7 +72,7 @@ namespace Catalog.API.Commands
             }
 
             // Get existing menu item
-            var existingMenuItem = await _menuRepository.GetByIdAsync(_menuItemId);
+            var existingMenuItem = _menuRepository.GetById(_menuItemId);
             if (existingMenuItem == null)
             {
                 throw new InvalidOperationException($"Menu item with ID {_menuItemId} not found");
@@ -86,12 +86,11 @@ namespace Catalog.API.Commands
             existingMenuItem.UnitOfMeasure = _updatedMenuItem.UnitOfMeasure;
             existingMenuItem.PricePerUOM = _updatedMenuItem.PricePerUOM;
             existingMenuItem.RestaurantId = _updatedMenuItem.RestaurantId;
-            existingMenuItem.ItemImage = _updatedMenuItem.ItemImage;
             existingMenuItem.IsAvailable = _updatedMenuItem.IsAvailable;
             existingMenuItem.UpdatedAt = DateTime.UtcNow;
 
             // Update in database
-            await _menuRepository.UpdateAsync(existingMenuItem);
+            _menuRepository.Update(_menuItemId, existingMenuItem);
 
             return existingMenuItem;
         }

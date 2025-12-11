@@ -1,7 +1,7 @@
 using catalog.Models;
 using catalog.DataAccess;
 
-namespace Catalog.API.Commands
+namespace catalog.API.Commands
 {
     /// <summary>
     /// Command for creating a new restaurant

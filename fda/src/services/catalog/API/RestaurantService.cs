@@ -1,5 +1,6 @@
 using catalog.Models;
 using catalog.DataAccess;
+using catalog.API.Commands;
 using MongoDB.Driver;
 
 namespace catalog.API
@@ -15,12 +16,12 @@ namespace catalog.API
         }
 
         // Restaurant Registration and Management
-        public Task<string> RegisterRestaurantAsync(Restaurant restaurant)
+        public async Task<string> RegisterRestaurantAsync(Restaurant restaurant)
         {
-            restaurant.CreatedAt = DateTime.UtcNow;
-            restaurant.UpdatedAt = DateTime.UtcNow;
-            _restaurantRepository.Insert(restaurant);
-            return Task.FromResult(restaurant.Id ?? string.Empty);
+            // Use CreateRestaurantCommand for restaurant creation logic
+            var command = new CreateRestaurantCommand(restaurant, _restaurantRepository);
+            var createdRestaurant = await command.ExecuteAsync();
+            return createdRestaurant.Id ?? string.Empty;
         }
 
         public Task<List<Restaurant>> GetAllRestaurantsAsync()
@@ -38,16 +39,18 @@ namespace catalog.API
             return Task.FromResult(_restaurantRepository.GetById(id));
         }
 
-        public Task<List<Restaurant>> GetRestaurantsByOwnerIdAsync(string ownerId)
+        public async Task<List<Restaurant>> GetRestaurantsByOwnerIdAsync(string ownerId)
         {
-            return Task.FromResult(_restaurantRepository.GetByOwnerId(ownerId).ToList());
+            // Use GetRestaurantsByOwnerCommand for filtering by owner
+            var command = new GetRestaurantsByOwnerCommand(ownerId, _restaurantRepository);
+            return await command.ExecuteAsync();
         }
 
-        public Task UpdateRestaurantAsync(string id, Restaurant restaurant)
+        public async Task UpdateRestaurantAsync(string id, Restaurant restaurant)
         {
-            restaurant.UpdatedAt = DateTime.UtcNow;
-            _restaurantRepository.Update(id, restaurant);
-            return Task.CompletedTask;
+            // Use UpdateRestaurantCommand for restaurant updates
+            var command = new UpdateRestaurantCommand(id, restaurant, _restaurantRepository);
+            await command.ExecuteAsync();
         }
 
         public Task DeleteRestaurantAsync(string id)
